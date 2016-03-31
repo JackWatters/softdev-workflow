@@ -11,8 +11,33 @@ from models.systems.software.feature import InoperableFeatureException
 class SoftwareSystem:
 
 
-    def __init__(self):
-        self.failed = False
+    def __init__(self,
+        probability_gain_feature_dependency = 0.1,
+        probability_gain_system_dependency = 0.05,
+        probability_lose_feature_dependency = 0.05,
+        probability_lose_system_dependency = 0.05,
+
+        probability_new_bug = 0.5,
+        probability_debug_known=0.9,
+        probability_debug_unknown=0.01,
+        pfd=0.01,
+        pdetect=0.5
+        
+        ):
+        
+        self.probability_gain_feature_dependency = probability_gain_feature_dependency
+        self.probability_gain_system_dependency = probability_gain_system_dependency
+
+        self.probability_lose_feature_dependency = probability_lose_feature_dependency
+        self.probability_lose_system_dependency = probability_lose_system_dependency
+
+        self.probability_new_bug = probability_new_bug
+        self.probability_debug_known=probability_debug_known
+        self.probability_debug_unknown=probability_debug_unknown
+        
+        self.pfd = pfd
+        self.pdetect = pdetect
+
         self.features = Set()
         self.tests = Set()
 
@@ -21,8 +46,8 @@ class SoftwareSystem:
     def chunks (self):
         chunk_sets = map (lambda f : frozenset(f.chunks), self.features)
         return reduce (lambda a, b : a.union(b), chunk_sets, set())
-    
-    
+
+
     @property
     def bugs (self):
         bug_sets = map (lambda c: frozenset(c.bugs), self.chunks)
@@ -35,8 +60,8 @@ class SoftwareSystem:
         return feature
 
 
-    def extend_feature(self, feature):
-        feature.extend()
+    def extend_feature(self, feature, random):
+        feature.extend(random)
 
 
     def add_test(self,feature):
@@ -47,22 +72,24 @@ class SoftwareSystem:
 
     def operate(self, random, limit=sys.maxint):
         
-        successful_operations = 0
+        successful_operations = []
         
         if len(self.features) == 0:
             return successful_operations
-
-        while successful_operations < limit:
+        
+        operable_features = sorted(self.features,key=lambda f : f.id)
+            
+        while len(successful_operations) < limit:
             try:
-                next_feature = random.sample(self.features,1)[0]
+                next_feature = random.choice(operable_features)
                 next_feature.operate(random)
-                successful_operations += 1
+                successful_operations.append(next_feature)
             except BugEncounteredException as e:
                 return successful_operations
             except InoperableFeatureException as e:
                 return successful_operations
             
-        return limit
+        return successful_operations
 
 
     def __str__(self):
