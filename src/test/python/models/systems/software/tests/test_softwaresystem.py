@@ -41,7 +41,7 @@ class SoftwareSystemTest(unittest.TestCase):
             self.complete_feature(my_random, 3)
         
         successful_operations = self.software_system.operate(my_random, 10000)
-        self.assertEquals(12, len(successful_operations))
+        self.assertEquals(10, len(successful_operations))
 
         for test in self.software_system.tests:
             test_failing = True
