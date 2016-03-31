@@ -72,6 +72,11 @@ class Feature:
                 detected_bug.chunk.debug(random, detected_bug)
 
 
+    def refactor(self, random):
+        chunk = random.choice(sorted(self.chunks, key=lambda c : c.id))
+        chunk.refactor(random)
+
+
     def sample_chunks(self, random):
         sample_cardinality = random.randint(0, len(self.chunks))
         return random.sample (sorted(self.chunks, key=lambda c: c.id), sample_cardinality)

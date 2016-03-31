@@ -46,7 +46,7 @@ class Waterfall(object):
         
         # Refactor
         for feature in sorted(features, key=lambda f : f.id):
-            for _ in range (0,2):
+            for _ in range (0,199):
                 feature.refactor(random)
         
 
