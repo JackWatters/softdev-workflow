@@ -7,7 +7,6 @@ from random import Random
 
 from models.systems.software.chunk import Chunk
 from models.systems.software.feature import Feature
-from sets import Set
 from models.systems.software.softwaresystem import SoftwareSystem
 from models.systems.software.bug import BugEncounteredException
 
@@ -23,7 +22,7 @@ class ChunkTest(unittest.TestCase):
         
         self.fixture_chunks = []
         
-        feature_mock.chunks = Set()
+        feature_mock.chunks = set()
         
         feature_mock.software_system = Mock(spec=SoftwareSystem)
         feature_mock.software_system.chunks = feature_mock.chunks
@@ -41,7 +40,7 @@ class ChunkTest(unittest.TestCase):
         self.fixture_chunks.append(Chunk(feature_mock))
         self.fixture_chunks.append(Chunk(feature_mock))
         
-        feature_mock.chunks.union_update(Set(self.fixture_chunks))
+        feature_mock.chunks |= set(self.fixture_chunks)
 
 
     def tearDown(self):

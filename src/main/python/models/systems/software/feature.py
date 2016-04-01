@@ -1,5 +1,4 @@
 from chunk import Chunk
-from sets import Set
 '''
 @author: tws
 '''
@@ -20,7 +19,7 @@ class Feature:
         self.software_system = software_system
         self.size = size
         
-        self.chunks = Set()
+        self.chunks = set()
 
 
     @property

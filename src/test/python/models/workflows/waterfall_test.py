@@ -25,7 +25,7 @@ class Test(unittest.TestCase):
         
         print "Operating."
         successful_operations = software_system.operate(random,10000)
-        print len(successful_operations)
+        self.assertEquals(53, len(successful_operations))
 
 if __name__ == "__main__":
     #import sys;sys.argv = ['', 'Test.testName']

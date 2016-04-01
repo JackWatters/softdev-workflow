@@ -5,7 +5,6 @@ import sys
 from feature import Feature
 from test import Test
 from bug import BugEncounteredException
-from sets import Set
 from models.systems.software.feature import InoperableFeatureException
 
 class SoftwareSystem:
@@ -38,8 +37,8 @@ class SoftwareSystem:
         self.pfd = pfd
         self.pdetect = pdetect
 
-        self.features = Set()
-        self.tests = Set()
+        self.features = set()
+        self.tests = set()
 
 
     @property
