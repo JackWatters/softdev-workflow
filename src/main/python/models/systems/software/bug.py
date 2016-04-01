@@ -8,22 +8,16 @@ class Bug(object):
 
 
     def __init__(self, chunk):
-        
+
         self.id = Bug.bug_count
         Bug.bug_count += 1
-        
+
         self.chunk = chunk
 
-        
-    
+
     @property
     def pfd(self):
-        return self.chunk.feature.software_system.pfd
-    
-    
-    @property
-    def pdetect(self):
-        return self.chunk.feature.software_system.pdetect
+        return self.chunk.feature.software_system.probabilities['failure_on_demand']
 
 
     def manifest(self, random):

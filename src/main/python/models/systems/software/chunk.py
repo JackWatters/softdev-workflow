@@ -23,37 +23,37 @@ class Chunk:
         
     @property
     def probability_gain_feature_dependency(self):
-        return self.feature.software_system.probability_gain_feature_dependency
+        return self.feature.software_system.probabilities['gain_feature_dependency']
 
 
     @property
     def probability_lose_feature_dependency(self):
-        return self.feature.software_system.probability_lose_feature_dependency
+        return self.feature.software_system.probabilities['lose_feature_dependency']
     
     
     @property
     def probability_gain_system_dependency(self):
-        return self.feature.software_system.probability_gain_system_dependency
+        return self.feature.software_system.probabilities['gain_system_dependency']
     
     
     @property
     def probability_lose_system_dependency(self):
-        return self.feature.software_system.probability_lose_system_dependency
+        return self.feature.software_system.probabilities['lose_system_dependency']
     
     
     @property
     def probability_new_bug(self):
-        return self.feature.software_system.probability_new_bug
+        return self.feature.software_system.probabilities['new_bug']
     
     
     @property
     def probability_debug_known(self):
-        return self.feature.software_system.probability_debug_known
+        return self.feature.software_system.probabilities['debug_known']
     
     
     @property
     def probability_debug_unknown(self):
-        return self.feature.software_system.probability_debug_unknown
+        return self.feature.software_system.probabilities['debug_unknown']
 
 
     def modify (self, random):

@@ -12,32 +12,20 @@ class SoftwareSystem:
 
 
     def __init__(self,
-        probability_gain_feature_dependency = 0.1,
-        probability_gain_system_dependency = 0.05,
-        probability_lose_feature_dependency = 0.05,
-        probability_lose_system_dependency = 0.05,
-
-        probability_new_bug = 0.5,
-        probability_debug_known=0.9,
-        probability_debug_unknown=0.01,
-        pfd=0.01,
-        pdetect=0.5
+                 probabilities={
+                    'gain_feature_dependency':0.5,
+                    'lose_feature_dependency':0.25,
+                    'gain_system_dependency':0.1,
+                    'lose_system_dependency':0.25,
+                    'new_bug':0.5,
+                    'debug_known':0.9,
+                    'debug_unknown':0.01,
+                    'failure_on_demand':0.01,
+                    'coverage' : 0.5,
+                    'detection':0.5
+                }):
         
-        ):
-        
-        self.probability_gain_feature_dependency = probability_gain_feature_dependency
-        self.probability_gain_system_dependency = probability_gain_system_dependency
-
-        self.probability_lose_feature_dependency = probability_lose_feature_dependency
-        self.probability_lose_system_dependency = probability_lose_system_dependency
-
-        self.probability_new_bug = probability_new_bug
-        self.probability_debug_known=probability_debug_known
-        self.probability_debug_unknown=probability_debug_unknown
-        
-        self.pfd = pfd
-        self.pdetect = pdetect
-
+        self.probabilities = probabilities
         self.features = SortedSet(key=lambda f : f.id)
         self.tests = SortedSet(key=lambda t : t.id)
 

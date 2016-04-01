@@ -33,15 +33,15 @@ class SoftwareSystemTest(unittest.TestCase):
         Regression test using a seed random value for repeatability.
         '''
         
-        my_random = Random()
-        my_random.seed(1)
+        rand = Random()
+        rand.seed(1)
 
             
         for _ in range(0,1):
-            self.complete_feature(my_random, 3)
+            self.complete_feature(rand, 3)
         
-        successful_operations = self.software_system.operate(my_random, 10000)
-        self.assertEquals(37, len(successful_operations))
+        successful_operations = self.software_system.operate(rand, 10000)
+        self.assertEquals(10, len(successful_operations))
 
         for test in self.software_system.tests:
             test_failing = True
@@ -51,9 +51,9 @@ class SoftwareSystemTest(unittest.TestCase):
                     test.exercise()
                     test_failing = False
                 except BugEncounteredException as e:
-                    test.feature.debug(my_random, e.bug)
+                    test.feature.debug(rand, e.bug)
 
-        successful_operations = self.software_system.operate(my_random, 10000)
+        successful_operations = self.software_system.operate(rand, 10000)
         self.assertEquals(10000, len(successful_operations))
 
 

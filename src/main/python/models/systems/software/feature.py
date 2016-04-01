@@ -33,8 +33,8 @@ class Feature:
     def tests(self):
         system_tests = frozenset(self.software_system.tests)
         return filter(lambda t : t.feature == self, system_tests)
-    
-    
+
+
     @property
     def test_coverage(self):
         chunk_sets = map(lambda t : frozenset(t.coverage), self.tests)

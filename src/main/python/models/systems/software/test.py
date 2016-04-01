@@ -10,11 +10,10 @@ class Test(object):
 
     test_count = 0
 
-    def __init__(self, feature, probability_coverage=0.5):
+    def __init__(self, feature, ):
         self.id = Test.test_count
         Test.test_count += 1
         self.feature = feature
-        self.probability_coverage = probability_coverage
 
 
     @property
@@ -33,10 +32,20 @@ class Test(object):
             my_random.seed(bug_test_hash)
             p = my_random.random()
                 
-            if p <= bug.pdetect:
+            if p <= self.pdetect:
                 result.add(bug)
                 
         return result
+
+
+    @property
+    def pdetect(self):
+        return self.feature.software_system.probabilities['detection']
+    
+    
+    @property
+    def probability_coverage(self):
+        return self.feature.software_system.probabilities['coverage']
 
 
     @property
@@ -44,9 +53,8 @@ class Test(object):
         result = set()
         for chunk in self.feature.chunks:
             chunk_test_hash = hash(frozenset([self.id, chunk.id]))
-            my_random = Random(chunk_test_hash)
-            p = my_random.random()
-            if p <= self.probability_coverage:
+            rand = Random(chunk_test_hash)
+            if rand.random() <= self.probability_coverage:
                 result.add(chunk)
         return result
 
