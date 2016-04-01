@@ -6,6 +6,7 @@ from feature import Feature
 from test import Test
 from bug import BugEncounteredException
 from models.systems.software.feature import InoperableFeatureException
+from sortedcontainers.sortedset import SortedSet
 
 class SoftwareSystem:
 
@@ -37,8 +38,8 @@ class SoftwareSystem:
         self.pfd = pfd
         self.pdetect = pdetect
 
-        self.features = set()
-        self.tests = set()
+        self.features = SortedSet(key=lambda f : f.id)
+        self.tests = SortedSet(key=lambda t : t.id)
 
 
     @property
@@ -75,12 +76,10 @@ class SoftwareSystem:
         
         if len(self.features) == 0:
             return successful_operations
-        
-        operable_features = sorted(self.features,key=lambda f : f.id)
-            
+                    
         while len(successful_operations) < limit:
             try:
-                next_feature = random.choice(operable_features)
+                next_feature = random.choice(self.features)
                 next_feature.operate(random)
                 successful_operations.append(next_feature)
             except BugEncounteredException as e:

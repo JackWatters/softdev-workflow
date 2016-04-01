@@ -3,6 +3,7 @@
 '''
 from random import Random
 from bug import BugEncounteredException
+from sortedcontainers.sortedset import SortedSet
 
 class Test(object):
 
@@ -24,7 +25,7 @@ class Test(object):
 
     @property
     def _bugs(self):
-        result = set()
+        result = SortedSet(key=lambda b: b.id)
         
         for bug in self._covered_bugs:
             my_random = Random()
@@ -52,7 +53,7 @@ class Test(object):
 
     def exercise (self):
         if len(self._bugs) > 0:
-            bug = sorted(self._bugs, key=lambda b : b.id)[0]
+            bug = self._bugs[0]
             raise BugEncounteredException (bug)
 
 

@@ -15,7 +15,7 @@ class Test(unittest.TestCase):
         pass
     
     
-    def testName(self):
+    def test_implement_system_and_operate_regression(self):
 
         random = Random()
         random.seed(1)
@@ -23,9 +23,8 @@ class Test(unittest.TestCase):
         
         software_system = self.workflow.deliver()
         
-        print "Operating."
         successful_operations = software_system.operate(random,10000)
-        self.assertEquals(53, len(successful_operations))
+        self.assertEquals(70, len(successful_operations))
 
 if __name__ == "__main__":
     #import sys;sys.argv = ['', 'Test.testName']

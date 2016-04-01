@@ -1,4 +1,5 @@
 from chunk import Chunk
+from sortedcontainers import SortedSet
 '''
 @author: tws
 '''
@@ -19,7 +20,7 @@ class Feature:
         self.software_system = software_system
         self.size = size
         
-        self.chunks = set()
+        self.chunks = SortedSet(key=lambda c : c.id)
 
 
     @property
@@ -49,11 +50,10 @@ class Feature:
 
         chunk = Chunk(self)
         self.chunks.add(chunk)
+        chunks_to_modify = self._sample_chunks(random)
+        chunks_to_modify.add(chunk)##
 
-        chunks_to_modify = set(self.sample_chunks(random))
-        chunks_to_modify.add(chunk)
-##
-        for chunk_to_modify in sorted(self.chunks, key=lambda c : c.id):
+        for chunk_to_modify in chunks_to_modify:
             chunk_to_modify.modify(random)
         
         return chunk
@@ -62,23 +62,17 @@ class Feature:
     def debug(self, random, detected_bug=None):
 
         if detected_bug == None:
-            for chunk in sorted(self.chunks, key=lambda c : c.id):
+            for chunk in self.chunks:
                 chunk.debug(random)
 
         else:
-            detected_bugs = self.bugs.intersection([detected_bug])
-            for detected_bug in sorted(detected_bugs, key=lambda b : b.id):
+            detected_bugs = SortedSet(self.bugs & set ([detected_bug]), key=lambda b : b.id)
+            for detected_bug in detected_bugs:
                 detected_bug.chunk.debug(random, detected_bug)
 
 
     def refactor(self, random):
-        chunk = random.choice(sorted(self.chunks, key=lambda c : c.id))
-        chunk.refactor(random)
-
-
-    def sample_chunks(self, random):
-        sample_cardinality = random.randint(0, len(self.chunks))
-        return random.sample (sorted(self.chunks, key=lambda c: c.id), sample_cardinality)
+        random.choice(self.chunks).refactor(random)
 
 
     def operate(self, my_random):
@@ -86,11 +80,17 @@ class Feature:
         Operates a random sample of the feature's implemented chunks if the feature has been implemented.
         '''
         if self.is_implemented:
-            for sampled_chunk in sorted(self.sample_chunks(my_random), key=lambda c: c.id):
+            for sampled_chunk in self._sample_chunks(my_random):
                 sampled_chunk.operate(my_random)
 
         else:
             raise InoperableFeatureException(self)
+
+
+    def _sample_chunks(self, random):
+        sample_cardinality = random.randint(0, len(self.chunks))
+        sample = random.sample (self.chunks, sample_cardinality)
+        return SortedSet(sample, key=lambda c : c.id)
 
 
     def __str__(self):
