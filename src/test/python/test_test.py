@@ -46,7 +46,6 @@ class TestTest(unittest.TestCase):
         self.mock_bug.pfd = 0.0
         
         self.fixture.exercise()
-        pass
 
 
 if __name__ == "__main__":
