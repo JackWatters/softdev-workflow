@@ -79,5 +79,27 @@ class SoftwareSystem:
 
 
     def __str__(self):
-        features_string = ",".join(map(lambda a : repr(a), self.features))
-        return "[%s]" % features_string
+        
+        result = []    
+    
+        for feature in self.features:
+            result.append(" ")
+            result.append(repr(feature))
+            result.append("[\n")
+            
+            for chunk in feature.chunks:
+                result.append("  ")
+                result.append(str(chunk))
+                result.append("\n")
+            result.append("]\n")
+        
+        result.append("[\n")    
+        for test in self.tests:
+            result.append(" ")
+            result.append(str(test))
+            result.append("\n")
+        
+        result.append("]")
+        
+        return "".join(result)
+

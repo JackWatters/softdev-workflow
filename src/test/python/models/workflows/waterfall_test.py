@@ -6,9 +6,10 @@ Created on 30 Mar 2016
 import unittest
 from models.workflows.waterfall import Waterfall
 from random import Random
+from models.systems.software.developer import Developer
 
 
-class Test(unittest.TestCase):
+class WaterfallTest(unittest.TestCase):
 
     def setUp(self):
         self.workflow = Waterfall(
@@ -36,12 +37,14 @@ class Test(unittest.TestCase):
 
         random = Random()
         random.seed(1)
-        self.workflow.work(random, None)
+        self.workflow.work(random, Developer(5))
         
         software_system = self.workflow.deliver()
         
         successful_operations = software_system.operate(random,10000)
-        self.assertEquals(70, len(successful_operations))
+        self.assertEquals(75, len(successful_operations))
+        
+        print software_system
 
 if __name__ == "__main__":
     #import sys;sys.argv = ['', 'Test.testName']

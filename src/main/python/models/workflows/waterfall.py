@@ -27,17 +27,17 @@ class Waterfall(object):
             self.software_system.add_feature(feature_size)
 
 
-    def work(self, random, software_developer):
+    def work(self, random, developer):
 
         # Implement features
         for feature in self.software_system.features:
             while not feature.is_implemented:
-                self.software_system.extend_feature(feature, random)
+                developer.extend_feature(random, feature)
 
         #Implement test suite
         for feature in self.software_system.features:
             while len(feature.tests) < feature.size * self.target_tests_per_feature:
-                self.software_system.add_test(feature)
+                developer.add_test(self.software_system, feature)
 
         # Debug
         for test in self.software_system.tests:
@@ -46,12 +46,12 @@ class Waterfall(object):
                     test.exercise()
                     break
                 except BugEncounteredException as e:
-                    test.feature.debug(random, e.bug)
+                    developer.debug(random, test, e.bug)
 
         # Refactor
         for feature in self.software_system.features:
             for _ in range (0,self.target_refactorings_per_feature):
-                feature.refactor(random)
+                developer.refactor(random, feature)
 
 
     def deliver (self):
