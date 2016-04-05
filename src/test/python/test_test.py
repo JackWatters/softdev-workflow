@@ -21,8 +21,9 @@ class TestTest(unittest.TestCase):
         self.mock_chunk = Mock(spec=Chunk)
         self.mock_chunk.id = 1
         self.mock_feature.chunks = [self.mock_chunk]
+        self.mock_feature.size = 3
         self.mock_feature.software_system = Mock(spec=SoftwareSystem)
-        self.mock_feature.software_system.probabilities = {'coverage': 0.5}
+        self.mock_feature.software_system.test_efficiency = 1.0
 
         self.mock_bug = Mock(spec=Bug)
         self.mock_bug.id = 1
@@ -30,15 +31,15 @@ class TestTest(unittest.TestCase):
         self.mock_chunk.bugs = self.mock_feature.bugs
 
     def test_exercise_and_fail(self):
-        self.mock_feature.software_system.probabilities['detection'] = [1.0]
+        self.mock_feature.software_system.test_effectiveness = 1.0
 
         with self.assertRaises(BugEncounteredException):
             self.fixture.exercise()
         pass
 
     def test_exercise_and_pass(self):
-        self.mock_feature.software_system.probabilities['detection'] = [1.0]
-        
+        self.mock_feature.software_system.test_effectiveness = 0.0
+
         self.fixture.exercise()
 
 

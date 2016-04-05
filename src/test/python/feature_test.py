@@ -20,19 +20,15 @@ class FeatureTest(unittest.TestCase):
         self.feature = Feature(software_system_mock, 1)
         software_system_mock.chunks = self.feature.chunks
         
-        software_system_mock.probabilities={
-                'gain_feature_dependency' : 0.1,
-                'gain_system_dependency' : 0.05,
-                'lose_feature_dependency' : 0.05,
-                'lose_system_dependency' : 0.05,
-                'new_bug' : 0.5,
-                'debug_known' : 0.9,
-                'debug_unknown' : 0.01,
-                'detection' : 0.5,
-                'failure_on_demand' : 0.01
-        }
-        
-
+        software_system_mock.probability_gain_feature_dependency = 0.1
+        software_system_mock.probability_gain_system_dependency = 0.05
+        software_system_mock.probability_lose_feature_dependency = 0.05
+        software_system_mock.probability_lose_system_dependency = 0.05
+        software_system_mock.probability_new_bug = 0.5
+        software_system_mock.probability_debug_known = 0.9
+        software_system_mock.probability_debug_unknown = 0.01
+        software_system_mock.probability_detection = 0.5
+        software_system_mock.probability_failure_on_demand = 0.01
 
     def _extend_feature_with_bug_and_feature_spec (self, random_float_sequence):
 

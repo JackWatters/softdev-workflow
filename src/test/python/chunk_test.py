@@ -1,6 +1,6 @@
-'''
+"""
 @author: tws
-'''
+"""
 import unittest
 from mock import Mock
 from random import Random
@@ -26,19 +26,17 @@ class ChunkTest(unittest.TestCase):
         
         feature_mock.software_system = Mock(spec=SoftwareSystem)
         feature_mock.software_system.chunks = feature_mock.chunks
-        
-        feature_mock.software_system.probabilities={
-                'gain_feature_dependency' : 0.1,
-                'gain_system_dependency' : 0.05,
-                'lose_feature_dependency' : 0.05,
-                'lose_system_dependency' : 0.05,
-                'new_bug' : 0.5,
-                'debug_known' : 0.9,
-                'debug_unknown' : 0.01,
-                'detection' : 0.5,
-                'failure_on_demand' : 0.01
-        }
-                
+
+        feature_mock.software_system.probability_gain_feature_dependency = 0.1
+        feature_mock.software_system.probability_gain_system_dependency = 0.05
+        feature_mock.software_system.probability_lose_feature_dependency = 0.05
+        feature_mock.software_system.probability_lose_system_dependency = 0.05
+        feature_mock.software_system.probability_new_bug = 0.5
+        feature_mock.software_system.probability_debug_known = 0.9
+        feature_mock.software_system.probability_debug_unknown = 0.01
+        feature_mock.software_system.probability_detection = 0.5
+        feature_mock.software_system.probability_failure_on_demand = 0.01
+
         self.fixture_chunks.append(Chunk(feature_mock))
         self.fixture_chunks.append(Chunk(feature_mock))
         
@@ -118,5 +116,5 @@ class ChunkTest(unittest.TestCase):
 
 
 if __name__ == "__main__":
-    # import sys;sys.argv = ['', 'ChunkTest.testName']
+    # import sys;sys.argv = [.., .ChunkTest.testName.]
     unittest.main()

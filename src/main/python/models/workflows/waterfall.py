@@ -8,24 +8,17 @@ from models.systems.software.bug import BugEncounteredException
 
 
 class Waterfall(object):
-    '''
+    """
     Represents a waterfall software development process.
-    '''
+    """
 
-    def __init__(self, 
-                 project_characteristics, 
-                 project_schedule, 
-                 target_tests_per_feature, 
-                 target_refactorings_per_feature):
-
-        self.target_tests_per_feature = target_tests_per_feature
-        self.target_refactorings_per_feature = target_refactorings_per_feature
-
-        self.software_system = SoftwareSystem(project_characteristics)
-
-        for feature_size in project_schedule:
-            self.software_system.add_feature(feature_size)
-
+    def __init__(self,
+                 software_system,
+                 target_test_coverage_per_feature=1.0,
+                 target_dependencies_per_feature=0):
+        self.software_system = software_system
+        self.target_test_coverage_per_feature = target_test_coverage_per_feature
+        self.target_dependencies_per_feature = target_dependencies_per_feature
 
     def work(self, random, developer):
 
@@ -34,10 +27,10 @@ class Waterfall(object):
             while not feature.is_implemented:
                 developer.extend_feature(random, feature)
 
-        #Implement test suite
+        # Implement test suite
         for feature in self.software_system.features:
-            while len(feature.tests) < feature.size * self.target_tests_per_feature:
-                developer.add_test(self.software_system, feature)
+            while feature.test_coverage < self.target_test_coverage_per_feature:
+                developer.add_test(feature)
 
         # Debug
         for test in self.software_system.tests:
@@ -46,13 +39,12 @@ class Waterfall(object):
                     test.exercise()
                     break
                 except BugEncounteredException as e:
-                    developer.debug(random, test, e.bug)
+                    developer.debug(random, test.feature, e.bug)
 
         # Refactor
         for feature in self.software_system.features:
-            for _ in range (0,self.target_refactorings_per_feature):
+            while len(feature.dependencies) > self.target_dependencies_per_feature:
                 developer.refactor(random, feature)
-
 
     def deliver (self):
         return self.software_system

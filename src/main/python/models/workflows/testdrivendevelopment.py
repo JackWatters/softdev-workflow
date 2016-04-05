@@ -1,32 +1,39 @@
-'''
-Created on 1 Apr 2016
+"""
+@author: tws
+"""
+from models.systems.software.bug import BugEncounteredException
 
-@author: Tim
-'''
-from models.systems.software.softwaresystem import SoftwareSystem
 
 class TestDrivenDevelopment(object):
-
-
     def __init__(self,
-                project_characteristics, 
-                 project_schedule, 
-                 target_tests_per_feature, 
-                 target_refactorings_per_feature):
+                 software_system,
+                 target_test_coverage_per_feature=1.0,
+                 target_dependencies_per_feature=0):
 
-        self.target_tests_per_feature = target_tests_per_feature
-        self.target_refactorings_per_feature = target_refactorings_per_feature
+        self.software_system = software_system
+        self.target_test_coverage_per_feature = target_test_coverage_per_feature
+        self.target_dependencies_per_feature = target_dependencies_per_feature
 
-        self.software_system = SoftwareSystem(project_characteristics)
-
-        for feature_size in project_schedule:
-            self.software_system.add_feature(feature_size)
-
-
-    def work(self, developer):
-        
+    def work(self, random, developer):
         for feature in self.software_system.features:
-            while not feature.is_implemented:
-                pass
-                
-                
+            self._ensure_sufficient_tests(developer, feature)
+            self._complete_feature(random, developer, feature)
+            self._refactor_feature(random, developer, feature)
+
+    def _ensure_sufficient_tests(self, developer, feature):
+        while feature.test_coverage < self.target_test_coverage_per_feature:
+            developer.add_test(feature)
+
+    def _complete_feature(self, random, developer, feature):
+        while not feature.is_implemented:
+            developer.extend_feature(random, feature)
+            while True:
+                try:
+                    feature.exercise_tests()
+                    break
+                except BugEncounteredException as e:
+                    developer.debug(random, feature, e.bug)
+
+    def _refactor_feature(self, random, developer, feature):
+        while len(feature.dependencies) > self.target_dependencies_per_feature:
+            developer.refactor(random, feature)

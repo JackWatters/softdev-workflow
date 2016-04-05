@@ -7,49 +7,60 @@ from sortedcontainers.sortedset import SortedSet
 
 
 class Test(object):
-    test_count = 0
+    _count = 0
 
-    def __init__(self, feature, ):
-        self.id = Test.test_count
-        Test.test_count += 1
+    def __init__(self, feature):
+        self.id = Test._count
+        Test._count += 1
+
         self.feature = feature
 
     @property
-    def _covered_bugs(self):
-        covered_bug_sets = map(lambda c: frozenset(c.bugs), self.coverage)
-        return reduce(lambda a, b: a.union(b), covered_bug_sets, set())
+    def effectiveness(self):
+        return self.feature.software_system.test_effectiveness
+
+    @property
+    def efficiency(self):
+        return self.feature.software_system.test_efficiency
+
+    @property
+    def chunks(self):
+        return map(lambda i: self.feature.chunks[i], filter (lambda i: i < len(self.feature.chunks), self.chunk_indexes))
 
     @property
     def _bugs(self):
+        covered_bugs = reduce(lambda a, b: a.union(b), map(lambda c: frozenset(c.bugs), self.chunks), set())
+
         result = SortedSet(key=lambda b: b.id)
 
-        for bug in self._covered_bugs:
-            my_random = Random()
+        for bug in covered_bugs:
+            rand = Random()
             bug_test_hash = hash(frozenset([self.id, bug.id]))
-            my_random.seed(bug_test_hash)
-            p = my_random.random()
-
-            if p <= self.probability_detect:
+            rand.seed(bug_test_hash)
+            p = rand.random()
+            if p <= self.effectiveness:
                 result.add(bug)
 
         return result
 
     @property
-    def probability_detect(self):
-        return self.feature.software_system.probabilities['detection']
+    def chunk_indexes(self):
+        """
+        The indexes to chunks in the sorted set of chunks of this test's parent feature that this test touches.
+        """
+        shuffled_indexes = range(0, self.feature.size)
+        shuffler = Random(self.id)
+        shuffler.shuffle(shuffled_indexes)
 
-    @property
-    def probability_chunk_covered(self):
-        return self.feature.software_system.probabilities['coverage']
+        result = SortedSet()
+        selector = Random(self.id)
 
-    @property
-    def coverage(self):
-        result = set()
-        for chunk in self.feature.chunks:
-            chunk_test_hash = hash(frozenset([self.id, chunk.id]))
-            rand = Random(chunk_test_hash)
-            if rand.random() <= self.probability_chunk_covered:
-                result.add(chunk)
+        for chunk_index in shuffled_indexes:
+            p = selector.random()
+
+            if p <= self.efficiency ** (len(result)):
+                result.add(chunk_index)
+
         return result
 
     def exercise(self):
@@ -62,4 +73,4 @@ class Test(object):
         return "t_%d[%s]" % (self.id, bugs_string)
 
     def __repr__(self):
-        return "t_%d" % (self.id)
+        return "t_%d" % self.id
