@@ -37,14 +37,11 @@ class TestDrivenDevelopmentTest(unittest.TestCase):
         self.software_system.test_effectiveness=0.5
         self.workflow.work(self.random, self.developer)
 
-        print self.software_system
-        print self.developer.person_time
-
         with self.assertRaises(BugEncounteredException):
             self.random.seed(1)
             self.software_system.operate(self.random, 10000)
 
-        self.assertEquals(73, len(self.software_system.successful_operations))
+        self.assertEquals(28, len(self.software_system.successful_operations))
 
 
 if __name__ == '__main__':
