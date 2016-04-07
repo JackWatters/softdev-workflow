@@ -53,10 +53,10 @@ class Test(object):
         shuffler.shuffle(shuffled_indexes)
 
         result = SortedSet()
-        selector = Random(self.id)
+        rand = Random(self.id)
 
         for chunk_index in shuffled_indexes:
-            p = selector.random()
+            p = rand.random()
 
             if p <= self.efficiency ** (len(result)):
                 result.add(chunk_index)

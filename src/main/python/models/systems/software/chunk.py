@@ -1,14 +1,14 @@
-'''
+"""
 @author: tws
-'''
+"""
 from bug import Bug
 from sortedcontainers import SortedSet
 
 
 class Chunk:
-    '''
+    """
     Represents a chunk of code providing some useful functionality in the system.
-    '''
+    """
 
     _count = 0
 
@@ -83,7 +83,7 @@ class Chunk:
         if len(self.bugs) == 0:
             return
 
-        elif not (bug == None) and random.random() <= self.probability_debug_known:
+        elif not (bug is None) and random.random() <= self.probability_debug_known:
             self.bugs.remove(bug)
         else:
             bug = random.choice(self.bugs)

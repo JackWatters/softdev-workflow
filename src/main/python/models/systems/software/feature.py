@@ -48,11 +48,10 @@ class Feature:
         return len(self.chunks) >= self.size
 
     def extend(self, random):
-
         chunk = Chunk(self)
         self.chunks.add(chunk)
         chunks_to_modify = self._sample_chunks(random)
-        chunks_to_modify.add(chunk)  ##
+        chunks_to_modify.add(chunk)
 
         for chunk_to_modify in chunks_to_modify:
             chunk_to_modify.modify(random)

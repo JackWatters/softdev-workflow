@@ -1,9 +1,6 @@
-'''
-Created on 23 Mar 2016
-
-@author: Tim
-'''
-from models.systems.software.softwaresystem import SoftwareSystem
+""""
+@author: tws
+"""
 from models.systems.software.bug import BugEncounteredException
 
 
@@ -15,12 +12,16 @@ class Waterfall(object):
     def __init__(self,
                  software_system,
                  target_test_coverage_per_feature=1.0,
-                 target_dependencies_per_feature=0):
+                 target_dependencies_per_feature=0
+                 ):
         self.software_system = software_system
         self.target_test_coverage_per_feature = target_test_coverage_per_feature
         self.target_dependencies_per_feature = target_dependencies_per_feature
 
-    def work(self, random, developer):
+    def work(self, random, developer, schedule):
+        # Complete specification
+        for feature_size in schedule:
+            self.software_system.add_feature(feature_size)
 
         # Implement features
         for feature in self.software_system.features:
@@ -45,6 +46,3 @@ class Waterfall(object):
         for feature in self.software_system.features:
             while len(feature.dependencies) > self.target_dependencies_per_feature:
                 developer.refactor(random, feature)
-
-    def deliver (self):
-        return self.software_system

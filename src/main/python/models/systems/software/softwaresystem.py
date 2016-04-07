@@ -1,10 +1,11 @@
-'''
+"""
 @author: tws
-'''
+"""
 import sys
 from feature import Feature
 from test import Test
 from sortedcontainers.sortedset import SortedSet
+
 
 class SoftwareSystem:
     def __init__(self,
@@ -34,7 +35,6 @@ class SoftwareSystem:
         self.features = SortedSet(key=lambda f: f.id)
         self.tests = SortedSet(key=lambda t: t.id)
         self.successful_operations = []
-        self.last_exception = None
 
     @property
     def chunks(self):
@@ -57,7 +57,8 @@ class SoftwareSystem:
         return test
 
     def operate(self, random, limit=sys.maxint):
-        self.successful_operations = []
+        current_operations = []
+        self.successful_operations.append(current_operations)
 
         if len(self.features) == 0:
             return self.successful_operations
@@ -65,7 +66,12 @@ class SoftwareSystem:
         while len(self.successful_operations) < limit:
             next_feature = random.choice(self.features)
             next_feature.operate(random)
-            self.successful_operations.append(next_feature)
+            current_operations.append(next_feature)
+
+    @property
+    def mean_operations_to_failure (self):
+        total_operations = reduce(lambda x, y: x + y, map(lambda l: len(l), self.successful_operations))
+        return total_operations / len(self.successful_operations)
 
     def __str__(self):
         result = []
