@@ -1,3 +1,7 @@
+"""
+@author probablytom, tws
+"""
+
 import random, ast, inspect
 from types import *
 
