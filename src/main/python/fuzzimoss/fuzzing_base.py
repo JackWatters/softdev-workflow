@@ -60,23 +60,21 @@ class mutate(object):
                 for i in range(0, len(func_source_lines)):
                     func_source_lines[i] = func_source_lines[i][4:]
 
-            func_source = ''.join(func_source_lines)# + '\n' + func.func_name + '_mod' + '()'
+            func_source = ''.join(func_source_lines)
 
             # Mutate using the visitor class.
             mutation_visitor = FuzzVisitor(mutation_operator)
             abstract_syntax_tree = ast.parse(func_source)
             mutated_func_uncompiled = mutation_visitor.visit(abstract_syntax_tree)
 
-            # Compile the newly mutated function into a module.
+            # Compile the newly mutated function into a module and then extract the mutated function definition.
             compiled_module = compile(mutated_func_uncompiled, inspect.getsourcefile(func), 'exec')
 
-            compiled_mutated_func= compiled_module.co_consts[0]
             mutated_func = func
-
-            mutated_func.func_code = compiled_mutated_func
+            mutated_func.func_code = compiled_module.co_consts[0]
             mutate.mutation_cache[(func, mutation_operator)] = mutated_func
-            # Execute the mutated function.
 
+            # Execute the mutated function.
             mutated_func(*args, **kwargs)
 
         return wrap
@@ -147,15 +145,6 @@ def remove_last_step(lines):
 
 def shuffle_steps(steps):
     return random.shuffle(steps)
-
-
-@mutate(choose_from([(0.5, remove_random_step)]))
-def mutated_function():
-    print 1
-    print 2
-    print 3
-    print 4
-    print 5
 
 
 class Bob:

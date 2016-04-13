@@ -2,7 +2,6 @@
 @author: tws
 """
 from models.systems.software.bug import BugEncounteredException
-from models.systems.software.developer import DeveloperExhaustedException
 
 
 class TestDrivenDevelopment(object):
