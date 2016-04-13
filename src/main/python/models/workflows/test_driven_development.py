@@ -2,6 +2,7 @@
 @author: tws
 """
 from models.systems.software.bug import BugEncounteredException
+from models.systems.software.developer import DeveloperExhaustedException
 
 
 class TestDrivenDevelopment(object):
@@ -23,11 +24,11 @@ class TestDrivenDevelopment(object):
             self._refactor_feature(random, developer, feature)
 
         # Work in wider quality assurance.
-        #while True:
-        #    try:
-        #        self._enhance_system_quality(random, developer)
-        #    except DeveloperExhaustedException:
-        #        break
+        while True:
+            try:
+                self._enhance_system_quality(random, developer)
+            except DeveloperExhaustedException:
+                break
 
     def _ensure_sufficient_tests(self, developer, feature):
         while feature.test_coverage < self.target_test_coverage_per_feature:

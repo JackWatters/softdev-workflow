@@ -19,9 +19,9 @@ class SoftwareSystemTest(unittest.TestCase):
             self.software_system.add_test(feature)
 
     def test_operate_test_debug_operate_regression(self):
-        '''
+        """
         Regression test using a seed random value for repeatability.
-        '''
+        """
 
         rand = Random()
         rand.seed(1)
@@ -32,20 +32,20 @@ class SoftwareSystemTest(unittest.TestCase):
         with self.assertRaises(BugEncounteredException) as e:
             self.software_system.operate(rand, 10000)
 
-        self.assertEquals(10, len(self.software_system.successful_operations))
+        self.assertEquals(10, len(self.software_system.last_trace))
 
         for test in self.software_system.tests:
             test_failing = True
 
-            while test_failing:
+            while True:
                 try:
                     test.exercise()
-                    test_failing = False
+                    break
                 except BugEncounteredException as e:
                     test.feature.debug(rand, e.bug)
 
         self.software_system.operate(rand, 10000)
-        self.assertEquals(10000, len(self.software_system.successful_operations))
+        self.assertEquals(10000, len(self.software_system.last_trace))
 
 
 if __name__ == "__main__":

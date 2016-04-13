@@ -170,6 +170,11 @@ class Bob:
         print 4
         print 5
         print 6
+        self.test_other()
+        print 7
+
+    def test_other(self):
+        print "hurrah"
 
 if __name__ == "__main__":
     for i in range(3):

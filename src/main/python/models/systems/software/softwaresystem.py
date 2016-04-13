@@ -63,10 +63,19 @@ class SoftwareSystem:
         if len(self.features) == 0:
             return self.successful_operations
 
-        while len(self.successful_operations) < limit:
+        while len(current_operations) < limit:
             next_feature = random.choice(self.features)
             next_feature.operate(random)
             current_operations.append(next_feature)
+
+    @property
+    def last_trace (self):
+        """
+        :return : the last sequence of successful operations called by operate.
+        """
+        last_trace_index = len(self.successful_operations) - 1
+
+        return self.successful_operations[last_trace_index]
 
     @property
     def mean_operations_to_failure (self):

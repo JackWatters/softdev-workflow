@@ -33,11 +33,10 @@ class TestDrivenDevelopmentTest(unittest.TestCase):
     def test_implement_default_system_and_operate_regression(self):
 
         self.workflow.work(random=self.random, developer=self.developer, schedule=[3,5,7])
-
         self.random.seed(1)
         self.software_system.operate(self.random, 10000)
 
-        self.assertEquals(10000, len(self.software_system.successful_operations))
+        self.assertEquals(10000, len(self.software_system.last_trace))
 
 
 if __name__ == '__main__':
