@@ -147,6 +147,15 @@ def shuffle_steps(steps):
     return random.shuffle(steps)
 
 
+@mutate(choose_from([(0.5, in_sequence([remove_random_step, remove_random_step]))]))
+def mangled_function():
+    print 1
+    print 2
+    print 3
+    print 4
+    print 5
+
+
 class Bob:
 
     def __init__(self):
@@ -159,8 +168,8 @@ class Bob:
         print 6
 
 if __name__ == "__main__":
-    #for i in range(3):
-    #    mutated_function()
-    #    print
+    for i in range(3):
+        mangled_function()
+        print
     bob = Bob()
     bob.testing()
