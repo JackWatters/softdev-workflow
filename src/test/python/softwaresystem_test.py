@@ -4,7 +4,7 @@
 import unittest
 from models.systems.software.softwaresystem import SoftwareSystem
 from random import Random
-from models.systems.software.bug import BugEncounteredException
+from models.systems.software import BugEncounteredException
 
 
 class SoftwareSystemTest(unittest.TestCase):

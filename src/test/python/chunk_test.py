@@ -5,10 +5,7 @@ import unittest
 from mock import Mock
 from random import Random
 
-from models.systems.software.chunk import Chunk
-from models.systems.software.feature import Feature
-from models.systems.software.softwaresystem import SoftwareSystem
-from models.systems.software.bug import BugEncounteredException
+from models.systems.software import BugEncounteredException, Chunk, Feature, SoftwareSystem
 
 
 class ChunkTest(unittest.TestCase):

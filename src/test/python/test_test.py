@@ -7,11 +7,7 @@ import unittest
 
 from mock import Mock
 
-from models.systems.software.bug import Bug, BugEncounteredException
-from models.systems.software.feature import Feature
-from models.systems.software.test import Test
-from chunk import Chunk
-from models.systems.software.softwaresystem import SoftwareSystem
+from models.systems.software import Bug, BugEncounteredException, Chunk, Feature, SoftwareSystem, Test
 
 
 class TestTest(unittest.TestCase):

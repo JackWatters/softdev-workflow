@@ -2,16 +2,12 @@
 @author: twsswt
 """
 import unittest
-from models.workflows.waterfall import Waterfall
-from models.systems.software.softwaresystem import SoftwareSystem
-from models.systems.software.chunk import Chunk
-from models.systems.software.feature import Feature
-from models.systems.software.test import Test
-from models.systems.software.bug import Bug, BugEncounteredException
 
+from models.systems.software import Bug, BugEncounteredException, Chunk, Developer, Feature, SoftwareSystem, Test
+
+from models.workflows import Waterfall
 
 from random import Random
-from models.systems.software.developer import Developer
 
 
 class WaterfallTest(unittest.TestCase):
