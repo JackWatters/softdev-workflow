@@ -39,10 +39,10 @@ class TestCompareWorkFlows(unittest.TestCase):
 
     @staticmethod
     def create_software_project(seed, workflow_constructor, resources, schedule, operations):
-        developer = Developer (resources)
+        developer = Developer(resources)
         software_system = SoftwareSystem()
         workflow = workflow_constructor(software_system)
-        random = Random (seed)
+        random = Random(seed)
         return SoftwareProject(random, software_system, workflow, developer, schedule, operations)
 
     def setUp(self):
@@ -51,8 +51,10 @@ class TestCompareWorkFlows(unittest.TestCase):
         Test._count = 0
         Bug._count = 0
 
-        self.waterfall_projects = [self.create_software_project(i, Waterfall,             250, [3, 5, 7], 50) for i in range(0, 10)]
-        self.tdd_projects =       [self.create_software_project(i, TestDrivenDevelopment, 250, [3, 5, 7], 50) for i in range(0, 10)]
+        self.waterfall_projects =\
+            [self.create_software_project(i, Waterfall,             250, [3, 5, 7], 50) for i in range(0, 10)]
+        self.tdd_projects =\
+            [self.create_software_project(i, TestDrivenDevelopment, 250, [3, 5, 7], 50) for i in range(0, 10)]
 
     @staticmethod
     def build_software_systems(projects):

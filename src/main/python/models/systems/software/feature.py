@@ -64,7 +64,7 @@ class Feature:
                 chunk.debug(random)
 
         else:
-            detected_bugs = SortedSet(self.bugs & set([detected_bug]), key=lambda b: b.id)
+            detected_bugs = SortedSet(self.bugs & {detected_bug}, key=lambda b: b.id)
             for detected_bug in detected_bugs:
                 detected_bug.chunk.debug(random, detected_bug)
 

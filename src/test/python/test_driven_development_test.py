@@ -1,7 +1,7 @@
 import unittest
 
 
-from models.systems.software.bug import Bug, BugEncounteredException
+from models.systems.software.bug import Bug
 from models.systems.software.chunk import Chunk
 from models.systems.software.developer import Developer
 from models.systems.software.feature import Feature
@@ -32,7 +32,7 @@ class TestDrivenDevelopmentTest(unittest.TestCase):
 
     def test_implement_default_system_and_operate_regression(self):
 
-        self.workflow.work(random=self.random, developer=self.developer, schedule=[3,5,7])
+        self.workflow.work(random=self.random, developer=self.developer, schedule=[3, 5, 7])
         self.random.seed(1)
         self.software_system.operate(self.random, 10000)
 

@@ -1,8 +1,8 @@
-'''
+"""
 Created on 20 Mar 2016
 
-@author: Tim
-'''
+@author: twsswt
+"""
 import unittest
 
 from mock import Mock

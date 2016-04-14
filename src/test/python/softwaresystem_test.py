@@ -29,13 +29,12 @@ class SoftwareSystemTest(unittest.TestCase):
         for _ in range(0, 1):
             self.complete_feature(rand, 3)
 
-        with self.assertRaises(BugEncounteredException) as e:
+        with self.assertRaises(BugEncounteredException):
             self.software_system.operate(rand, 10000)
 
         self.assertEquals(10, len(self.software_system.last_trace))
 
         for test in self.software_system.tests:
-            test_failing = True
 
             while True:
                 try:

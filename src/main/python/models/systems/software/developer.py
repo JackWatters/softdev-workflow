@@ -26,7 +26,7 @@ class Developer(object):
     def refactor(self, random, feature):
         self._perform_task(Feature.refactor, [feature, random], 1)
 
-    def _perform_task (self, task, args, cost):
+    def _perform_task(self, task, args, cost):
         """
         Private book keeping function to monitor the developer's work load.
         """

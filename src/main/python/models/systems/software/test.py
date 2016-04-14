@@ -1,6 +1,6 @@
-'''
-@author: tws
-'''
+"""
+@author: twsswt
+"""
 from random import Random
 from bug import BugEncounteredException
 from sortedcontainers.sortedset import SortedSet
@@ -25,7 +25,7 @@ class Test(object):
 
     @property
     def chunks(self):
-        return map(lambda i: self.feature.chunks[i], filter (lambda i: i < len(self.feature.chunks), self.chunk_indexes))
+        return map(lambda i: self.feature.chunks[i], filter(lambda i: i < len(self.feature.chunks), self.chunk_indexes))
 
     @property
     def _bugs(self):

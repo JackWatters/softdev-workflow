@@ -69,7 +69,7 @@ class SoftwareSystem:
             current_operations.append(next_feature)
 
     @property
-    def last_trace (self):
+    def last_trace(self):
         """
         :return : the last sequence of successful operations called by operate.
         """
@@ -78,7 +78,7 @@ class SoftwareSystem:
         return self.successful_operations[last_trace_index]
 
     @property
-    def mean_operations_to_failure (self):
+    def mean_operations_to_failure(self):
         total_operations = reduce(lambda x, y: x + y, map(lambda l: len(l), self.successful_operations))
         return total_operations / len(self.successful_operations)
 

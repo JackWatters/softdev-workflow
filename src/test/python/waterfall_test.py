@@ -1,6 +1,6 @@
-'''
-@author: tws
-'''
+"""
+@author: twsswt
+"""
 import unittest
 from models.workflows.waterfall import Waterfall
 from models.systems.software.softwaresystem import SoftwareSystem
@@ -27,11 +27,11 @@ class WaterfallTest(unittest.TestCase):
         self.developer = Developer(person_time=500)
 
         self.workflow = Waterfall(
-            software_system = self.software_system,
+            software_system=self.software_system,
         )
 
     def test_implement_default_system_and_operate_regression(self):
-        self.workflow.work(self.random, self.developer, [3,5,7])
+        self.workflow.work(self.random, self.developer, [3, 5, 7])
 
         with self.assertRaises(BugEncounteredException):
             self.random.seed(1)
@@ -41,7 +41,7 @@ class WaterfallTest(unittest.TestCase):
     def test_implement_system_with_low_effectiveness_tests_and_operate_regression(self):
         self.software_system.test_effectiveness = 0.1
 
-        self.workflow.work(self.random, self.developer, [3,5,7])
+        self.workflow.work(self.random, self.developer, [3, 5, 7])
 
         with self.assertRaises(BugEncounteredException):
             self.software_system.operate(self.random, 10000)
@@ -50,7 +50,7 @@ class WaterfallTest(unittest.TestCase):
     def test_implement_system_with_high_effectiveness_tests_and_operate_regression(self):
         self.software_system.test_effectiveness = 1.0
 
-        self.workflow.work(self.random, self.developer, [3,5,7])
+        self.workflow.work(self.random, self.developer, [3, 5, 7])
 
         self.software_system.operate(self.random, 10000)
         self.assertEquals(10000, len(self.software_system.last_trace))

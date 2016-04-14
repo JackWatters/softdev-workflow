@@ -14,7 +14,7 @@ class Chunk:
 
     def __init__(self, feature):
         self.id = Chunk._count
-        Chunk._count += 1;
+        Chunk._count += 1
 
         self.feature = feature
 
@@ -50,7 +50,7 @@ class Chunk:
         return self.feature.software_system.probability_debug_unknown
 
     def modify(self, random):
-        feature_chunks = self.feature.chunks - set([self])
+        feature_chunks = self.feature.chunks - {self}
         system_chunks = set(self.feature.software_system.chunks.difference(self.feature.chunks))
         self._add_dependencies(random, system_chunks, self.probability_gain_system_dependency)
         self._add_dependencies(random, feature_chunks, self.probability_gain_feature_dependency)
@@ -100,7 +100,8 @@ class Chunk:
         return reduce(lambda bugs_a, bugs_b: bugs_a.union(bugs_b), chunk_bug_set, set())
 
     def __str__(self):
-        string_repr_set = lambda iterable: ",".join(map(lambda e: repr(e), iterable))
+        def string_repr_set(iterable):
+            return ",".join(map(lambda e: repr(e), iterable))
 
         feature_dependencies = string_repr_set(filter(lambda c: c.feature == self.feature, self.dependencies))
         system_dependencies = string_repr_set(filter(lambda c: c.feature != self.feature, self.dependencies))

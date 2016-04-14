@@ -1,6 +1,6 @@
-'''
-@author: tws
-'''
+"""
+@author: twsswt
+"""
 
 
 class Bug(object):
