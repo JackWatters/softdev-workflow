@@ -4,8 +4,10 @@
 from models.systems.software.bug import BugEncounteredException
 from models.systems.software.developer import DeveloperExhaustedException
 
-
 class TestDrivenDevelopment(object):
+    """
+    Represents the sequence of activities in a test driven development workflow.
+    """
     def __init__(self,
                  software_system,
                  target_test_coverage_per_feature=1.0,
