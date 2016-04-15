@@ -1,11 +1,13 @@
 """
-@author: tws
+@author: twsswt
 """
 import unittest
-from mock import Mock
-from random import Random
 
-from models.systems.software import BugEncounteredException, Chunk, Feature, SoftwareSystem
+from mock import Mock
+
+from model.system import BugEncounteredException, Chunk, Feature, SoftwareSystem
+
+from random import Random
 
 
 class ChunkTest(unittest.TestCase):

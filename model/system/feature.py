@@ -1,4 +1,4 @@
-from chunk import Chunk
+from .chunk import Chunk
 from sortedcontainers import SortedSet
 
 """

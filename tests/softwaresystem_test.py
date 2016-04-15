@@ -2,9 +2,10 @@
 @author: tws
 """
 import unittest
-from models.systems.software.softwaresystem import SoftwareSystem
+
+from model.system import BugEncounteredException, SoftwareSystem
+
 from random import Random
-from models.systems.software import BugEncounteredException
 
 
 class SoftwareSystemTest(unittest.TestCase):
@@ -20,7 +21,7 @@ class SoftwareSystemTest(unittest.TestCase):
 
     def test_operate_test_debug_operate_regression(self):
         """
-        Regression test using a seed random value for repeatability.
+        Regression tests using a seed random value for repeatability.
         """
 
         rand = Random()

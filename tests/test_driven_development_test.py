@@ -1,8 +1,7 @@
 import unittest
 
-from models.systems.software import Bug, Test, Chunk, Developer, Feature, SoftwareSystem
-
-from models.workflows import TestDrivenDevelopment
+from model.system import Bug, Test, Chunk, Developer, Feature, SoftwareSystem
+from model.workflows import TestDrivenDevelopment
 
 from random import Random
 

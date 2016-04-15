@@ -2,8 +2,10 @@
 @author: twsswt
 """
 from random import Random
-from bug import BugEncounteredException
+
 from sortedcontainers.sortedset import SortedSet
+
+from .bug import BugEncounteredException
 
 
 class Test(object):
@@ -46,7 +48,7 @@ class Test(object):
     @property
     def chunk_indexes(self):
         """
-        The indexes to chunks in the sorted set of chunks of this test's parent feature that this test touches.
+        The indexes to chunks in the sorted set of chunks of this tests's parent feature that this tests touches.
         """
         shuffled_indexes = range(0, self.feature.size)
         shuffler = Random(self.id)

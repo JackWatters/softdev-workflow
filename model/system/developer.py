@@ -1,8 +1,8 @@
 """
 @author: tws
 """
-from models.systems.software.softwaresystem import SoftwareSystem
-from models.systems.software.feature import Feature
+from .feature import Feature
+from .software_system import SoftwareSystem
 
 
 class Developer(object):

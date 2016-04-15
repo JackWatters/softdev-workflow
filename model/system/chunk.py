@@ -1,7 +1,7 @@
 """
 @author: tws
 """
-from bug import Bug
+from .bug import Bug
 from sortedcontainers import SortedSet
 
 

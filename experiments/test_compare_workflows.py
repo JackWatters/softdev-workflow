@@ -1,13 +1,12 @@
 import unittest
 
-from models.systems.software.bug import Bug
-from models.systems.software.chunk import Chunk
-from models.systems.software.feature import Feature
-from models.systems.software.software_project import SoftwareProject
-from models.systems.software.test import Test
-
-from models.workflows.test_driven_development import TestDrivenDevelopment
-from models.workflows.waterfall import Waterfall
+from model.system.software.bug import Bug
+from model.system.software.chunk import Chunk
+from model.system.software.feature import Feature
+from model.system.software.software_project import SoftwareProject
+from model.system.software.test import Test
+from model.workflows.test_driven_development import TestDrivenDevelopment
+from model.workflows.waterfall import Waterfall
 
 
 class TestCompareWorkFlows(unittest.TestCase):

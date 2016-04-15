@@ -3,9 +3,8 @@
 """
 import unittest
 
-from models.systems.software import Bug, BugEncounteredException, Chunk, Developer, Feature, SoftwareSystem, Test
-
-from models.workflows import Waterfall
+from model.system import Bug, BugEncounteredException, Chunk, Developer, Feature, SoftwareSystem, Test
+from model.workflows import Waterfall
 
 from random import Random
 

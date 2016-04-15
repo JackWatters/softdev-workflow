@@ -2,9 +2,11 @@
 @author: tws
 """
 import sys
-from feature import Feature
-from test import Test
+
 from sortedcontainers.sortedset import SortedSet
+
+from .feature import Feature
+from .test import Test
 
 
 class SoftwareSystem:

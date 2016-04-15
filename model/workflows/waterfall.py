@@ -1,7 +1,7 @@
 """"
-@author: tws
+@author: twsswt
 """
-from models.systems.software.bug import BugEncounteredException
+from model.system import BugEncounteredException
 
 
 class Waterfall(object):
@@ -28,7 +28,7 @@ class Waterfall(object):
             while not feature.is_implemented:
                 developer.extend_feature(random, feature)
 
-        # Implement test suite
+        # Implement tests suite
         for feature in self.software_system.features:
             while feature.test_coverage < self.target_test_coverage_per_feature:
                 developer.add_test(feature)

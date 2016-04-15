@@ -3,10 +3,10 @@
 @author probablytom
 """
 
-from models.systems.software.bug import BugEncounteredException
-from models.systems.software.developer import Developer, DeveloperExhaustedException
-from models.systems.software.feature import InoperableFeatureException
-from models.systems.software.softwaresystem import SoftwareSystem
+from .bug import BugEncounteredException
+from .developer import Developer, DeveloperExhaustedException
+from .feature import InoperableFeatureException
+from .software_system import SoftwareSystem
 
 from random import Random
 

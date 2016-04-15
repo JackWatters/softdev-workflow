@@ -2,10 +2,12 @@
 @author: twsswt
 """
 import unittest
-from mock import Mock
-from random import Random
 
-from models.systems.software import BugEncounteredException, Feature, InoperableFeatureException, SoftwareSystem
+from mock import Mock
+
+from model.system import BugEncounteredException, Feature, InoperableFeatureException, SoftwareSystem
+
+from random import Random
 
 
 class FeatureTest(unittest.TestCase):

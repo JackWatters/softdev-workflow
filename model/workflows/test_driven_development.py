@@ -1,13 +1,13 @@
 """
-@author: tws
+@author: twsswt
 """
-from models.systems.software.bug import BugEncounteredException
-from models.systems.software.developer import DeveloperExhaustedException
+from model.system import BugEncounteredException
+from model.system import DeveloperExhaustedException
 
 
 class TestDrivenDevelopment(object):
     """
-    Represents the sequence of activities in a test driven development workflow.
+    Represents the sequence of activities in a tests driven development workflow.
     """
     def __init__(self,
                  software_system,
