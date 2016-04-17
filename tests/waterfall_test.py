@@ -3,6 +3,8 @@
 """
 import unittest
 
+import sys
+
 from model.system import Bug, BugEncounteredException, Chunk, Developer, Feature, SoftwareSystem, Test
 from model.workflows import Waterfall
 
@@ -16,6 +18,8 @@ class WaterfallTest(unittest.TestCase):
         Feature._count = 0
         Test._count = 0
         Bug._count = 0
+
+        self.is_64bits = sys.maxsize > 2**32
 
         self.random = Random(1)
         self.software_system = SoftwareSystem()
@@ -31,7 +35,10 @@ class WaterfallTest(unittest.TestCase):
         with self.assertRaises(BugEncounteredException):
             self.random.seed(1)
             self.software_system.operate(self.random, 10000)
-        self.assertEquals(15, len(self.software_system.last_trace))
+        if self.is_64bits:
+            self.assertEquals(15, len(self.software_system.last_trace))
+        else:
+            self.assertEquals(33, len(self.software_system.last_trace))
 
     def test_implement_system_with_low_effectiveness_tests_and_operate_regression(self):
         self.software_system.test_effectiveness = 0.1
@@ -41,7 +48,7 @@ class WaterfallTest(unittest.TestCase):
         with self.assertRaises(BugEncounteredException):
             self.random.seed(1)
             self.software_system.operate(self.random, 10000)
-        self.assertEquals(10, len(self.software_system.last_trace))
+        self.assertEquals(9, len(self.software_system.last_trace))
 
     def test_implement_system_with_high_effectiveness_tests_and_operate_regression(self):
         self.software_system.test_effectiveness = 1.0

@@ -37,7 +37,7 @@ class Test(object):
 
         for bug in SortedSet(covered_bugs, key=lambda b: b.id):
             rand = Random()
-            bug_test_hash = hash((self.id, bug.id)) & 0xffffffff
+            bug_test_hash = hash((self.id, bug.id))
             rand.seed(bug_test_hash)
             p = rand.random()
             if p <= self.effectiveness:
