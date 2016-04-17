@@ -19,13 +19,17 @@ class TestDrivenDevelopmentTest(unittest.TestCase):
         self.developer = Developer(person_time=500)
 
         self.workflow = TestDrivenDevelopment(
-            software_system=self.software_system,
             target_dependencies_per_feature=0
         )
 
     def test_implement_default_system_and_operate_regression(self):
 
-        self.workflow.work(random=self.random, developer=self.developer, schedule=[3, 5, 7])
+        self.workflow.work(
+            random=self.random,
+            software_system=self.software_system,
+            developer=self.developer,
+            schedule=[3, 5, 7])
+
         self.random.seed(1)
         self.software_system.operate(self.random, 10000)
 

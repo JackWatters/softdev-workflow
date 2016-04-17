@@ -10,7 +10,6 @@ from softdev_model.workflows.waterfall import Waterfall
 
 
 class TestCompareWorkFlows(unittest.TestCase):
-    fuzzi_moss.fuzz.enable_fuzzings = False
 
     def setUp(self):
         Chunk._count = 0
@@ -22,7 +21,7 @@ class TestCompareWorkFlows(unittest.TestCase):
             return [SoftwareProject(
                 random=Random(seed),
                 software_system=SoftwareSystem(),
-                workflow=workflow,
+                workflow=workflow(),
                 developer=Developer(person_time=250),
                 schedule=[3, 5, 7],
                 number_of_traces=50,
@@ -32,12 +31,27 @@ class TestCompareWorkFlows(unittest.TestCase):
         self.tdd_projects = create_software_projects(TestDrivenDevelopment)
 
     def test_compare_with_excess_resource(self):
+
+        fuzzi_moss.fuzz.enable_fuzzings = False
+
         for project in self.waterfall_projects + self.tdd_projects:
             project.build_and_operate()
 
         print "Work flow,\tMTF,\tRDT"
         print TestCompareWorkFlows.create_result_row("Waterfall", self.waterfall_projects)
         print TestCompareWorkFlows.create_result_row("TDD", self.tdd_projects)
+
+    def test_compare_with_fuzzing(self):
+
+        fuzzi_moss.fuzz.enable_fuzzings = True
+
+        for project in self.waterfall_projects + self.tdd_projects:
+            project.build_and_operate()
+
+        print "Work flow,\tMTF,\tRDT"
+        print TestCompareWorkFlows.create_result_row("Waterfall", self.waterfall_projects)
+        print TestCompareWorkFlows.create_result_row("TDD", self.tdd_projects)
+
 
     @staticmethod
     def average_project_attribute(projects, attr):
@@ -54,10 +68,16 @@ class TestCompareWorkFlows(unittest.TestCase):
             average_project_attribute(projects, lambda p: p.developer.person_time)
 
     @staticmethod
+    def average_project_features_implemented(projects):
+        return TestCompareWorkFlows. \
+            average_project_attribute(projects, lambda p: 1.0*len(p.software_system.features))
+
+    @staticmethod
     def create_result_row(workflow_label, projects):
         return ",\t".join([workflow_label,
                            str(TestCompareWorkFlows.average_project_mean_time_to_failure(projects)),
-                           str(TestCompareWorkFlows.average_project_remaining_developer_time(projects))])
+                           str(TestCompareWorkFlows.average_project_remaining_developer_time(projects)),
+                           str(TestCompareWorkFlows.average_project_features_implemented(projects))])
 
 
 if __name__ == '__main__':

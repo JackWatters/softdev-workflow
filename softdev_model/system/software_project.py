@@ -23,7 +23,7 @@ class SoftwareProject(object):
 
     def build_and_operate(self):
         try:
-            self.workflow.work(self.random, self.developer, self.schedule)
+            self.workflow.work(self.random, self.software_system, self.developer, self.schedule)
         except DeveloperExhaustedException:
             pass
         for _ in range(0, self.number_of_traces):
