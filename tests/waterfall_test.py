@@ -5,8 +5,8 @@ import unittest
 
 import sys
 
-from model.system import Bug, BugEncounteredException, Chunk, Developer, Feature, SoftwareSystem, Test
-from model.workflows import Waterfall
+from softdev_model.system import Bug, BugEncounteredException, Chunk, Developer, Feature, SoftwareSystem, Test
+from softdev_model.workflows import Waterfall
 
 from random import Random
 

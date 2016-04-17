@@ -1,7 +1,7 @@
 """"
 @author: twsswt
 """
-from model.system import BugEncounteredException
+from softdev_model.system import BugEncounteredException
 
 
 class Waterfall(object):

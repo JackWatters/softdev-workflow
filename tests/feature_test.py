@@ -5,7 +5,7 @@ import unittest
 
 from mock import Mock
 
-from model.system import BugEncounteredException, Feature, InoperableFeatureException, SoftwareSystem
+from softdev_model.system import BugEncounteredException, Feature, InoperableFeatureException, SoftwareSystem
 
 from random import Random
 

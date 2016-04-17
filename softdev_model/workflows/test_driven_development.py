@@ -1,8 +1,8 @@
 """
 @author: twsswt
 """
-from model.system import BugEncounteredException
-from model.system import DeveloperExhaustedException
+from softdev_model.system import BugEncounteredException
+from softdev_model.system import DeveloperExhaustedException
 
 
 class TestDrivenDevelopment(object):

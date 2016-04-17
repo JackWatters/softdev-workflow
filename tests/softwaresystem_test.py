@@ -3,7 +3,7 @@
 """
 import unittest
 
-from model.system import BugEncounteredException, SoftwareSystem
+from softdev_model.system import BugEncounteredException, SoftwareSystem
 
 from random import Random
 

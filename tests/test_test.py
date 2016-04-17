@@ -7,7 +7,7 @@ import unittest
 
 from mock import Mock
 
-from model.system import Bug, BugEncounteredException, Chunk, Feature, SoftwareSystem, Test
+from softdev_model.system import Bug, BugEncounteredException, Chunk, Feature, SoftwareSystem, Test
 
 
 class TestTest(unittest.TestCase):
