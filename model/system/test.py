@@ -35,9 +35,9 @@ class Test(object):
 
         result = SortedSet(key=lambda b: b.id)
 
-        for bug in covered_bugs:
+        for bug in SortedSet(covered_bugs, key=lambda b: b.id):
             rand = Random()
-            bug_test_hash = hash(frozenset([self.id, bug.id]))
+            bug_test_hash = hash((self.id, bug.id)) & 0xffffffff
             rand.seed(bug_test_hash)
             p = rand.random()
             if p <= self.effectiveness:

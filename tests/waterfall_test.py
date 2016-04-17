@@ -31,7 +31,7 @@ class WaterfallTest(unittest.TestCase):
         with self.assertRaises(BugEncounteredException):
             self.random.seed(1)
             self.software_system.operate(self.random, 10000)
-        self.assertEquals(73, len(self.software_system.last_trace))
+        self.assertEquals(15, len(self.software_system.last_trace))
 
     def test_implement_system_with_low_effectiveness_tests_and_operate_regression(self):
         self.software_system.test_effectiveness = 0.1
@@ -39,14 +39,16 @@ class WaterfallTest(unittest.TestCase):
         self.workflow.work(self.random, self.developer, [3, 5, 7])
 
         with self.assertRaises(BugEncounteredException):
+            self.random.seed(1)
             self.software_system.operate(self.random, 10000)
-        self.assertEquals(11, len(self.software_system.last_trace))
+        self.assertEquals(10, len(self.software_system.last_trace))
 
     def test_implement_system_with_high_effectiveness_tests_and_operate_regression(self):
         self.software_system.test_effectiveness = 1.0
 
         self.workflow.work(self.random, self.developer, [3, 5, 7])
 
+        self.random.seed(1)
         self.software_system.operate(self.random, 10000)
         self.assertEquals(10000, len(self.software_system.last_trace))
 

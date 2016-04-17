@@ -3,7 +3,7 @@ from setuptools import setup
 setup(
     name='Software_Dev',
     version='0.1',
-    packages=['software_dev'],
+    packages=['model'],
     package_dir={'': './' },
     url='https://github.com/twsswt/software-dev',
     license='',
