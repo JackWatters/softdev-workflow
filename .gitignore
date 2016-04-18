@@ -1,3 +1,9 @@
+build/
+dist/
+.eggs/
+**/nosetests.xml
+*.egg
+*.egg-info
 **/*.pyc
 .project
 .idea
