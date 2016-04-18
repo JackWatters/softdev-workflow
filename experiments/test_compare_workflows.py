@@ -2,8 +2,6 @@ import unittest
 
 import fuzzi_moss
 
-from random import Random
-
 from softdev_model.system import Bug, Chunk, Developer, Feature, SoftwareProjectGroup, Test
 from softdev_model.workflows.test_driven_development import TestDrivenDevelopment
 from softdev_model.workflows.waterfall import Waterfall
@@ -37,7 +35,7 @@ class TestCompareWorkFlows(unittest.TestCase):
 
     def test_compare_with_excess_resource(self):
 
-        fuzzi_moss.fuzz.enable_fuzzings = False
+        fuzzi_moss.enable_fuzzings = False
 
         self.waterfall_projects.build_and_operate()
         self.tdd_projects.build_and_operate()
@@ -46,7 +44,7 @@ class TestCompareWorkFlows(unittest.TestCase):
 
     def test_compare_with_fuzzing(self):
 
-        fuzzi_moss.fuzz.enable_fuzzings = True
+        fuzzi_moss.enable_fuzzings = True
 
         self.waterfall_projects.build_and_operate()
         self.tdd_projects.build_and_operate()
