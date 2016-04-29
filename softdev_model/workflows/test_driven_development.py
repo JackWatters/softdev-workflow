@@ -18,7 +18,15 @@ class TestDrivenDevelopment(object):
         self.target_test_coverage_per_feature = target_test_coverage_per_feature
         self.target_dependencies_per_feature = target_dependencies_per_feature
 
-    @fuzz(remove_last_step)
+    @fuzz(
+        recurse_into_nested_steps(
+            target_structures={ast.For, ast.TryExcept},
+            fuzzer=filter_steps(
+                exclude_control_structures(),
+                fuzzer=choose_from([(0.95, identity), (0.05, remove_random_step)])
+            )
+        )
+    )
     def work(self, random, software_system, developer, schedule):
         # Complete main tasks.
         for feature_size in schedule:
@@ -38,21 +46,25 @@ class TestDrivenDevelopment(object):
             except DeveloperExhaustedException:
                 break
 
+    @fuzz(choose_from([(0.95, identity), (0.05, replace_condition_with(False))]))
     def _ensure_sufficient_tests(self, developer, feature):
         while feature.test_coverage < self.target_test_coverage_per_feature:
             developer.add_test(feature)
 
+    @fuzz(choose_from([(0.99, identity), (0.01, replace_condition_with(False))]))
     def _complete_feature(self, random, developer, feature):
         while not feature.is_implemented:
             developer.extend_feature(random, feature)
             self._debug_feature(random, developer, feature)
 
+    @fuzz(choose_from([(0.95, identity), (0.05, remove_random_step)]))
     def _enhance_system_quality(self, random, feature, developer):
         developer.add_test(feature)
         self._debug_feature(random, developer, feature)
         self._refactor_feature(random, developer, feature)
 
     @staticmethod
+    @fuzz(choose_from([(0.99, identity), (0.01, replace_condition_with(False))]))
     def _debug_feature(random, developer, feature):
         while True:
             try:
@@ -61,6 +73,7 @@ class TestDrivenDevelopment(object):
             except BugEncounteredException as e:
                 developer.debug(random, feature, e.bug)
 
+    @fuzz(choose_from([(0.99, identity), (0.01, replace_condition_with(False))]))
     def _refactor_feature(self, random, developer, feature):
         while len(feature.dependencies) > self.target_dependencies_per_feature:
             developer.refactor(random, feature)

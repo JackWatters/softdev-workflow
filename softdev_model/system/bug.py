@@ -28,3 +28,6 @@ class BugEncounteredException(Exception):
     def __init__(self, bug):
         assert isinstance(bug, Bug)
         self.bug = bug
+
+    def __str__(self):
+        return "bug_encounter[%s]" % self.bug.id

@@ -3,6 +3,8 @@
 @author probablytom
 """
 
+import time
+
 from .bug import BugEncounteredException
 from .developer import Developer, DeveloperExhaustedException
 from .feature import InoperableFeatureException
@@ -32,7 +34,7 @@ class SoftwareProject(object):
         for _ in range(0, self.number_of_traces):
             try:
                 self.software_system.operate(self.random, self.max_trace_length)
-            except BugEncounteredException or InoperableFeatureException:
+            except (BugEncounteredException, InoperableFeatureException):
                 pass
 
 
@@ -41,7 +43,7 @@ class SoftwareProjectGroup(object):
     def __init__(self, workflow, person_time, schedule, number_of_traces, max_trace_length, n):
         self.software_projects = list()
 
-        for seed in range (0, n):
+        for seed in range(0, n):
             software_project = SoftwareProject(
                 random=Random(seed),
                 software_system=SoftwareSystem(),
@@ -53,9 +55,13 @@ class SoftwareProjectGroup(object):
 
             self.software_projects.append(software_project)
 
+        self.duration = -1
+
     def build_and_operate(self):
+        start_time = time.time()
         for software_project in self.software_projects:
             software_project.build_and_operate()
+        self.duration = time.time() - start_time
 
     def _average_project_attribute(self, attr):
         return reduce(lambda x, y: x + y, map(attr, self.software_projects), 0) / len(self.software_projects)

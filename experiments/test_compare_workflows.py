@@ -1,67 +1,78 @@
 import unittest
 
+from nose_parameterized import parameterized, param
+
 import fuzzi_moss
 
-from softdev_model.system import Bug, Chunk, Developer, Feature, SoftwareProjectGroup, Test
+from softdev_model.system import Bug, Chunk, Feature, SoftwareProjectGroup, Test
 from softdev_model.workflows.test_driven_development import TestDrivenDevelopment
 from softdev_model.workflows.waterfall import Waterfall
 
 
 class TestCompareWorkFlows(unittest.TestCase):
 
+    @classmethod
+    def setUpClass(cls):
+        print "Workflow &" \
+              "\tMean time to failure &" \
+              "\tAllocated person time &" \
+              "\tRemaining person time &" \
+              "\tCompleted features &" \
+              "\tSimulation Run time (ms) &" \
+              "\tFuzzings applied.\\"
+
     def setUp(self):
+        fuzzi_moss.fuzzi_moss_random.seed(1)
         Chunk._count = 0
         Feature._count = 0
         Test._count = 0
         Bug._count = 0
 
-        self.waterfall_projects =\
-            SoftwareProjectGroup(
-                workflow=Waterfall,
-                person_time=250,
-                schedule=[3,5,7],
-                number_of_traces=50,
-                max_trace_length=750,
-                n=10)
+    @parameterized.expand(
+        [
+            param(workflow=Waterfall, person_time=50, enable_fuzzings=False),
+            param(workflow=Waterfall, person_time=250, enable_fuzzings=False),
+            param(workflow=Waterfall, person_time=500, enable_fuzzings=False),
+            param(workflow=Waterfall, person_time=50, enable_fuzzings=True),
+            param(workflow=Waterfall, person_time=250, enable_fuzzings=True),
+            param(workflow=Waterfall, person_time=500, enable_fuzzings=True),
 
-        self.tdd_projects = \
+            param(workflow=TestDrivenDevelopment, person_time=50, enable_fuzzings=False),
+            param(workflow=TestDrivenDevelopment, person_time=250, enable_fuzzings=False),
+            param(workflow=TestDrivenDevelopment, person_time=500, enable_fuzzings=False),
+            param(workflow=TestDrivenDevelopment, person_time=50, enable_fuzzings=True),
+            param(workflow=TestDrivenDevelopment, person_time=250, enable_fuzzings=True),
+            param(workflow=TestDrivenDevelopment, person_time=500, enable_fuzzings=True)
+        ]
+    )
+    def test_compare_workflows(self, workflow, person_time, enable_fuzzings):
+
+        def create_result_row(projects_group):
+            return " & ".join([str(workflow.__name__),
+                               str(person_time),
+                               str(fuzzi_moss.enable_fuzzings),
+                               str(projects_group.average_project_mean_time_to_failure),
+                               str(projects_group.average_project_remaining_developer_time),
+                               str(projects_group.average_project_features_implemented),
+                               str(projects_group.duration)
+                               ])
+
+        projects = \
             SoftwareProjectGroup(
-                workflow=TestDrivenDevelopment,
-                person_time=250,
+                workflow=workflow,
+                person_time=person_time,
                 schedule=[3, 5, 7],
                 number_of_traces=50,
                 max_trace_length=750,
                 n=10)
 
-    def test_compare_with_excess_resource(self):
+        fuzzi_moss.enable_fuzzings = enable_fuzzings
 
-        fuzzi_moss.enable_fuzzings = False
+        projects.build_and_operate()
 
-        self.waterfall_projects.build_and_operate()
-        self.tdd_projects.build_and_operate()
+        print create_result_row(projects)
 
-        self.print_output()
 
-    def test_compare_with_fuzzing(self):
-
-        fuzzi_moss.enable_fuzzings = True
-
-        self.waterfall_projects.build_and_operate()
-        self.tdd_projects.build_and_operate()
-
-        self.print_output()
-
-    def print_output(self):
-
-        def create_result_row(workflow_label, projects_group):
-            return ",\t".join([workflow_label,
-                               str(projects_group.average_project_mean_time_to_failure),
-                               str(projects_group.average_project_remaining_developer_time),
-                               str(projects_group.average_project_features_implemented)])
-
-        print "Work flow,\tMTF,\tRDT,CP"
-        print create_result_row("Waterfall", self.waterfall_projects)
-        print create_result_row("TDD", self.tdd_projects)
 
 
 if __name__ == '__main__':

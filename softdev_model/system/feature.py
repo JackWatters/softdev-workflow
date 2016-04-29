@@ -103,3 +103,6 @@ class Feature:
 class InoperableFeatureException(Exception):
     def __init__(self, feature):
         self.feature = feature
+
+    def __str__(self):
+        return "incomplete_feature[%s]" % self.feature.id
