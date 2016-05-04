@@ -6,7 +6,7 @@ setup(
     packages=['softdev_model'],
     package_dir={'': '.'},
     url='https://github.com/twsswt/software-dev',
-    dependency_links=['https://github.com/twsswt/fuzzi-moss'],
+    dependency_links=['https://github.com/twsswt/fuzzi-moss/tarball/master#egg=fuzzi_moss-0.1'],
     license='',
     author='Tim Storer',
     author_email='timothy.storer@glasgow.ac.uk',
