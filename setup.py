@@ -11,7 +11,7 @@ setup(
     author='Tim Storer',
     author_email='timothy.storer@glasgow.ac.uk',
     description='A socio-technical model of software development work flows developed for the Fuzzi_Moss framework.',
-    setup_requires=['fuzzi_moss', 'nose', 'nose_parameterized'],
+    setup_requires=['fuzzi_moss', 'sortedcontainers', 'nose', 'nose_parameterized'],
     test_suite='nose.collector',
     tests_require=['mock', 'nose']
 )
