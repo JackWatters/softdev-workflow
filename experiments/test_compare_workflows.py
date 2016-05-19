@@ -62,12 +62,13 @@ class TestCompareWorkFlows(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         print "Workflow &" \
+              "\tAllocated person time &"\
+              "\tFuzzings applied &"  \
               "\tMean time to failure &" \
-              "\tAllocated person time &" \
               "\tRemaining person time &" \
               "\tCompleted features &" \
               "\tSimulation Run time (ms) &" \
-              "\tFuzzings applied.\\"
+
 
     def setUp(self):
         fuzzi_moss.fuzzi_moss_random.seed(1)
@@ -98,7 +99,7 @@ class TestCompareWorkFlows(unittest.TestCase):
         def create_result_row(projects_group):
             return " & ".join([str(workflow.__name__),
                                str(person_time),
-                               str(fuzzi_moss.enable_fuzzings),
+                               str(len(advice)>0),
                                str(projects_group.average_project_mean_time_to_failure),
                                str(projects_group.average_project_remaining_developer_time),
                                str(projects_group.average_project_features_implemented),
