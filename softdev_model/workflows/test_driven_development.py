@@ -28,14 +28,6 @@ class TestDrivenDevelopment(object):
             except DeveloperExhaustedException:
                 software_system.features.remove(feature)
 
-        # Work in wider quality assurance.
-        #while len(software_system.features) > 0:
-        #    try:
-        #        feature = random.choice(software_system.features)
-        #        self._enhance_system_quality(random, feature, developer)
-        #    except DeveloperExhaustedException:
-        #        break
-
     def _ensure_sufficient_tests(self, developer, feature):
         while feature.test_coverage < self.target_test_coverage_per_feature:
             developer.add_test(feature)
@@ -44,11 +36,6 @@ class TestDrivenDevelopment(object):
         while not feature.is_implemented:
             developer.extend_feature(random, feature)
             self._debug_feature(random, developer, feature)
-
-    def _enhance_system_quality(self, random, feature, developer):
-        developer.add_test(feature)
-        self._debug_feature(random, developer, feature)
-        self._refactor_feature(random, developer, feature)
 
     @staticmethod
     def _debug_feature(random, developer, feature):
