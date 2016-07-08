@@ -20,8 +20,8 @@ class TestDrivenDevelopment(object):
     def work(self, random, software_system, developer, schedule):
         # Complete main tasks.
         for feature_size in schedule:
+            feature = software_system.add_feature(feature_size)
             try:
-                feature = software_system.add_feature(feature_size)
                 self._ensure_sufficient_tests(developer, feature)
                 self._complete_feature(random, developer, feature)
                 self._refactor_feature(random, developer, feature)
@@ -29,12 +29,12 @@ class TestDrivenDevelopment(object):
                 software_system.features.remove(feature)
 
         # Work in wider quality assurance.
-        while True:
-            try:
-                feature = random.choice(software_system.features)
-                self._enhance_system_quality(random, feature, developer)
-            except DeveloperExhaustedException:
-                break
+        #while len(software_system.features) > 0:
+        #    try:
+        #        feature = random.choice(software_system.features)
+        #        self._enhance_system_quality(random, feature, developer)
+        #    except DeveloperExhaustedException:
+        #        break
 
     def _ensure_sufficient_tests(self, developer, feature):
         while feature.test_coverage < self.target_test_coverage_per_feature:
