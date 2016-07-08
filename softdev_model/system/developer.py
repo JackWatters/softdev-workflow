@@ -15,18 +15,21 @@ class Developer(object):
         self.completed_tasks = []
 
     def extend_feature(self, random, feature):
-        self._perform_task(Feature.extend, [feature, random], 1)
-
-    def debug(self, random, feature, bug):
-        self._perform_task(Feature.debug, [feature, random, bug], 1)
+        self._perform_task(1, Feature.extend, [feature, random])
 
     def add_test(self, feature):
-        self._perform_task(SoftwareSystem.add_test, [feature.software_system, feature], 1)
+        self._perform_task(1, SoftwareSystem.add_test, [feature.software_system, feature])
+
+    def debug(self, random, feature, bug):
+        self._perform_task(1, Feature.debug, [feature, random, bug])
 
     def refactor(self, random, feature):
-        self._perform_task(Feature.refactor, [feature, random], 1)
+        self._perform_task(1, Feature.refactor, [feature, random])
 
-    def _perform_task(self, task, args, cost):
+    def idle(self):
+        self._perform_task(1)
+
+    def _perform_task(self, cost=0, task=None, args=None):
         """
         Private book keeping function to monitor the developer's work load.
         """
@@ -34,8 +37,9 @@ class Developer(object):
             raise DeveloperExhaustedException(self)
         else:
             self.person_time -= cost
-            task(*args)
-            self.completed_tasks.append([task, args])
+            if task is not None:
+                task(*args)
+                self.completed_tasks.append([task, args])
 
 
 class DeveloperExhaustedException(Exception):
