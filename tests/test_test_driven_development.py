@@ -1,3 +1,4 @@
+import sys
 import unittest
 
 from softdev_model.system import Bug, BugEncounteredException, Test, Chunk, Developer, Feature, SoftwareSystem
@@ -13,6 +14,8 @@ class TestDrivenDevelopmentTest(unittest.TestCase):
         Feature._count = 0
         Test._count = 0
         Bug._count = 0
+
+        self.is_64bits = sys.maxsize > 2 ** 32
 
         self.random = Random(1)
         self.software_system = SoftwareSystem()
@@ -35,7 +38,11 @@ class TestDrivenDevelopmentTest(unittest.TestCase):
         with self.assertRaises(BugEncounteredException):
             self.software_system.operate(self.random, 10000)
 
-        self.assertEquals(29, len(self.software_system.last_trace))
+        print self.software_system
+        if self.is_64bits:
+            self.assertEquals(21, len(self.software_system.last_trace))
+        else:
+            self.assertEquals(29, len(self.software_system.last_trace))
 
 
 if __name__ == '__main__':
