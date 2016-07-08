@@ -81,8 +81,11 @@ class SoftwareSystem:
 
     @property
     def mean_operations_to_failure(self):
-        total_operations = reduce(lambda x, y: x + y, map(lambda l: len(l), self.successful_operations))
-        return total_operations / len(self.successful_operations)
+        total_operations = reduce(lambda x, y: x + y, map(lambda l: len(l), self.successful_operations), 0)
+        if len(self.successful_operations) is 0:
+            return 0
+        else:
+            return total_operations / len(self.successful_operations)
 
     def __str__(self):
         result = []
