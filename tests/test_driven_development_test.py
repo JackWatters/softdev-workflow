@@ -5,6 +5,7 @@ from softdev_model.workflows import TestDrivenDevelopment
 
 from random import Random
 
+
 class TestDrivenDevelopmentTest(unittest.TestCase):
 
     def setUp(self):
