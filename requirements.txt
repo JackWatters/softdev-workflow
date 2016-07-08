@@ -1,5 +1,5 @@
 fuzzi_moss
 mock
-numpy
 nose
 sortedcontainers
+
