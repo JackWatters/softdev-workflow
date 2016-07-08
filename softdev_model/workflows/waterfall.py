@@ -24,11 +24,13 @@ class Waterfall(object):
         self._debug_system(developer, random, software_system)
         self._refactor_system(developer, random, software_system)
 
-    def _complete_specification(self, schedule, software_system):
+    @staticmethod
+    def _complete_specification(schedule, software_system):
         for feature_size in schedule:
             software_system.add_feature(feature_size)
 
-    def _implement_features(self, developer, random, software_system):
+    @staticmethod
+    def _implement_features(developer, random, software_system):
         for feature in software_system.features:
             while not feature.is_implemented:
                 developer.extend_feature(random, feature)
@@ -38,7 +40,8 @@ class Waterfall(object):
             while feature.test_coverage < self.target_test_coverage_per_feature:
                 developer.add_test(feature)
 
-    def _debug_system(self, developer, random, software_system):
+    @staticmethod
+    def _debug_system(developer, random, software_system):
         for test in software_system.tests:
             while True:
                 try:
