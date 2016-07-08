@@ -1,6 +1,6 @@
 import unittest
 
-from softdev_model.system import Bug, Test, Chunk, Developer, Feature, SoftwareSystem
+from softdev_model.system import Bug, BugEncounteredException, Test, Chunk, Developer, Feature, SoftwareSystem
 from softdev_model.workflows import TestDrivenDevelopment
 
 from random import Random
@@ -30,9 +30,11 @@ class TestDrivenDevelopmentTest(unittest.TestCase):
             schedule=[3, 5, 7])
 
         self.random.seed(1)
-        self.software_system.operate(self.random, 10000)
 
-        self.assertEquals(10000, len(self.software_system.last_trace))
+        with self.assertRaises(BugEncounteredException):
+            self.software_system.operate(self.random, 10000)
+
+        self.assertEquals(29, len(self.software_system.last_trace))
 
 
 if __name__ == '__main__':
