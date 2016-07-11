@@ -38,7 +38,6 @@ class TestDrivenDevelopmentTest(unittest.TestCase):
         with self.assertRaises(BugEncounteredException):
             self.software_system.operate(self.random, 10000)
 
-        print self.software_system
         if self.is_64bits:
             self.assertEquals(21, len(self.software_system.last_trace))
         else:
