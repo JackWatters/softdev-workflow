@@ -28,7 +28,7 @@ class DeveloperTestCase(unittest.TestCase):
         feature_mock.software_system.probability_gain_feature_dependency = 0.0
         feature_mock.software_system.probability_new_bug = 0.0
 
-        self.developer.extend_feature(random_mock, feature_mock)
+        self.developer.extend_feature(random_mock, 0, feature_mock)
         self.assertEquals(1, self.developer.person_time)
 
 if __name__ == '__main__':

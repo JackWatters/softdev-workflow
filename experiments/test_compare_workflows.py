@@ -20,7 +20,7 @@ def create_experimental_parameters():
         result = list()
 
         workflows = [Waterfall, TestDrivenDevelopment]
-        person_times = [50, 250, 500]
+        person_times = [50, 250]
         p_incomplete_steps = [p / 100.0 for p in range(0, 100, 5)]
         p_miss_steps = [p / 100.0 for p in range(0, 100, 50)]
 
@@ -127,7 +127,7 @@ class TestCompareWorkFlows(unittest.TestCase):
                 schedule=[3, 5, 7],
                 number_of_traces=50,
                 max_trace_length=750,
-                n=10)
+                n=20)
 
         projects.build_and_operate()
         print create_result_row(projects)

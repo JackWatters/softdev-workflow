@@ -11,11 +11,14 @@ from random import Random
 class SoftwareSystemTest(unittest.TestCase):
     def setUp(self):
         self.software_system = SoftwareSystem()
+        self.chunk_count = 0
 
-    def complete_feature(self, random, size):
-        feature = self.software_system.add_feature(size)
+    def complete_feature(self, random, size, logical_name):
+        feature = self.software_system.add_feature(logical_name, size)
         while not feature.is_implemented:
-            feature.extend(random)
+            feature.extend(self.chunk_count, random)
+            self.chunk_count += 1
+
         for _ in range(0, 30):
             self.software_system.add_test(feature)
 
@@ -27,13 +30,13 @@ class SoftwareSystemTest(unittest.TestCase):
         rand = Random()
         rand.seed(1)
 
-        for _ in range(0, 1):
-            self.complete_feature(rand, 3)
+        for logical_name in range(0, 1):
+            self.complete_feature(rand, 3, logical_name)
 
         with self.assertRaises(BugEncounteredException):
             self.software_system.operate(rand, 10000)
 
-        self.assertEquals(10, len(self.software_system.last_trace))
+        self.assertEquals(334, len(self.software_system.last_trace))
 
         for test in self.software_system.tests:
 

@@ -6,21 +6,22 @@ from sortedcontainers import SortedSet
 """
 
 
-class Feature:
-    _count = 0
+class Feature(object):
 
-    def __init__(self, software_system, size):
+    def __init__(self, software_system, logical_name, size):
         """
         Constructs a new feature specification, initially with no corresponding chunks in the system.
-        @param size: the required number of chunks for this feature to operate. 
         """
-        self.id = Feature._count
-        Feature._count += 1
+        self._logical_name = logical_name
 
         self.software_system = software_system
         self.size = size
 
-        self.chunks = SortedSet(key=lambda c: c.id)
+        self.chunks = SortedSet(key=lambda c: c.logical_name)
+
+    @property
+    def logical_name(self):
+        return self._logical_name
 
     @property
     def bugs(self):
@@ -29,7 +30,7 @@ class Feature:
 
     @property
     def tests(self):
-        return SortedSet(filter(lambda t: t.feature == self, frozenset(self.software_system.tests)), lambda t: t.id)
+        return SortedSet(filter(lambda t: t.feature == self, frozenset(self.software_system.tests)), lambda t: t.ident)
 
     @property
     def test_coverage(self):
@@ -41,15 +42,19 @@ class Feature:
     def dependencies(self):
         all_dependencies = reduce(lambda a, b: a.union(b), map(lambda c: frozenset(c.dependencies), self.chunks), set())
         external_dependencies = filter(lambda c: c.feature != self, all_dependencies)
-        return SortedSet(external_dependencies, lambda c: c.id)
+        return SortedSet(external_dependencies, lambda c: c.logical_name)
 
     @property
     def is_implemented(self):
         return len(self.chunks) >= self.size
 
-    def extend(self, random):
-        chunk = Chunk(self)
+    def add_chunk(self, logical_name, content=None):
+        chunk = Chunk(logical_name, self, content)
         self.chunks.add(chunk)
+        return chunk
+
+    def extend(self, logical_name, random):
+        chunk = self.add_chunk(logical_name)
         chunks_to_modify = self._sample_chunks(random)
         chunks_to_modify.add(chunk)
 
@@ -64,7 +69,7 @@ class Feature:
                 chunk.debug(random)
 
         else:
-            detected_bugs = SortedSet(self.bugs & {detected_bug}, key=lambda b: b.id)
+            detected_bugs = SortedSet(self.bugs & {detected_bug}, key=lambda b: b.ident)
             for detected_bug in detected_bugs:
                 detected_bug.chunk.debug(random, detected_bug)
 
@@ -89,15 +94,15 @@ class Feature:
     def _sample_chunks(self, random):
         sample_cardinality = random.randint(0, len(self.chunks))
         sample = random.sample(self.chunks, sample_cardinality)
-        return SortedSet(sample, key=lambda c: c.id)
+        return SortedSet(sample, key=lambda c: c.logical_name)
 
     def __str__(self):
 
         chunk_strings = map(lambda chunk: str(chunk), self.chunks)
-        return "f_%d[%s]" % (self.id, ",".join(chunk_strings))
+        return "f_%d[%s]" % (self._logical_name, ",".join(chunk_strings))
 
     def __repr__(self):
-        return "f_%d" % self.id
+        return "f_%s" % self._logical_name
 
 
 class InoperableFeatureException(Exception):
@@ -105,4 +110,4 @@ class InoperableFeatureException(Exception):
         self.feature = feature
 
     def __str__(self):
-        return "incomplete_feature[%s]" % self.feature.id
+        return "incomplete_feature[%s]" % self.feature.ident

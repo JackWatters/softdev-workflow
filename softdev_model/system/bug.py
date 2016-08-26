@@ -7,7 +7,7 @@ class Bug(object):
     _count = 0
 
     def __init__(self, chunk):
-        self.id = Bug._count
+        self.ident = Bug._count
         Bug._count += 1
 
         self.chunk = chunk
@@ -21,7 +21,7 @@ class Bug(object):
             raise BugEncounteredException(self)
 
     def __repr__(self):
-        return "b_%d" % self.id
+        return "b_%d" % self.ident
 
 
 class BugEncounteredException(Exception):

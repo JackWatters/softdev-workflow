@@ -9,7 +9,7 @@ from .feature import Feature
 from .test import Test
 
 
-class SoftwareSystem:
+class SoftwareSystem(object):
     def __init__(self,
                  probability_gain_feature_dependency=0.5,
                  probability_lose_feature_dependency=0.25,
@@ -34,24 +34,43 @@ class SoftwareSystem:
         self.test_effectiveness = test_effectiveness
         self.test_efficiency = test_efficiency
 
-        self.features = SortedSet(key=lambda f: f.id)
-        self.tests = SortedSet(key=lambda t: t.id)
+        self.features = SortedSet(key=lambda f: f.logical_name)
+        self.tests = SortedSet(key=lambda t: t.ident)
         self.successful_operations = []
 
     @property
     def chunks(self):
         chunk_sets = map(lambda f: frozenset(f.chunks), self.features)
-        return reduce(lambda a, b: a.union(b), chunk_sets, set())
+        return reduce(lambda a, b: a.union(b), chunk_sets, SortedSet(key=lambda c: c.logical_name))
+
+    def get_chunk(self, logical_name):
+        return filter(lambda chunk: chunk.logical_name == logical_name, self.chunks)[0]
+
+    @property
+    def chunk_names(self):
+        return map(lambda c: c.logical_name, self.chunks)
+
+    @property
+    def chunk_contents(self):
+        return map(lambda c: c.content, self.chunks)
 
     @property
     def bugs(self):
         bug_sets = map(lambda c: frozenset(c.bugs), self.chunks)
-        return reduce(lambda a, b: a.union(b), bug_sets, set())
+        return reduce(lambda a, b: a.union(b), bug_sets, SortedSet(key=lambda bug: bug.ident))
 
-    def add_feature(self, size):
-        feature = Feature(self, size)
+    def add_feature(self, logical_name, size):
+        feature = Feature(self, logical_name, size)
         self.features.add(feature)
         return feature
+
+    def copy_feature(self, original_feature):
+        copied_feature = self.add_feature(original_feature.logical_name, original_feature.size)
+        for chunk in original_feature.chunks:
+            copied_feature.add_chunk(chunk.logical_name, chunk.content)
+
+    def get_feature(self, logical_name):
+        return filter (lambda f: f.logical_name, self.features)
 
     def add_test(self, feature):
         test = Test(feature)

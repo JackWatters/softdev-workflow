@@ -16,6 +16,8 @@ class Waterfall(object):
         self.target_test_coverage_per_feature = target_test_coverage_per_feature
         self.target_dependencies_per_feature = target_dependencies_per_feature
 
+        self.chunk_count = 0
+
     def work(self, random, software_system, developer, schedule):
 
         self._complete_specification(schedule, software_system)
@@ -26,14 +28,14 @@ class Waterfall(object):
 
     @staticmethod
     def _complete_specification(schedule, software_system):
-        for feature_size in schedule:
-            software_system.add_feature(feature_size)
+        for logical_name, feature_size in schedule:
+            software_system.add_feature(logical_name=logical_name, size=feature_size)
 
-    @staticmethod
-    def _implement_features(developer, random, software_system):
+    def _implement_features(self, developer, random, software_system):
         for feature in software_system.features:
             while not feature.is_implemented:
-                developer.extend_feature(random, feature)
+                developer.extend_feature(random, self.chunk_count, feature)
+                self.chunk_count += 1
 
     def _implement_test_suite(self, developer, software_system):
         for feature in software_system.features:

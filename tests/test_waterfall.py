@@ -28,7 +28,7 @@ class WaterfallTest(unittest.TestCase):
         self.workflow = Waterfall()
 
     def test_implement_default_system_and_operate_regression(self):
-        self.workflow.work(self.random, self.software_system, self.developer, [3, 5, 7])
+        self.workflow.work(self.random, self.software_system, self.developer, [(0, 3), (1, 5), (2, 7)])
 
         with self.assertRaises(BugEncounteredException):
             self.random.seed(1)
@@ -36,22 +36,21 @@ class WaterfallTest(unittest.TestCase):
         if self.is_64bits:
             self.assertEquals(15, len(self.software_system.last_trace))
         else:
-            self.assertEquals(33, len(self.software_system.last_trace))
+            self.assertEquals(1, len(self.software_system.last_trace))
 
     def test_implement_system_with_low_effectiveness_tests_and_operate_regression(self):
         self.software_system.test_effectiveness = 0.1
 
-        self.workflow.work(self.random, self.software_system, self.developer, [3, 5, 7])
-
+        self.workflow.work(self.random, self.software_system, self.developer, [(0, 3), (1, 5), (2, 7)])
         with self.assertRaises(BugEncounteredException):
             self.random.seed(1)
             self.software_system.operate(self.random, 10000)
-        self.assertEquals(9, len(self.software_system.last_trace))
+        self.assertEquals(1, len(self.software_system.last_trace))
 
     def test_implement_system_with_high_effectiveness_tests_and_operate_regression(self):
         self.software_system.test_effectiveness = 1.0
 
-        self.workflow.work(self.random, self.software_system, self.developer, [3, 5, 7])
+        self.workflow.work(self.random, self.software_system, self.developer, [(0, 3), (1, 5), (2, 7)])
 
         self.random.seed(1)
         self.software_system.operate(self.random, 10000)

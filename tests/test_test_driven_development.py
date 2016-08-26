@@ -31,7 +31,7 @@ class TestDrivenDevelopmentTest(unittest.TestCase):
             random=self.random,
             software_system=self.software_system,
             developer=self.developer,
-            schedule=[3, 5, 7])
+            schedule=[(0,3), (1,5), (2,7)])
 
         self.random.seed(1)
 
@@ -41,7 +41,7 @@ class TestDrivenDevelopmentTest(unittest.TestCase):
         if self.is_64bits:
             self.assertEquals(21, len(self.software_system.last_trace))
         else:
-            self.assertEquals(29, len(self.software_system.last_trace))
+            self.assertEquals(15, len(self.software_system.last_trace))
 
 
 if __name__ == '__main__':

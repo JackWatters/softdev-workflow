@@ -36,8 +36,8 @@ class ChunkTest(unittest.TestCase):
         feature_mock.software_system.probability_detection = 0.5
         feature_mock.software_system.probability_failure_on_demand = 0.01
 
-        self.fixture_chunks.append(Chunk(feature_mock))
-        self.fixture_chunks.append(Chunk(feature_mock))
+        self.fixture_chunks.append(Chunk(0, feature_mock))
+        self.fixture_chunks.append(Chunk(1, feature_mock))
         
         feature_mock.chunks |= set(self.fixture_chunks)
 

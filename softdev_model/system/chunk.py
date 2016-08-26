@@ -1,25 +1,30 @@
 """
 @author: tws
 """
+import sys
+
 from .bug import Bug
 from sortedcontainers import SortedSet
 
 
-class Chunk:
+class Chunk(object):
     """
     Represents a chunk of code providing some useful functionality in the system.
     """
 
-    _count = 0
-
-    def __init__(self, feature):
-        self.id = Chunk._count
-        Chunk._count += 1
+    def __init__(self, logical_name, feature, content=None):
+        self._logical_name = logical_name
 
         self.feature = feature
 
-        self.dependencies = SortedSet(key=lambda d: d.id)
-        self.bugs = SortedSet(key=lambda b: b.id)
+        self.dependencies = SortedSet(key=lambda d: d.logical_name)
+        self.bugs = SortedSet(key=lambda b: b.ident)
+
+        self.content = content
+
+    @property
+    def logical_name(self):
+        return self._logical_name
 
     @property
     def probability_gain_feature_dependency(self):
@@ -57,8 +62,17 @@ class Chunk:
 
         self._insert_bugs(random)
 
+        self.content = random.randint(0, sys.maxint)
+
+    def merge(self, random, source_chunk):
+        for dependency in source_chunk.dependencies:
+            working_copy_dependency = self.feature.software_system.get_chunk(dependency.logical_name)
+            self.dependencies.add(working_copy_dependency)
+
+        self.modify(random)
+
     def _add_dependencies(self, my_random, candidate_chunks, probability):
-        for candidate in SortedSet(candidate_chunks, key=lambda c: c.id):
+        for candidate in SortedSet(candidate_chunks, key=lambda c: c.logical_name):
             p = my_random.random()
             if p <= probability:
                 self.dependencies.add(candidate)
@@ -108,7 +122,8 @@ class Chunk:
 
         bugs = ", ".join(map(lambda bug: str(bug), self.bugs))
 
-        return "c_%d:[%s]->(in[%s],ex[%s])" % (self.id, bugs, feature_dependencies, system_dependencies)
+        return "c_%d:[%s]:[%s]->(in[%s],ex[%s])" % \
+               (self._logical_name, self.content, bugs, feature_dependencies, system_dependencies)
 
     def __repr__(self):
-        return "c%d" % self.id
+        return "c%d" % self._logical_name

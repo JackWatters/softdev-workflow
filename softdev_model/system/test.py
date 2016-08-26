@@ -12,7 +12,7 @@ class Test(object):
     _count = 0
 
     def __init__(self, feature):
-        self.id = Test._count
+        self.ident = Test._count
         Test._count += 1
 
         self.feature = feature
@@ -33,11 +33,11 @@ class Test(object):
     def _bugs(self):
         covered_bugs = reduce(lambda a, b: a.union(b), map(lambda c: frozenset(c.bugs), self.chunks), set())
 
-        result = SortedSet(key=lambda b: b.id)
+        result = SortedSet(key=lambda b: b.ident)
 
-        for bug in SortedSet(covered_bugs, key=lambda b: b.id):
+        for bug in SortedSet(covered_bugs, key=lambda b: b.ident):
             rand = Random()
-            bug_test_hash = hash((self.id, bug.id))
+            bug_test_hash = hash((self.ident, bug.ident))
             rand.seed(bug_test_hash)
             p = rand.random()
             if p <= self.effectiveness:
@@ -51,11 +51,11 @@ class Test(object):
         The indexes to chunks in the sorted set of chunks of this tests's parent feature that this tests touches.
         """
         shuffled_indexes = range(0, self.feature.size)
-        shuffler = Random(self.id)
+        shuffler = Random(self.ident)
         shuffler.shuffle(shuffled_indexes)
 
         result = SortedSet()
-        rand = Random(self.id)
+        rand = Random(self.ident)
 
         for chunk_index in shuffled_indexes:
             p = rand.random()
@@ -72,7 +72,7 @@ class Test(object):
 
     def __str__(self):
         bugs_string = ",".join(map(lambda bug: str(bug), self._bugs))
-        return "t_%d[%s]" % (self.id, bugs_string)
+        return "t_%d[%s]" % (self.ident, bugs_string)
 
     def __repr__(self):
-        return "t_%d" % self.id
+        return "t_%d" % self.ident

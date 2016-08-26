@@ -16,11 +16,12 @@ class TestDrivenDevelopment(object):
 
         self.target_test_coverage_per_feature = target_test_coverage_per_feature
         self.target_dependencies_per_feature = target_dependencies_per_feature
+        self.chunk_count = 0
 
     def work(self, random, software_system, developer, schedule):
         # Complete main tasks.
-        for feature_size in schedule:
-            feature = software_system.add_feature(feature_size)
+        for logical_name, feature_size in schedule:
+            feature = software_system.add_feature(logical_name, feature_size)
             try:
                 self._ensure_sufficient_tests(developer, feature)
                 self._complete_feature(random, developer, feature)
@@ -34,7 +35,8 @@ class TestDrivenDevelopment(object):
 
     def _complete_feature(self, random, developer, feature):
         while not feature.is_implemented:
-            developer.extend_feature(random, feature)
+            developer.extend_feature(random, self.chunk_count, feature)
+            self.chunk_count += 1
             self._debug_feature(random, developer, feature)
 
     @staticmethod
