@@ -18,13 +18,13 @@ class Waterfall(object):
 
         self.chunk_count = 0
 
-    def work(self, random, software_system, developer, schedule):
+    def work(self, random, centralised_vcs_client, developer, schedule):
 
-        self._complete_specification(schedule, software_system)
-        self._implement_features(developer, random, software_system)
-        self._implement_test_suite(developer, software_system)
-        self._debug_system(developer, random, software_system)
-        self._refactor_system(developer, random, software_system)
+        self._complete_specification(schedule, centralised_vcs_client)
+        self._implement_features(developer, random, centralised_vcs_client)
+        self._implement_test_suite(developer, centralised_vcs_client)
+        self._debug_system(developer, random, centralised_vcs_client)
+        self._refactor_system(developer, random, centralised_vcs_client)
 
     @staticmethod
     def _complete_specification(schedule, software_system):
@@ -40,7 +40,7 @@ class Waterfall(object):
     def _implement_test_suite(self, developer, software_system):
         for feature in software_system.features:
             while feature.test_coverage < self.target_test_coverage_per_feature:
-                developer.add_test(feature)
+                developer.add_test(feature.software_system, feature)
 
     @staticmethod
     def _debug_system(developer, random, software_system):

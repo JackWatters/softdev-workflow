@@ -71,11 +71,14 @@ class Chunk(object):
 
         self.modify(random)
 
-    def _add_dependencies(self, my_random, candidate_chunks, probability):
+    def _add_dependencies(self, my_random, candidate_chunks, threshold):
         for candidate in SortedSet(candidate_chunks, key=lambda c: c.logical_name):
             p = my_random.random()
-            if p <= probability:
-                self.dependencies.add(candidate)
+            if p <= threshold:
+                self.add_dependency(candidate)
+
+    def add_dependency(self, candidate):
+        self.dependencies.add(candidate)
 
     def _insert_bugs(self, random):
         while random.random() <= self.probability_new_bug:

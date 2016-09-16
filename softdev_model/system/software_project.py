@@ -9,6 +9,7 @@ from .bug import BugEncounteredException
 from .developer import Developer, DeveloperExhaustedException
 from .feature import InoperableFeatureException
 from .software_system import SoftwareSystem
+from .centralised_vcs import CentralisedVCSServer
 
 from random import Random
 
@@ -17,9 +18,17 @@ class SoftwareProject(object):
     """
     Represents the overall state and behaviour of a software project.
     """
-    def __init__(self, random, software_system, workflow, developer, schedule, number_of_traces, max_trace_length):
+    def __init__(self,
+                 random,
+                 centralised_vcs_server,
+                 workflow,
+                 developer,
+                 schedule,
+                 number_of_traces,
+                 max_trace_length):
+
         self.random = random
-        self.software_system = software_system
+        self.centralised_vcs_server = centralised_vcs_server
         self.workflow = workflow
         self.developer = developer
         self.schedule = schedule
@@ -28,12 +37,12 @@ class SoftwareProject(object):
 
     def build_and_operate(self):
         try:
-            self.workflow.work(self.random, self.software_system, self.developer, self.schedule)
+            self.workflow.work(self.random, self.centralised_vcs_server, self.developer, self.schedule)
         except DeveloperExhaustedException:
             pass
         for _ in range(0, self.number_of_traces):
             try:
-                self.software_system.operate(self.random, self.max_trace_length)
+                self.centralised_vcs_server.master.operate(self.random, self.max_trace_length)
             except (BugEncounteredException, InoperableFeatureException):
                 pass
 
@@ -46,7 +55,7 @@ class SoftwareProjectGroup(object):
         for seed in range(0, n):
             software_project = SoftwareProject(
                 random=Random(seed),
-                software_system=SoftwareSystem(),
+                centralised_vcs_server=CentralisedVCSServer(SoftwareSystem()),
                 workflow=workflow(),
                 developer=Developer(person_time),
                 schedule=schedule,

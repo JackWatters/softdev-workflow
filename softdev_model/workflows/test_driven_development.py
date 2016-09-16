@@ -31,7 +31,7 @@ class TestDrivenDevelopment(object):
 
     def _ensure_sufficient_tests(self, developer, feature):
         while feature.test_coverage < self.target_test_coverage_per_feature:
-            developer.add_test(feature)
+            developer.add_test(feature.software_system, feature)
 
     def _complete_feature(self, random, developer, feature):
         while not feature.is_implemented:

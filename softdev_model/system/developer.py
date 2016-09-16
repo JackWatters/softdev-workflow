@@ -1,8 +1,6 @@
 """
 @author: tws
 """
-from .feature import Feature
-from .software_system import SoftwareSystem
 
 
 class Developer(object):
@@ -15,16 +13,32 @@ class Developer(object):
         self.completed_tasks = []
 
     def extend_feature(self, random, logical_name, feature):
-        self._perform_task(1, Feature.extend, [feature, logical_name, random])
+        extend_method = getattr(feature, "extend")
+        self._perform_task(1, extend_method, [logical_name, random])
 
-    def add_test(self, feature):
-        self._perform_task(1, SoftwareSystem.add_test, [feature.software_system, feature])
+    def add_test(self, software_system, feature):
+        add_test_method = getattr(software_system, "add_test")
+        self._perform_task(1, add_test_method, [feature])
 
     def debug(self, random, feature, bug):
-        self._perform_task(1, Feature.debug, [feature, random, bug])
+        debug_method = getattr(feature, "debug")
+        self._perform_task(1, debug_method, [random, bug])
 
     def refactor(self, random, feature):
-        self._perform_task(1, Feature.refactor, [feature, random])
+        refactor_method = getattr(feature, "refactor")
+        self._perform_task(1, refactor_method, [random])
+
+    def update_working_copy(self, random, centralised_vcs_client):
+        update_method = getattr(centralised_vcs_client, "update")
+        self._perform_task(0, update_method, [centralised_vcs_client, random])
+
+    def resolve_conflict(self, random, centralised_vcs_client, conflict):
+        resolve_method = getattr(centralised_vcs_client, "resolve")
+        self._perform_task(1, resolve_method, [centralised_vcs_client, conflict, random])
+
+    def commit_changes(self, centralised_vcs_client):
+        commit_method = getattr(centralised_vcs_client, "commit")
+        self._perform_task(0, commit_method, [centralised_vcs_client])
 
     def idle(self):
         self._perform_task(1)

@@ -3,13 +3,6 @@ from .feature import Feature
 from .software_system import SoftwareSystem
 
 
-class Conflict(object):
-
-    def __init__(self, logical_name, resolve_threshold):
-        self.logical_name = logical_name
-        self.resolve_threshold = resolve_threshold
-
-
 def copy_system(system):
     copied_system = SoftwareSystem()
 
@@ -23,6 +16,13 @@ def copy_system(system):
             copied_chunk.add_dependency(copied_dependency)
 
     return copied_system
+
+
+class Conflict(object):
+
+    def __init__(self, logical_name, resolve_threshold):
+        self.logical_name = logical_name
+        self.resolve_threshold = resolve_threshold
 
 
 class CentralisedVCSServer(object):
@@ -105,13 +105,10 @@ class CentralisedVCSClient(object):
                     self._update_working_copy_chunk_dependencies(working_base_chunk, working_copy_chunk)
 
                 elif working_copy_chunk.content != working_base_chunk.content:
-                    conflict = Conflict(working_base_chunk.logical_name, random.random())
-                    self.conflicts.append(conflict)
-
-    def _automatically_resolve_some_conflicts(self, random):
-        for conflict in self.conflicts:
-            if conflict.resolve_threshold < self.probability_automatically_resolve:
-                self.resolve(conflict, random)
+                    conflict_complexity = random.random()
+                    if conflict_complexity > self.probability_automatically_resolve:
+                        conflict = Conflict(working_base_chunk.logical_name, conflict_complexity)
+                        self.conflicts.append(conflict)
 
     def update(self, random):
         old_working_base = self.working_base
@@ -119,7 +116,6 @@ class CentralisedVCSClient(object):
 
         self._update_working_copy_with_new_features_chunks_and_tests()
         self._update_existing_chunks(old_working_base, random)
-        self._automatically_resolve_some_conflicts(random)
 
         self.version = self.server.version
 
