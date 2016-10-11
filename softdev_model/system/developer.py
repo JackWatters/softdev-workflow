@@ -8,13 +8,14 @@ class Developer(object):
     Represents the work effort of a software developer.
     """
 
-    def __init__(self, person_time=0):
+    def __init__(self, logical_name, person_time=0):
         self.person_time = person_time
         self.completed_tasks = []
+        self.logical_name = logical_name
 
     def extend_feature(self, random, logical_name, feature):
         extend_method = getattr(feature, "extend")
-        self._perform_task(1, extend_method, [logical_name, random])
+        self._perform_task(1, extend_method, [logical_name, self, random])
 
     def add_test(self, software_system, feature):
         add_test_method = getattr(software_system, "add_test")

@@ -3,9 +3,11 @@
 """
 import unittest
 
-from softdev_model.system import BugEncounteredException, SoftwareSystem
+from softdev_model.system import BugEncounteredException, Developer, SoftwareSystem
 
 from random import Random
+
+from mock import Mock
 
 
 class SoftwareSystemTest(unittest.TestCase):
@@ -13,10 +15,13 @@ class SoftwareSystemTest(unittest.TestCase):
         self.software_system = SoftwareSystem()
         self.chunk_count = 0
 
+        self.developer_mock = Mock(spec=Developer)
+        self.developer_mock.logical_name = "bob"
+
     def complete_feature(self, random, size, logical_name):
         feature = self.software_system.add_feature(logical_name, size)
         while not feature.is_implemented:
-            feature.extend(self.chunk_count, random)
+            feature.extend(self.chunk_count, self.developer_mock, random)
             self.chunk_count += 1
 
         for _ in range(0, 30):

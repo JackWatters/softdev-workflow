@@ -19,7 +19,7 @@ class TestDrivenDevelopmentTest(unittest.TestCase):
 
         self.random = Random(1)
         self.software_system = SoftwareSystem()
-        self.developer = Developer(person_time=500)
+        self.developer = Developer("alice", person_time=500)
 
         self.workflow = TestDrivenDevelopment(
             target_dependencies_per_feature=0

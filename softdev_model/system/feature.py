@@ -30,7 +30,8 @@ class Feature(object):
 
     @property
     def tests(self):
-        return SortedSet(filter(lambda t: t.feature == self, frozenset(self.software_system.tests)), lambda t: t.ident)
+        unsorted_feature_tests = filter(lambda t: t.feature == self, frozenset(self.software_system.tests))
+        return SortedSet(unsorted_feature_tests, lambda t: t.logical_name)
 
     @property
     def test_coverage(self):
@@ -48,18 +49,18 @@ class Feature(object):
     def is_implemented(self):
         return len(self.chunks) >= self.size
 
-    def add_chunk(self, logical_name, content=None):
-        chunk = Chunk(logical_name, self, content)
+    def add_chunk(self, logical_name):
+        chunk = Chunk(logical_name, self)
         self.chunks.add(chunk)
         return chunk
 
-    def extend(self, logical_name, random):
+    def extend(self, logical_name, developer, random):
         chunk = self.add_chunk(logical_name)
         chunks_to_modify = self._sample_chunks(random)
         chunks_to_modify.add(chunk)
 
         for chunk_to_modify in chunks_to_modify:
-            chunk_to_modify.modify(random)
+            chunk_to_modify.modify(developer, random)
 
         return chunk
 
@@ -69,7 +70,7 @@ class Feature(object):
                 chunk.debug(random)
 
         else:
-            detected_bugs = SortedSet(self.bugs & {detected_bug}, key=lambda b: b.ident)
+            detected_bugs = SortedSet(self.bugs & {detected_bug}, key=lambda b: b.logical_name)
             for detected_bug in detected_bugs:
                 detected_bug.chunk.debug(random, detected_bug)
 

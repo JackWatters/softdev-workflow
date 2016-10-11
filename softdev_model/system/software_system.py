@@ -35,7 +35,7 @@ class SoftwareSystem(object):
         self.test_efficiency = test_efficiency
 
         self.features = SortedSet(key=lambda f: f.logical_name)
-        self.tests = SortedSet(key=lambda t: t.ident)
+        self.tests = SortedSet(key=lambda t: t.logical_name)
         self.successful_operations = []
 
     @property
@@ -44,7 +44,11 @@ class SoftwareSystem(object):
         return reduce(lambda a, b: a.union(b), chunk_sets, SortedSet(key=lambda c: c.logical_name))
 
     def get_chunk(self, logical_name):
-        return filter(lambda chunk: chunk.logical_name == logical_name, self.chunks)[0]
+        result = filter(lambda chunk: chunk.logical_name == logical_name, self.chunks)
+        if len(result) is 0:
+            return None
+        else:
+            return result[0]
 
     @property
     def chunk_names(self):
@@ -52,7 +56,7 @@ class SoftwareSystem(object):
 
     @property
     def chunk_contents(self):
-        return map(lambda c: c.content, self.chunks)
+        return map(lambda c: c.local_content, self.chunks)
 
     @property
     def bugs(self):
@@ -64,13 +68,12 @@ class SoftwareSystem(object):
         self.features.add(feature)
         return feature
 
-    def copy_feature(self, original_feature):
-        copied_feature = self.add_feature(original_feature.logical_name, original_feature.size)
-        for chunk in original_feature.chunks:
-            copied_feature.add_chunk(chunk.logical_name, chunk.content)
-
     def get_feature(self, logical_name):
-        return filter (lambda f: f.logical_name, self.features)
+        result = filter (lambda f: f.logical_name==logical_name, self.features)
+        if len(result) is 0:
+            return None
+        else:
+            return result[0]
 
     def add_test(self, feature):
         test = Test(feature)

@@ -12,19 +12,25 @@ class Chunk(object):
     Represents a chunk of code providing some useful functionality in the system.
     """
 
-    def __init__(self, logical_name, feature, content=None):
-        self._logical_name = logical_name
+    def __init__(self, logical_name, feature, local_content=None):
+        self.logical_name = logical_name
 
         self.feature = feature
 
+        self.local_content = local_content
+
         self.dependencies = SortedSet(key=lambda d: d.logical_name)
-        self.bugs = SortedSet(key=lambda b: b.ident)
+        self.bugs = SortedSet(key=lambda b: b.logical_name)
 
-        self.content = content
-
-    @property
-    def logical_name(self):
-        return self._logical_name
+    def __eq__(self, other):
+        if self.local_content != other.local_content:
+            return False
+        elif self.bugs_logical_names != other.bugs_logical_names:
+            return False
+        elif self.dependency_logical_names != other.dependency_logical_names:
+            return False
+        else:
+            return True
 
     @property
     def probability_gain_feature_dependency(self):
@@ -54,22 +60,47 @@ class Chunk(object):
     def probability_debug_unknown(self):
         return self.feature.software_system.probability_debug_unknown
 
-    def modify(self, random):
+    @property
+    def dependency_logical_names(self):
+        return map(lambda d: d.logical_name, self.dependencies)
+
+    @property
+    def bugs_logical_names(self):
+        return map(lambda b: b.logical_name, self.bugs)
+
+    def modify(self, creator, random):
         feature_chunks = self.feature.chunks - {self}
         system_chunks = set(self.feature.software_system.chunks.difference(self.feature.chunks))
         self._add_dependencies(random, system_chunks, self.probability_gain_system_dependency)
         self._add_dependencies(random, feature_chunks, self.probability_gain_feature_dependency)
 
-        self._insert_bugs(random)
+        self.local_content = random.randint(0,100)
 
-        self.content = random.randint(0, sys.maxint)
+        self._insert_bugs(creator, random)
 
-    def merge(self, random, source_chunk):
+    def merge(self, source_chunk, creator, random):
         for dependency in source_chunk.dependencies:
             working_copy_dependency = self.feature.software_system.get_chunk(dependency.logical_name)
             self.dependencies.add(working_copy_dependency)
 
-        self.modify(random)
+        self.modify(creator, random)
+
+    def overwrite_with(self, source_chunk):
+
+        self.local_content = source_chunk.local_content
+
+        self.bugs.clear()
+        # Make sure bugs are copied across.
+        for old_bug in source_chunk.bugs:
+            new_bug = self.get_bug(old_bug.logical_name)
+            if new_bug is None:
+                self.add_bug(old_bug.logical_name)
+
+        self.dependencies.clear()
+        #and dependencies
+        for dependency in source_chunk.dependencies:
+            new_dependency = self.feature.software_system.get_chunk(dependency.logical_name)
+            self.dependencies.add(new_dependency)
 
     def _add_dependencies(self, my_random, candidate_chunks, threshold):
         for candidate in SortedSet(candidate_chunks, key=lambda c: c.logical_name):
@@ -80,9 +111,20 @@ class Chunk(object):
     def add_dependency(self, candidate):
         self.dependencies.add(candidate)
 
-    def _insert_bugs(self, random):
+    def _insert_bugs(self, creator, random):
         while random.random() <= self.probability_new_bug:
-            self.bugs.add(Bug(self))
+            bug_logical_name = "%s_%d" % (creator.logical_name, len(self.bugs))
+            self.add_bug(bug_logical_name)
+
+    def add_bug(self, logical_name):
+        self.bugs.add(Bug( logical_name, self))
+
+    def get_bug(self, logical_name):
+        result = filter(lambda bug: bug.logical_name == logical_name, self.bugs)
+        if len(result) is 0:
+            return None
+        else:
+            return result[0]
 
     def refactor(self, random):
         to_remove = set()
@@ -126,7 +168,7 @@ class Chunk(object):
         bugs = ", ".join(map(lambda bug: str(bug), self.bugs))
 
         return "c_%d:[%s]:[%s]->(in[%s],ex[%s])" % \
-               (self._logical_name, self.content, bugs, feature_dependencies, system_dependencies)
+               (self.logical_name, self.local_content, bugs, feature_dependencies, system_dependencies)
 
     def __repr__(self):
-        return "c%d" % self._logical_name
+        return "c%d" % self.logical_name

@@ -10,7 +10,7 @@ class DeveloperTestCase(unittest.TestCase):
 
     def setUp(self):
 
-        self.developer = Developer(person_time=2)
+        self.developer = Developer("alice", person_time=2)
 
         self.feature_mock = Mock(spec=Feature)
         self.bug_mock = Mock(spec=Bug)
