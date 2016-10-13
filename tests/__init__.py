@@ -5,3 +5,4 @@ from test_softwaresystem import SoftwareSystemTest
 from test_test import TestTest
 from test_test_driven_development import TestDrivenDevelopmentTest
 from test_waterfall import WaterfallTest
+from test_centralised_vcs import CentralisedVCSTest

@@ -36,7 +36,7 @@ class WaterfallTest(unittest.TestCase):
             vcs_client.working_copy.operate(self.random, 10000)
 
         if self.is_64bits:
-            self.assertEquals(15, len(vcs_client.working_copy.last_trace))
+            self.assertEquals(88, len(vcs_client.working_copy.last_trace))
         else:
             self.assertEquals(97, len(vcs_client.working_copy.last_trace))
 
@@ -50,7 +50,11 @@ class WaterfallTest(unittest.TestCase):
         with self.assertRaises(BugEncounteredException):
             self.random.seed(1)
             software_system.operate(self.random, 10000)
-        self.assertEquals(97, len(software_system.last_trace))
+
+        if self.is_64bits:
+            self.assertEquals(88, len(software_system.last_trace))
+        else:
+            self.assertEquals(97, len(software_system.last_trace))
 
     def test_implement_system_with_high_effectiveness_tests_and_operate_regression(self):
         self.centralised_vcs_server.master.test_effectiveness = 1.0
