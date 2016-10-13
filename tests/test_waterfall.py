@@ -66,8 +66,6 @@ class WaterfallTest(unittest.TestCase):
 
         software_system = self.centralised_vcs_server.checkout().working_copy
 
-        print software_system
-
         software_system.operate(self.random, 10000)
         self.assertEquals(10000, len(software_system.last_trace))
 
