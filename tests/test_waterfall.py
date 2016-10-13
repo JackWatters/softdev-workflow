@@ -58,13 +58,15 @@ class WaterfallTest(unittest.TestCase):
 
     def test_implement_system_with_high_effectiveness_tests_and_operate_regression(self):
         self.centralised_vcs_server.master.test_effectiveness = 1.0
-        self.workflow.target_minimum_tests_per_chunk = 2
+        self.workflow.target_minimum_tests_per_chunk = 4
 
         self.workflow.work(self.centralised_vcs_server, self.developer, [(0, 3), (1, 5), (2, 7)], self.random)
 
         self.random.seed(1)
 
         software_system = self.centralised_vcs_server.checkout().working_copy
+
+        print software_system
 
         software_system.operate(self.random, 10000)
         self.assertEquals(10000, len(software_system.last_trace))
