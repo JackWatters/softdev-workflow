@@ -1,7 +1,13 @@
 from .software_system import SoftwareSystem
 
+from threading import Lock
+
 
 def copy_software_system(system):
+    """
+    A custom function for making a copy of a software system object.
+    """
+
     copied_system = SoftwareSystem()
     for feature in system.features:
         target_feature = copied_system.add_feature(feature.logical_name, feature.size)
@@ -51,17 +57,25 @@ class CentralisedVCSServer(object):
     def __init__(self, system):
         self.master = system
         self.version = 0
-        pass
+        self.lock = Lock()
 
     def checkout(self):
         return CentralisedVCSClient(self)
 
+    def latest(self):
+        self.lock.acquire()
+        result = [copy_software_system(self.master), self.version]
+        self.lock.release()
+        return result[0], result[1]
+
     def receive_commit(self, working_copy, version):
+        self.lock.acquire()
         if version < self.version:
             raise CentralisedVCSException()
         else:
             self.master = copy_software_system(working_copy)
             self.version += 1
+        self.lock.release()
 
 
 class CentralisedVCSClient(object):
@@ -73,10 +87,8 @@ class CentralisedVCSClient(object):
     def __init__(self, server, probability_automatically_resolve=0.25):
         self.server = server
 
-        self.working_base = copy_software_system(self.server.master)
+        self.working_base, self.version  = self.server.latest()
         self.working_copy = copy_software_system(self.working_base)
-
-        self.version = self.server.version
 
         self.probability_automatically_resolve = probability_automatically_resolve
         self.conflicts = []
@@ -127,12 +139,11 @@ class CentralisedVCSClient(object):
 
     def update(self, updater, random):
         old_working_base = self.working_base
-        self.working_base = copy_software_system(self.server.master)
+        self.working_base, self.version = self.server.latest()
         self._merge(old_working_base, updater, random)
 
-        self.version = self.server.version
-
     def commit(self):
+
         if not len(self.conflicts) > 0:
             self.server.receive_commit(self.working_copy, self.version)
         else:

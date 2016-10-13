@@ -35,7 +35,7 @@ class Developer(object):
 
     def resolve_conflict(self, centralised_vcs_client, conflict, random):
         resolve_method = getattr(centralised_vcs_client, "resolve")
-        self._perform_task(1, resolve_method, [centralised_vcs_client, conflict, random])
+        self._perform_task(1, resolve_method, [conflict, self, random])
 
     def commit_changes(self, centralised_vcs_client):
         commit_method = getattr(centralised_vcs_client, "commit")

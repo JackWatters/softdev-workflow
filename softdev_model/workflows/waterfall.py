@@ -1,7 +1,7 @@
 """"
 @author: twsswt
 """
-from softdev_model.system import BugEncounteredException
+from softdev_model.system import BugEncounteredException, CentralisedVCSException
 
 
 class Waterfall(object):
@@ -32,23 +32,18 @@ class Waterfall(object):
         self._debug_system(developer, centralised_vcs_client, random)
         self._refactor_system(developer, centralised_vcs_client, random)
 
-    @staticmethod
-    def _complete_specification(developer, schedule, centralised_vcs_client, random):
+    def _complete_specification(self, developer, schedule, centralised_vcs_client, random):
         for logical_name, feature_size in schedule:
             centralised_vcs_client.working_copy.add_feature(logical_name=logical_name, size=feature_size)
-            centralised_vcs_client.update(developer, random)
-            centralised_vcs_client.commit()
+            self._commit_changes(developer, centralised_vcs_client, random)
 
     def _implement_features(self, developer, centralised_vcs_client, random):
 
         for feature in centralised_vcs_client.working_copy.features:
             while not feature.is_implemented:
-                centralised_vcs_client.update(developer, random)
                 developer.extend_feature(self.chunk_count, feature, random)
                 self.chunk_count += 1
-                centralised_vcs_client.update(developer, random)
-
-                centralised_vcs_client.commit()
+                self._commit_changes(developer, centralised_vcs_client, random)
 
     def _implement_test_suite(self, developer, centralised_vcs_client, random):
 
@@ -61,11 +56,9 @@ class Waterfall(object):
                 developer.add_test(feature.software_system, self.test_count, feature)
                 self.test_count += 1
 
-                centralised_vcs_client.update(developer, random)
-                centralised_vcs_client.commit()
+                self._commit_changes(developer, centralised_vcs_client, random)
 
-    @staticmethod
-    def _debug_system(developer, centralised_vcs_client, random):
+    def _debug_system(self, developer, centralised_vcs_client, random):
 
         for test in centralised_vcs_client.working_copy.tests:
             while True:
@@ -73,15 +66,24 @@ class Waterfall(object):
                     test.exercise()
                     break
                 except BugEncounteredException as e:
-                    centralised_vcs_client.update(developer, random)
                     developer.debug(test.feature, e.bug, random)
-                    centralised_vcs_client.update(developer, random)
-                    centralised_vcs_client.commit()
+                    self._commit_changes(developer, centralised_vcs_client, random)
 
     def _refactor_system(self, developer, centralised_vcs_client, random):
         for feature in centralised_vcs_client.working_copy.features:
             while len(feature.dependencies) > self.target_dependencies_per_feature:
-                centralised_vcs_client.update(developer, random)
                 developer.refactor(feature, random)
-                centralised_vcs_client.update(developer, random)
+                self._commit_changes(developer, centralised_vcs_client, random)
+
+    @staticmethod
+    def _commit_changes(developer, centralised_vcs_client, random):
+        while True:
+            try:
                 centralised_vcs_client.commit()
+                centralised_vcs_client.update(developer, random)
+                break
+            except CentralisedVCSException:
+                centralised_vcs_client.update(developer, random)
+                for conflict in centralised_vcs_client.conflicts:
+                    developer.resolve_conflict(centralised_vcs_client, conflict, random)
+
