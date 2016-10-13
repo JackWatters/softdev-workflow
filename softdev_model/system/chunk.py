@@ -1,7 +1,6 @@
 """
 @author: tws
 """
-import sys
 
 from .bug import Bug
 from sortedcontainers import SortedSet
@@ -86,7 +85,7 @@ class Chunk(object):
         self._add_dependencies(random, system_chunks, self.probability_gain_system_dependency)
         self._add_dependencies(random, feature_chunks, self.probability_gain_feature_dependency)
 
-        self.local_content = random.randint(0,100)
+        self.local_content = random.randint(0, 100)
 
         self._insert_bugs(creator, random)
 
@@ -102,14 +101,12 @@ class Chunk(object):
         self.local_content = source_chunk.local_content
 
         self.bugs.clear()
-        # Make sure bugs are copied across.
         for old_bug in source_chunk.bugs:
             new_bug = self.get_bug(old_bug.logical_name)
             if new_bug is None:
                 self.add_bug(old_bug.logical_name)
 
         self.dependencies.clear()
-        #and dependencies
         for dependency in source_chunk.dependencies:
             new_dependency = self.feature.software_system.get_chunk(dependency.logical_name)
             self.dependencies.add(new_dependency)
@@ -129,7 +126,7 @@ class Chunk(object):
             self.add_bug(bug_logical_name)
 
     def add_bug(self, logical_name):
-        self.bugs.add(Bug( logical_name, self))
+        self.bugs.add(Bug(logical_name, self))
 
     def get_bug(self, logical_name):
         result = filter(lambda bug: bug.logical_name == logical_name, self.bugs)

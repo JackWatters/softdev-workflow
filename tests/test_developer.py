@@ -3,7 +3,7 @@ import unittest
 from mock import Mock
 from random import Random
 
-from softdev_model.system import Bug, Chunk, Developer, Feature, SoftwareSystem, CentralisedVCSClient
+from softdev_model.system import Bug, Developer, Feature, SoftwareSystem, CentralisedVCSClient
 
 
 class DeveloperTestCase(unittest.TestCase):

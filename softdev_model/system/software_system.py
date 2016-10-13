@@ -69,7 +69,7 @@ class SoftwareSystem(object):
         return feature
 
     def get_feature(self, logical_name):
-        result = filter (lambda f: f.logical_name==logical_name, self.features)
+        result = filter(lambda f: f.logical_name == logical_name, self.features)
         if len(result) is 0:
             return None
         else:

@@ -1,5 +1,3 @@
-import copy
-
 import unittest
 
 from mock import Mock
@@ -12,8 +10,10 @@ from softdev_model.system import Developer, CentralisedVCSServer, SoftwareSystem
 class CentralisedVCSTest(unittest.TestCase):
 
     def setUp(self):
+        self.alice = Mock(Developer)
+        self.alice.logical_name = "alice"
         self.bob = Mock(Developer)
-        self.bob.logical_name="bob"
+        self.bob.logical_name = "bob"
 
         self.software_system = SoftwareSystem()
         feature = self.software_system.add_feature(0, 2)
@@ -31,7 +31,7 @@ class CentralisedVCSTest(unittest.TestCase):
 
         random_mock = Mock(spec=Random)
 
-        self.centralised_vcs_client_alice.update(random_mock)
+        self.centralised_vcs_client_alice.update(self.alice, random_mock)
 
         self.assertEquals([0], self.centralised_vcs_client_alice.working_copy.chunk_names)
 
@@ -54,15 +54,15 @@ class CentralisedVCSTest(unittest.TestCase):
         random_mock.randint = Mock()
         random_mock.random = Mock()
 
-        self.centralised_vcs_client_alice.update(random_mock)
+        self.centralised_vcs_client_alice.update(self.alice, random_mock)
         self.centralised_vcs_client_alice.commit()
-        self.centralised_vcs_client_alice.update(random_mock)
+        self.centralised_vcs_client_alice.update(self.alice, random_mock)
 
     def _bob_updates_and_conflicts_working_copy(self):
         random_mock = Mock(spec=Random)
         random_mock.random = Mock(side_effect=[1.0])
 
-        self.centralised_vcs_client_bob.update(random_mock)
+        self.centralised_vcs_client_bob.update(self.bob, random_mock)
 
     def _bob_manually_resolves_conflict(self):
         random_mock = Mock(spec=Random)
@@ -78,7 +78,7 @@ class CentralisedVCSTest(unittest.TestCase):
         random_mock = Mock(spec=Random)
 
         random_mock.random = Mock(side_effect=[])
-        self.centralised_vcs_client_bob.update(random_mock)
+        self.centralised_vcs_client_bob.update(self.bob, random_mock)
 
     def test_checkout_modify_update_and_commit(self):
 

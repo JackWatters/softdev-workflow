@@ -72,11 +72,11 @@ class CentralisedVCSClient(object):
 
     def __init__(self, server, probability_automatically_resolve=0.25):
         self.server = server
-        self.working_base = None
-        self.working_copy = None
 
         self.working_base = copy_software_system(self.server.master)
         self.working_copy = copy_software_system(self.working_base)
+
+        self.version = self.server.version
 
         self.probability_automatically_resolve = probability_automatically_resolve
         self.conflicts = []
@@ -87,11 +87,11 @@ class CentralisedVCSClient(object):
         self.conflicts.append(conflict)
         return conflict
 
-    def _try_automatic_resolve(self, conflict, random):
+    def _try_automatic_resolve(self, conflict, resolver, random):
         if conflict.resolve_threshold <= self.probability_automatically_resolve:
-            self.resolve(conflict, random)
+            self.resolve(conflict, resolver, random)
 
-    def _merge(self, old_working_base, random):
+    def _merge(self, old_working_base, merger, random):
         """
         Check if each chunk in the current working base has changed since the last update.  If so, either over-write the
         ne working copy if it hasn't been modified, or conflict.
@@ -123,12 +123,12 @@ class CentralisedVCSClient(object):
                     elif working_copy_chunk != new_working_base_chunk:
 
                         conflict = self._add_conflict(new_working_base_chunk, random)
-                        self._try_automatic_resolve(conflict, random)
+                        self._try_automatic_resolve(conflict, merger, random)
 
-    def update(self, random):
+    def update(self, updater, random):
         old_working_base = self.working_base
         self.working_base = copy_software_system(self.server.master)
-        self._merge(old_working_base, random)
+        self._merge(old_working_base, updater, random)
 
         self.version = self.server.version
 
@@ -144,4 +144,4 @@ class CentralisedVCSClient(object):
         working_base_chunk = self.working_base.get_chunk(conflict.logical_name)
         working_copy_chunk = self.working_copy.get_chunk(conflict.logical_name)
 
-        working_copy_chunk.merge( working_base_chunk, resolver, random)
+        working_copy_chunk.merge(working_base_chunk, resolver, random)

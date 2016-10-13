@@ -31,7 +31,7 @@ class TestDrivenDevelopmentTest(unittest.TestCase):
             random=self.random,
             software_system=self.software_system,
             developer=self.developer,
-            schedule=[(0,3), (1,5), (2,7)])
+            schedule=[(0, 3), (1, 5), (2, 7)])
 
         self.random.seed(1)
 

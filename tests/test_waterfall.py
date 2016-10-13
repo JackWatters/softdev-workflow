@@ -5,8 +5,7 @@ import unittest
 
 import sys
 
-from softdev_model.system import \
-    Bug, BugEncounteredException, CentralisedVCSServer, Chunk, Developer, Feature, SoftwareSystem, Test
+from softdev_model.system import BugEncounteredException, CentralisedVCSServer, Developer, SoftwareSystem
 
 from softdev_model.workflows import Waterfall
 
@@ -55,7 +54,7 @@ class WaterfallTest(unittest.TestCase):
 
     def test_implement_system_with_high_effectiveness_tests_and_operate_regression(self):
         self.centralised_vcs_server.master.test_effectiveness = 1.0
-        self.workflow.target_minimum_tests_per_chunk=2
+        self.workflow.target_minimum_tests_per_chunk = 2
 
         self.workflow.work(self.centralised_vcs_server, self.developer, [(0, 3), (1, 5), (2, 7)], self.random)
 
