@@ -16,10 +16,6 @@ from random import Random
 class WaterfallTest(unittest.TestCase):
 
     def setUp(self):
-        Chunk._count = 0
-        Feature._count = 0
-        Test._count = 0
-        Bug._count = 0
 
         self.is_64bits = sys.maxsize > 2**32
 
