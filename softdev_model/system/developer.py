@@ -13,27 +13,27 @@ class Developer(object):
         self.completed_tasks = []
         self.logical_name = logical_name
 
-    def extend_feature(self, random, logical_name, feature):
+    def extend_feature(self, logical_name, feature, random):
         extend_method = getattr(feature, "extend")
         self._perform_task(1, extend_method, [logical_name, self, random])
 
-    def add_test(self, software_system, feature):
+    def add_test(self, software_system, logical_name, feature):
         add_test_method = getattr(software_system, "add_test")
-        self._perform_task(1, add_test_method, [feature])
+        self._perform_task(1, add_test_method, [logical_name, feature])
 
-    def debug(self, random, feature, bug):
+    def debug(self, feature, bug, random):
         debug_method = getattr(feature, "debug")
         self._perform_task(1, debug_method, [random, bug])
 
-    def refactor(self, random, feature):
+    def refactor(self, feature, random):
         refactor_method = getattr(feature, "refactor")
         self._perform_task(1, refactor_method, [random])
 
-    def update_working_copy(self, random, centralised_vcs_client):
+    def update_working_copy(self, centralised_vcs_client, random):
         update_method = getattr(centralised_vcs_client, "update")
         self._perform_task(0, update_method, [centralised_vcs_client, random])
 
-    def resolve_conflict(self, random, centralised_vcs_client, conflict):
+    def resolve_conflict(self, centralised_vcs_client, conflict, random):
         resolve_method = getattr(centralised_vcs_client, "resolve")
         self._perform_task(1, resolve_method, [centralised_vcs_client, conflict, random])
 

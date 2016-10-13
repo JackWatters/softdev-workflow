@@ -1,8 +1,33 @@
-from .bug import Bug
-from .feature import Feature
 from .software_system import SoftwareSystem
 
-import copy
+
+def copy_software_system(system):
+    copied_system = SoftwareSystem()
+    for feature in system.features:
+        target_feature = copied_system.add_feature(feature.logical_name, feature.size)
+
+        for chunk in feature.chunks:
+            target_chunk = target_feature.add_chunk(chunk.logical_name, chunk.local_content)
+
+            for bug in chunk.bugs:
+                target_chunk.add_bug(bug.logical_name)
+
+        for test in feature.tests:
+            copied_system.add_test(test.logical_name, target_feature)
+
+    for chunk in system.chunks:
+        target_chunk = copied_system.get_chunk(chunk.logical_name)
+        for dependency in chunk.dependencies:
+            target_dependency = copied_system.get_chunk(dependency.logical_name)
+            target_chunk.add_dependency(target_dependency)
+
+    return copied_system
+
+
+class CentralisedVCSException(Exception):
+
+    def __init__(self):
+        pass
 
 
 class Conflict(object):
@@ -35,7 +60,7 @@ class CentralisedVCSServer(object):
         if version < self.version:
             raise CentralisedVCSException()
         else:
-            self.master = copy.deepcopy(working_copy)
+            self.master = copy_software_system(working_copy)
             self.version += 1
 
 
@@ -50,32 +75,11 @@ class CentralisedVCSClient(object):
         self.working_base = None
         self.working_copy = None
 
-        self.update(None)
+        self.working_base = copy_software_system(self.server.master)
+        self.working_copy = copy_software_system(self.working_base)
 
         self.probability_automatically_resolve = probability_automatically_resolve
         self.conflicts = []
-
-    @staticmethod
-    def _working_base_chunk_has_been_updated(old_working_base_chunk, new_working_base_chunk):
-        if old_working_base_chunk is None:
-            # A new chunk has been introduced by the update.
-            return False
-        elif new_working_base_chunk == old_working_base_chunk:
-            # The update hasn't changed the working base.
-            return False
-        else:
-            return True
-
-    @staticmethod
-    def _working_copy_chunk_has_local_changes(old_working_base_chunk, old_working_copy_chunk, new_working_base_chunk):
-        if old_working_copy_chunk == old_working_base_chunk:
-            # The working copy can be safely over-written as it doesn't contain local changes.
-            return False
-        elif old_working_copy_chunk == new_working_base_chunk:
-            # The local changes to the working copy are identical to the changes in the update.
-            return False
-        else:
-            return True
 
     def _add_conflict(self, working_base_chunk, random):
         conflict_complexity = random.random()
@@ -87,42 +91,44 @@ class CentralisedVCSClient(object):
         if conflict.resolve_threshold <= self.probability_automatically_resolve:
             self.resolve(conflict, random)
 
-    def _merge(self, old_working_base, old_working_copy, random):
+    def _merge(self, old_working_base, random):
         """
         Check if each chunk in the current working base has changed since the last update.  If so, either over-write the
         ne working copy if it hasn't been modified, or conflict.
         :param old_working_base:
-        :param old_working_copy:
         :param random:
         """
+        for working_base_feature in self.working_base.features:
+            working_copy_feature = self.working_copy.get_feature(working_base_feature.logical_name)
+            if working_copy_feature is None:
+                self.working_copy.add_feature(working_copy_feature.logical_name, working_copy_feature.size)
+
         for new_working_base_chunk in self.working_base.chunks:
+            chunk_logical_name = new_working_base_chunk.logical_name
 
-            logical_name = new_working_base_chunk.logical_name
+            working_copy_chunk = self.working_copy.get_chunk(chunk_logical_name)
 
-            old_working_base_chunk = old_working_base.get_chunk(logical_name)
-            old_working_copy_chunk = old_working_copy.get_chunk(logical_name)
+            if working_copy_chunk is None:
+                working_copy_feature = self.working_copy.get_feature(new_working_base_chunk.feature.logical_name)
+                working_copy_chunk = working_copy_feature.add_chunk(chunk_logical_name)
+                working_copy_chunk.overwrite_with(new_working_base_chunk)
 
-            if self._working_copy_chunk_has_local_changes(
-                    old_working_base_chunk, old_working_copy_chunk, new_working_base_chunk):
+            else:
+                old_working_base_chunk = old_working_base.get_chunk(chunk_logical_name)
 
-                new_working_copy_chunk = self.working_copy.get_chunk(old_working_copy_chunk.logical_name)
-                new_working_copy_chunk.overwrite_with(old_working_copy_chunk)
+                if old_working_base_chunk is not None and old_working_base_chunk != new_working_base_chunk:
 
-                if self._working_base_chunk_has_been_updated(old_working_base_chunk, new_working_base_chunk):
+                    if working_copy_chunk == old_working_base_chunk:
+                        working_copy_chunk.overwrite_with(new_working_base_chunk)
+                    elif working_copy_chunk != new_working_base_chunk:
 
-                    conflict = self._add_conflict(new_working_base_chunk, random)
-                    self._try_automatic_resolve(conflict, random)
+                        conflict = self._add_conflict(new_working_base_chunk, random)
+                        self._try_automatic_resolve(conflict, random)
 
     def update(self, random):
         old_working_base = self.working_base
-        old_working_copy = self.working_copy
-
-        self.working_base = copy.deepcopy(self.server.master)
-
-        self.working_copy = copy.deepcopy(self.working_base)
-
-        if not(old_working_base is None or old_working_copy is None):
-            self._merge(old_working_base, old_working_copy, random)
+        self.working_base = copy_software_system(self.server.master)
+        self._merge(old_working_base, random)
 
         self.version = self.server.version
 
@@ -139,11 +145,3 @@ class CentralisedVCSClient(object):
         working_copy_chunk = self.working_copy.get_chunk(conflict.logical_name)
 
         working_copy_chunk.merge( working_base_chunk, resolver, random)
-
-        pass
-
-
-class CentralisedVCSException(Exception):
-
-    def __init__(self):
-        pass

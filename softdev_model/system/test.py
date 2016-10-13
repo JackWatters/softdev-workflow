@@ -9,11 +9,9 @@ from .bug import BugEncounteredException
 
 
 class Test(object):
-    _count = 0
 
-    def __init__(self, feature):
-        self.logical_name = Test._count
-        Test._count += 1
+    def __init__(self, logical_name, feature):
+        self.logical_name = logical_name
 
         self.feature = feature
 

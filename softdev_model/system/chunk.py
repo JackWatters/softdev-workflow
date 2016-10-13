@@ -32,6 +32,9 @@ class Chunk(object):
         else:
             return True
 
+    def __ne__(self, other):
+        return not(self.__eq__(other))
+
     @property
     def probability_gain_feature_dependency(self):
         return self.feature.software_system.probability_gain_feature_dependency
@@ -67,6 +70,15 @@ class Chunk(object):
     @property
     def bugs_logical_names(self):
         return map(lambda b: b.logical_name, self.bugs)
+
+    @property
+    def bugs_in_dependencies(self):
+        chunk_bug_set = frozenset(map(lambda chunk: frozenset(chunk.bugs), self.dependencies))
+        return reduce(lambda bugs_a, bugs_b: bugs_a.union(bugs_b), chunk_bug_set, set())
+
+    @property
+    def tests(self):
+        return filter(lambda t: self in t.chunks, self.feature.tests)
 
     def modify(self, creator, random):
         feature_chunks = self.feature.chunks - {self}
@@ -152,11 +164,6 @@ class Chunk(object):
     def operate(self, random):
         for bug in self.bugs_in_dependencies.union(self.bugs):
             bug.manifest(random)
-
-    @property
-    def bugs_in_dependencies(self):
-        chunk_bug_set = frozenset(map(lambda chunk: frozenset(chunk.bugs), self.dependencies))
-        return reduce(lambda bugs_a, bugs_b: bugs_a.union(bugs_b), chunk_bug_set, set())
 
     def __str__(self):
         def string_repr_set(iterable):

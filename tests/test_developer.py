@@ -31,19 +31,19 @@ class DeveloperTestCase(unittest.TestCase):
 
     def test_add_test(self):
 
-        self.developer.add_test(self.software_system_mock, self.feature_mock)
+        self.developer.add_test(self.software_system_mock, 0, self.feature_mock)
 
         self.assertEquals(1, self.developer.person_time)
 
     def test_debug(self):
 
-        self.developer.debug(self.random_mock, self.feature_mock, self.bug_mock)
+        self.developer.debug(self.feature_mock, self.bug_mock, self.random_mock)
 
         self.assertEquals(1, self.developer.person_time)
 
     def test_refactor(self):
 
-        self.developer.refactor(self.random_mock, self.feature_mock)
+        self.developer.refactor(self.feature_mock, self.random_mock)
 
         self.assertEquals(1, self.developer.person_time)
 
@@ -51,7 +51,7 @@ class DeveloperTestCase(unittest.TestCase):
 
         self.centralised_vcs_client_mock.conflicts = {}
 
-        self.developer.update_working_copy(self.random_mock, self.centralised_vcs_client_mock)
+        self.developer.update_working_copy(self.centralised_vcs_client_mock, self.random_mock)
 
         self.assertEquals(2, self.developer.person_time)
 

@@ -32,36 +32,36 @@ class WaterfallTest(unittest.TestCase):
         self.workflow = Waterfall()
 
     def test_implement_default_system_and_operate_regression(self):
-        self.workflow.work(self.random, self.centralised_vcs_server, self.developer, [(0, 3), (1, 5), (2, 7)])
+        self.workflow.work(self.centralised_vcs_server, self.developer, [(0, 3), (1, 5), (2, 7)], self.random)
 
-        software_system = self.centralised_vcs_server.checkout().working_copy
-
-        print software_system
+        vcs_client = self.centralised_vcs_server.checkout()
 
         with self.assertRaises(BugEncounteredException):
             self.random.seed(1)
-            software_system.operate(self.random, 10000)
+            vcs_client.working_copy.operate(self.random, 10000)
+
         if self.is_64bits:
-            self.assertEquals(15, len(self.software_system.last_trace))
+            self.assertEquals(15, len(vcs_client.working_copy.last_trace))
         else:
-            self.assertEquals(1, len(self.software_system.last_trace))
+            self.assertEquals(97, len(vcs_client.working_copy.last_trace))
 
     def test_implement_system_with_low_effectiveness_tests_and_operate_regression(self):
         self.centralised_vcs_server.master.test_effectiveness = 0.1
 
-        self.workflow.work(self.random, self.centralised_vcs_server, self.developer, [(0, 3), (1, 5), (2, 7)])
+        self.workflow.work(self.centralised_vcs_server, self.developer, [(0, 3), (1, 5), (2, 7)], self.random)
 
         software_system = self.centralised_vcs_server.checkout().working_copy
 
         with self.assertRaises(BugEncounteredException):
             self.random.seed(1)
             software_system.operate(self.random, 10000)
-        self.assertEquals(1, len(software_system.last_trace))
+        self.assertEquals(97, len(software_system.last_trace))
 
     def test_implement_system_with_high_effectiveness_tests_and_operate_regression(self):
         self.centralised_vcs_server.master.test_effectiveness = 1.0
+        self.workflow.target_minimum_tests_per_chunk=2
 
-        self.workflow.work(self.random, self.centralised_vcs_server, self.developer, [(0, 3), (1, 5), (2, 7)])
+        self.workflow.work(self.centralised_vcs_server, self.developer, [(0, 3), (1, 5), (2, 7)], self.random)
 
         self.random.seed(1)
 

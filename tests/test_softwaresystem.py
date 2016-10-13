@@ -18,30 +18,30 @@ class SoftwareSystemTest(unittest.TestCase):
         self.developer_mock = Mock(spec=Developer)
         self.developer_mock.logical_name = "bob"
 
-    def complete_feature(self, random, size, logical_name):
+    def complete_feature(self, logical_name, size, random):
         feature = self.software_system.add_feature(logical_name, size)
         while not feature.is_implemented:
             feature.extend(self.chunk_count, self.developer_mock, random)
             self.chunk_count += 1
 
-        for _ in range(0, 30):
-            self.software_system.add_test(feature)
+        for test_logical_name in range(0, 30):
+            self.software_system.add_test(test_logical_name, feature)
 
     def test_operate_test_debug_operate_regression(self):
         """
         Regression tests using a seed random value for repeatability.
         """
 
-        rand = Random()
-        rand.seed(1)
+        random = Random()
+        random.seed(1)
 
         for logical_name in range(0, 1):
-            self.complete_feature(rand, 3, logical_name)
+            self.complete_feature(logical_name, 3, random)
 
         with self.assertRaises(BugEncounteredException):
-            self.software_system.operate(rand, 10000)
+            self.software_system.operate(random, 10000)
 
-        self.assertEquals(334, len(self.software_system.last_trace))
+        self.assertEquals(3, len(self.software_system.last_trace))
 
         for test in self.software_system.tests:
 
@@ -50,9 +50,9 @@ class SoftwareSystemTest(unittest.TestCase):
                     test.exercise()
                     break
                 except BugEncounteredException as e:
-                    test.feature.debug(rand, e.bug)
+                    test.feature.debug(random, e.bug)
 
-        self.software_system.operate(rand, 10000)
+        self.software_system.operate(random, 10000)
         self.assertEquals(10000, len(self.software_system.last_trace))
 
 

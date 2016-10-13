@@ -41,7 +41,7 @@ class TestDrivenDevelopmentTest(unittest.TestCase):
         if self.is_64bits:
             self.assertEquals(21, len(self.software_system.last_trace))
         else:
-            self.assertEquals(15, len(self.software_system.last_trace))
+            self.assertEquals(14, len(self.software_system.last_trace))
 
 
 if __name__ == '__main__':

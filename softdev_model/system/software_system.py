@@ -75,8 +75,8 @@ class SoftwareSystem(object):
         else:
             return result[0]
 
-    def add_test(self, feature):
-        test = Test(feature)
+    def add_test(self, logical_name, feature):
+        test = Test(logical_name, feature)
         self.tests.add(test)
         return test
 

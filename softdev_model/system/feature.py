@@ -40,6 +40,10 @@ class Feature(object):
         return float(len(covered_chunks)) / self.size
 
     @property
+    def minimum_tests_per_chunk(self):
+        return min(map(lambda c: len(c.tests), self.chunks))
+
+    @property
     def dependencies(self):
         all_dependencies = reduce(lambda a, b: a.union(b), map(lambda c: frozenset(c.dependencies), self.chunks), set())
         external_dependencies = filter(lambda c: c.feature != self, all_dependencies)
@@ -49,8 +53,8 @@ class Feature(object):
     def is_implemented(self):
         return len(self.chunks) >= self.size
 
-    def add_chunk(self, logical_name):
-        chunk = Chunk(logical_name, self)
+    def add_chunk(self, logical_name, local_content=None):
+        chunk = Chunk(logical_name, self, local_content)
         self.chunks.add(chunk)
         return chunk
 
@@ -98,7 +102,6 @@ class Feature(object):
         return SortedSet(sample, key=lambda c: c.logical_name)
 
     def __str__(self):
-
         chunk_strings = map(lambda chunk: str(chunk), self.chunks)
         return "f_%d[%s]" % (self._logical_name, ",".join(chunk_strings))
 
