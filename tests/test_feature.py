@@ -5,7 +5,7 @@ import unittest
 
 from mock import Mock
 
-from softdev_model.system import BugEncounteredException, Developer, Feature, InoperableFeatureException, SoftwareSystem
+from softdev_model.system import BugEncounteredException, Feature, InoperableFeatureException, SoftwareSystem
 
 from random import Random
 
@@ -13,9 +13,6 @@ from random import Random
 class FeatureTest(unittest.TestCase):
 
     def setUp(self):
-
-        self.developer_mock = Mock(spec=Developer)
-        self.developer_mock.logical_name = "bob"
 
         software_system_mock = Mock(spec=SoftwareSystem)
         self.feature = Feature(software_system_mock, 0, 1)
@@ -37,7 +34,7 @@ class FeatureTest(unittest.TestCase):
         random_mock.sample = Mock(side_effect=[[]])
         random_mock.randint = Mock(side_effect=[1, 'content'])
         random_mock.random = Mock(side_effect=random_float_sequence)
-        chunk = self.feature.extend(chunk_name, self.developer_mock, random_mock)
+        chunk = self.feature.extend(chunk_name, random_mock)
         
         return chunk
 

@@ -1,4 +1,5 @@
 from .chunk import Chunk
+from .test import Test
 from sortedcontainers import SortedSet
 
 """
@@ -18,6 +19,7 @@ class Feature(object):
         self.size = size
 
         self.chunks = SortedSet(key=lambda c: c.logical_name)
+        self.tests = SortedSet(key=lambda t: t.logical_name)
 
     @property
     def logical_name(self):
@@ -29,19 +31,15 @@ class Feature(object):
         return reduce(lambda a, b: a.union(b), bug_sets, set())
 
     @property
-    def tests(self):
-        unsorted_feature_tests = filter(lambda t: t.feature == self, frozenset(self.software_system.tests))
-        return SortedSet(unsorted_feature_tests, lambda t: t.logical_name)
-
-    @property
     def test_coverage(self):
         covered_chunks = SortedSet(
             reduce(lambda a, b: a.union(b), map(lambda t: frozenset(t.chunk_indexes), self.tests), set()))
         return float(len(covered_chunks)) / self.size
 
     @property
-    def minimum_tests_per_chunk(self):
-        return min(map(lambda c: len(c.tests), self.chunks))
+    def tests_per_chunk_ratio(self):
+
+        return 1.0*len(self.tests) / self.size
 
     @property
     def dependencies(self):
@@ -58,13 +56,13 @@ class Feature(object):
         self.chunks.add(chunk)
         return chunk
 
-    def extend(self, logical_name, developer, random):
+    def extend(self, logical_name, random):
         chunk = self.add_chunk(logical_name)
         chunks_to_modify = self._sample_chunks(random)
         chunks_to_modify.add(chunk)
 
         for chunk_to_modify in chunks_to_modify:
-            chunk_to_modify.modify(developer, random)
+            chunk_to_modify.modify(random)
 
         return chunk
 
@@ -74,12 +72,17 @@ class Feature(object):
                 chunk.debug(random)
 
         else:
-            detected_bugs = SortedSet(self.bugs & {detected_bug}, key=lambda b: b.logical_name)
+            detected_bugs = SortedSet(self.bugs & {detected_bug}, key=lambda b: b.fully_qualified_name)
             for detected_bug in detected_bugs:
                 detected_bug.chunk.debug(random, detected_bug)
 
     def refactor(self, random):
         random.choice(self.chunks).refactor(random)
+
+    def add_test(self, logical_name):
+        test = Test(logical_name, self)
+        self.tests.add(test)
+        return test
 
     def operate(self, my_random):
         """

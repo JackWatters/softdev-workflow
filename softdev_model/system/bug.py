@@ -18,7 +18,11 @@ class Bug(object):
             raise BugEncounteredException(self)
 
     def __repr__(self):
-        return "b_%s" % str(self.logical_name)
+        return "b_%s" % str(self.fully_qualified_name)
+
+    @property
+    def fully_qualified_name(self):
+        return "%s.%s" % (self.chunk.fully_qualified_name, self.logical_name)
 
 
 class BugEncounteredException(Exception):
@@ -27,4 +31,4 @@ class BugEncounteredException(Exception):
         self.bug = bug
 
     def __str__(self):
-        return "bug_encounter[%s]" % self.bug.logical_name
+        return "bug_encounter[%s]" % self.bug.fully_qualified_name

@@ -1,47 +1,45 @@
 import sys
 import unittest
 
-from softdev_model.system import Bug, BugEncounteredException, Test, Chunk, Developer, Feature, SoftwareSystem
-from softdev_model.workflows import TestDrivenDevelopment
-
+from mock import Mock
 from random import Random
+
+from theatre_ag import AbstractClock, Actor
+
+from softdev_model.system import BugEncounteredException, CentralisedVCSServer, SoftwareSystem
+
+from softdev_model.workflows import test_driven_development
 
 
 class TestDrivenDevelopmentTest(unittest.TestCase):
 
     def setUp(self):
-        Chunk._count = 0
-        Feature._count = 0
-        Test._count = 0
-        Bug._count = 0
 
         self.is_64bits = sys.maxsize > 2 ** 32
 
-        self.random = Random(1)
-        self.software_system = SoftwareSystem()
-        self.developer = Developer("alice", person_time=500)
+        clock = Mock(spec=AbstractClock)
+        clock.current_tick = -1
+        self.developer = Actor("alice", clock)
 
-        self.workflow = TestDrivenDevelopment(
-            target_dependencies_per_feature=0
-        )
+        self.centralised_vcs_server = CentralisedVCSServer(SoftwareSystem())
+        self.schedule = [(0, 3), (1, 5), (2, 7)]
+        self.random = Random(1)
 
     def test_implement_default_system_and_operate_regression(self):
 
-        self.workflow.work(
-            random=self.random,
-            software_system=self.software_system,
-            developer=self.developer,
-            schedule=[(0, 3), (1, 5), (2, 7)])
+        self.developer.perform_task(test_driven_development, [self.centralised_vcs_server, self.schedule, self.random])
 
         self.random.seed(1)
 
+        working_copy = self.centralised_vcs_server.checkout().working_copy
+
         with self.assertRaises(BugEncounteredException):
-            self.software_system.operate(self.random, 10000)
+            working_copy.operate(self.random, 10000)
 
         if self.is_64bits:
-            self.assertEquals(12, len(self.software_system.last_trace))
+            self.assertEquals(12, len(working_copy.last_trace))
         else:
-            self.assertEquals(14, len(self.software_system.last_trace))
+            self.assertEquals(73, len(working_copy.last_trace))
 
 
 if __name__ == '__main__':

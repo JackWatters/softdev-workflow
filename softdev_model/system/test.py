@@ -31,11 +31,11 @@ class Test(object):
     def _bugs(self):
         covered_bugs = reduce(lambda a, b: a.union(b), map(lambda c: frozenset(c.bugs), self.chunks), set())
 
-        result = SortedSet(key=lambda b: b.logical_name)
+        result = SortedSet(key=lambda b: b.fully_qualified_name)
 
-        for bug in SortedSet(covered_bugs, key=lambda b: b.logical_name):
+        for bug in SortedSet(covered_bugs, key=lambda b: b.fully_qualified_name):
             rand = Random()
-            bug_test_hash = hash((self.logical_name, bug.logical_name))
+            bug_test_hash = hash((self.logical_name, bug.fully_qualified_name))
             rand.seed(bug_test_hash)
             p = rand.random()
             if p <= self.effectiveness:
@@ -63,6 +63,10 @@ class Test(object):
 
         return result
 
+    @property
+    def fully_qualified_name(self):
+        return ("%s.%s") % (str(self.feature.logical_name), str(self.logical_name))
+
     def exercise(self):
         if len(self._bugs) > 0:
             bug = self._bugs[0]
@@ -70,7 +74,7 @@ class Test(object):
 
     def __str__(self):
         bugs_string = ",".join(map(lambda bug: str(bug), self._bugs))
-        return "t_%d[%s]" % (self.logical_name, bugs_string)
+        return "t_%s[%s]" % (str(self.fully_qualified_name), bugs_string)
 
     def __repr__(self):
         return "t_%d" % self.logical_name

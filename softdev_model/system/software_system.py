@@ -35,7 +35,6 @@ class SoftwareSystem(object):
         self.test_efficiency = test_efficiency
 
         self.features = SortedSet(key=lambda f: f.logical_name)
-        self.tests = SortedSet(key=lambda t: t.logical_name)
         self.successful_operations = []
 
     @property
@@ -43,8 +42,8 @@ class SoftwareSystem(object):
         chunk_sets = map(lambda f: frozenset(f.chunks), self.features)
         return reduce(lambda a, b: a.union(b), chunk_sets, SortedSet(key=lambda c: c.logical_name))
 
-    def get_chunk(self, logical_name):
-        result = filter(lambda chunk: chunk.logical_name == logical_name, self.chunks)
+    def get_chunk(self, fully_qualified_name):
+        result = filter(lambda chunk: chunk.fully_qualified_name == fully_qualified_name, self.chunks)
         if len(result) is 0:
             return None
         else:
@@ -52,16 +51,21 @@ class SoftwareSystem(object):
 
     @property
     def chunk_names(self):
-        return map(lambda c: c.logical_name, self.chunks)
+        return map(lambda c: c.fully_qualified_name, self.chunks)
 
     @property
     def chunk_contents(self):
         return map(lambda c: c.local_content, self.chunks)
 
     @property
+    def tests(self):
+        test_sets = map(lambda f: frozenset(f.tests), self.features)
+        return reduce(lambda a, b: a.union(b), test_sets, SortedSet(key=lambda test: test.fully_qualified_name))
+
+    @property
     def bugs(self):
         bug_sets = map(lambda c: frozenset(c.bugs), self.chunks)
-        return reduce(lambda a, b: a.union(b), bug_sets, SortedSet(key=lambda bug: bug.ident))
+        return reduce(lambda a, b: a.union(b), bug_sets, SortedSet(key=lambda bug: bug.fully_qualified_name))
 
     def add_feature(self, logical_name, size):
         feature = Feature(self, logical_name, size)
@@ -74,11 +78,6 @@ class SoftwareSystem(object):
             return None
         else:
             return result[0]
-
-    def add_test(self, logical_name, feature):
-        test = Test(logical_name, feature)
-        self.tests.add(test)
-        return test
 
     def operate(self, random, limit=sys.maxint):
         current_operations = []

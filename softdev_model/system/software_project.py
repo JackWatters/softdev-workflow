@@ -5,8 +5,8 @@
 
 import time
 
+
 from .bug import BugEncounteredException
-from .developer import Developer, DeveloperExhaustedException
 from .feature import InoperableFeatureException
 from .software_system import SoftwareSystem
 from .centralised_vcs import CentralisedVCSServer
@@ -38,7 +38,7 @@ class SoftwareProject(object):
     def build_and_operate(self):
         try:
             self.workflow.work(self.random, self.centralised_vcs_server, self.developer, self.schedule)
-        except DeveloperExhaustedException:
+        except ActorExhaustedException:
             pass
         for _ in range(0, self.number_of_traces):
             try:

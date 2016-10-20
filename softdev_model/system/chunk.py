@@ -21,6 +21,8 @@ class Chunk(object):
         self.dependencies = SortedSet(key=lambda d: d.logical_name)
         self.bugs = SortedSet(key=lambda b: b.logical_name)
 
+        self.bug_count = 0
+
     def __eq__(self, other):
         if self.local_content != other.local_content:
             return False
@@ -79,7 +81,7 @@ class Chunk(object):
     def tests(self):
         return filter(lambda t: self in t.chunks, self.feature.tests)
 
-    def modify(self, creator, random):
+    def modify(self, random):
         feature_chunks = self.feature.chunks - {self}
         system_chunks = set(self.feature.software_system.chunks.difference(self.feature.chunks))
         self._add_dependencies(random, system_chunks, self.probability_gain_system_dependency)
@@ -87,14 +89,14 @@ class Chunk(object):
 
         self.local_content = random.randint(0, 100)
 
-        self._insert_bugs(creator, random)
+        self._insert_bugs(random)
 
-    def merge(self, source_chunk, creator, random):
+    def merge(self, source_chunk, random):
         for dependency in source_chunk.dependencies:
             working_copy_dependency = self.feature.software_system.get_chunk(dependency.logical_name)
             self.dependencies.add(working_copy_dependency)
 
-        self.modify(creator, random)
+        self.modify(random)
 
     def overwrite_with(self, source_chunk):
 
@@ -120,10 +122,10 @@ class Chunk(object):
     def add_dependency(self, candidate):
         self.dependencies.add(candidate)
 
-    def _insert_bugs(self, creator, random):
+    def _insert_bugs(self, random):
         while random.random() <= self.probability_new_bug:
-            bug_logical_name = "%s_%d" % (creator.logical_name, len(self.bugs))
-            self.add_bug(bug_logical_name)
+            self.add_bug(self.bug_count)
+            self.bug_count += 1
 
     def add_bug(self, logical_name):
         self.bugs.add(Bug(logical_name, self))
@@ -173,6 +175,10 @@ class Chunk(object):
 
         return "c_%d:[%s]:[%s]->(in[%s],ex[%s])" % \
                (self.logical_name, self.local_content, bugs, feature_dependencies, system_dependencies)
+
+    @property
+    def fully_qualified_name(self):
+        return "%s.%s" %(str(self.feature.logical_name), str(self.logical_name))
 
     def __repr__(self):
         return "c%d" % self.logical_name

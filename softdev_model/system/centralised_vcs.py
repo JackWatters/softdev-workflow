@@ -8,7 +8,18 @@ def copy_software_system(system):
     A custom function for making a copy of a software system object.
     """
 
-    copied_system = SoftwareSystem()
+    copied_system = SoftwareSystem(
+        probability_gain_feature_dependency=system.probability_gain_feature_dependency,
+        probability_lose_feature_dependency=system.probability_lose_feature_dependency,
+        probability_gain_system_dependency=system.probability_gain_system_dependency,
+        probability_lose_system_dependency=system.probability_lose_system_dependency,
+        probability_new_bug=system.probability_new_bug,
+        probability_debug_known=system.probability_debug_known,
+        probability_debug_unknown=system.probability_debug_unknown,
+        probability_failure_on_demand=system.probability_failure_on_demand,
+        test_effectiveness=system.test_effectiveness,
+        test_efficiency=system.test_efficiency
+    )
     for feature in system.features:
         target_feature = copied_system.add_feature(feature.logical_name, feature.size)
 
@@ -19,12 +30,12 @@ def copy_software_system(system):
                 target_chunk.add_bug(bug.logical_name)
 
         for test in feature.tests:
-            copied_system.add_test(test.logical_name, target_feature)
+            target_feature.add_test(test.logical_name)
 
     for chunk in system.chunks:
-        target_chunk = copied_system.get_chunk(chunk.logical_name)
+        target_chunk = copied_system.get_chunk(chunk.fully_qualified_name)
         for dependency in chunk.dependencies:
-            target_dependency = copied_system.get_chunk(dependency.logical_name)
+            target_dependency = copied_system.get_chunk(dependency.fully_qualified_name)
             target_chunk.add_dependency(target_dependency)
 
     return copied_system
@@ -38,15 +49,15 @@ class CentralisedVCSException(Exception):
 
 class Conflict(object):
 
-    def __init__(self, logical_name, resolve_threshold):
-        self.logical_name = logical_name
+    def __init__(self, chunk_fully_qualified_name, resolve_threshold):
+        self.chunk_fully_qualified_name = chunk_fully_qualified_name
         self.resolve_threshold = resolve_threshold
 
     def __str__(self):
-        return str(self.logical_name)
+        return str(self.chunk_fully_qualified_name)
 
     def __repr__(self):
-        return str(self.logical_name)
+        return str(self.chunk_fully_qualified_name)
 
 
 class CentralisedVCSServer(object):
@@ -64,7 +75,7 @@ class CentralisedVCSServer(object):
 
     def latest(self):
         self.lock.acquire()
-        result = [copy_software_system(self.master), self.version]
+        result = (copy_software_system(self.master), self.version)
         self.lock.release()
         return result[0], result[1]
 
@@ -87,7 +98,7 @@ class CentralisedVCSClient(object):
     def __init__(self, server, probability_automatically_resolve=0.25):
         self.server = server
 
-        self.working_base, self.version  = self.server.latest()
+        self.working_base, self.version = self.server.latest()
         self.working_copy = copy_software_system(self.working_base)
 
         self.probability_automatically_resolve = probability_automatically_resolve
@@ -95,15 +106,15 @@ class CentralisedVCSClient(object):
 
     def _add_conflict(self, working_base_chunk, random):
         conflict_complexity = random.random()
-        conflict = Conflict(working_base_chunk.logical_name, conflict_complexity)
+        conflict = Conflict(working_base_chunk.fully_qualified_name, conflict_complexity)
         self.conflicts.append(conflict)
         return conflict
 
-    def _try_automatic_resolve(self, conflict, resolver, random):
+    def _try_automatic_resolve(self, conflict, random):
         if conflict.resolve_threshold <= self.probability_automatically_resolve:
-            self.resolve(conflict, resolver, random)
+            self.resolve(conflict, random)
 
-    def _merge(self, old_working_base, merger, random):
+    def _merge(self, old_working_base, random):
         """
         Check if each chunk in the current working base has changed since the last update.  If so, either over-write the
         ne working copy if it hasn't been modified, or conflict.
@@ -117,16 +128,17 @@ class CentralisedVCSClient(object):
 
         for new_working_base_chunk in self.working_base.chunks:
             chunk_logical_name = new_working_base_chunk.logical_name
+            chunk_fully_qualfied_name = new_working_base_chunk.fully_qualified_name
 
-            working_copy_chunk = self.working_copy.get_chunk(chunk_logical_name)
+            working_copy_chunk = self.working_copy.get_chunk(chunk_fully_qualfied_name)
 
             if working_copy_chunk is None:
                 working_copy_feature = self.working_copy.get_feature(new_working_base_chunk.feature.logical_name)
-                working_copy_chunk = working_copy_feature.add_chunk(chunk_logical_name)
+                working_copy_chunk = working_copy_feature.add_chunk(chunk_fully_qualfied_name)
                 working_copy_chunk.overwrite_with(new_working_base_chunk)
 
             else:
-                old_working_base_chunk = old_working_base.get_chunk(chunk_logical_name)
+                old_working_base_chunk = old_working_base.get_chunk(chunk_fully_qualfied_name)
 
                 if old_working_base_chunk is not None and old_working_base_chunk != new_working_base_chunk:
 
@@ -135,12 +147,12 @@ class CentralisedVCSClient(object):
                     elif working_copy_chunk != new_working_base_chunk:
 
                         conflict = self._add_conflict(new_working_base_chunk, random)
-                        self._try_automatic_resolve(conflict, merger, random)
+                        self._try_automatic_resolve(conflict, random)
 
-    def update(self, updater, random):
+    def update(self, random):
         old_working_base = self.working_base
         self.working_base, self.version = self.server.latest()
-        self._merge(old_working_base, updater, random)
+        self._merge(old_working_base, random)
 
     def commit(self):
 
@@ -149,10 +161,10 @@ class CentralisedVCSClient(object):
         else:
             raise CentralisedVCSException()
 
-    def resolve(self, conflict, resolver, random):
+    def resolve(self, conflict, random):
         self.conflicts.remove(conflict)
 
-        working_base_chunk = self.working_base.get_chunk(conflict.logical_name)
-        working_copy_chunk = self.working_copy.get_chunk(conflict.logical_name)
+        working_base_chunk = self.working_base.get_chunk(conflict.chunk_fully_qualified_name)
+        working_copy_chunk = self.working_copy.get_chunk(conflict.chunk_fully_qualified_name)
 
-        working_copy_chunk.merge(working_base_chunk, resolver, random)
+        working_copy_chunk.merge(working_base_chunk, random)

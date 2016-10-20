@@ -11,18 +11,23 @@ from softdev_model.system import Bug, BugEncounteredException, Chunk, Feature, S
 
 
 class TestTest(unittest.TestCase):
+
     def setUp(self):
+
         self.mock_feature = Mock(spec=Feature)
+
         self.fixture = Test(0, self.mock_feature)
+
         self.mock_chunk = Mock(spec=Chunk)
         self.mock_chunk.logical_name = 1
+
         self.mock_feature.chunks = [self.mock_chunk]
         self.mock_feature.size = 3
         self.mock_feature.software_system = Mock(spec=SoftwareSystem)
         self.mock_feature.software_system.test_efficiency = 1.0
 
         self.mock_bug = Mock(spec=Bug)
-        self.mock_bug.logical_name = 1
+        self.mock_bug._logical_name = 1
         self.mock_feature.bugs = [self.mock_bug]
         self.mock_chunk.bugs = self.mock_feature.bugs
 

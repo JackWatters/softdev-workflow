@@ -5,7 +5,7 @@ import unittest
 
 from mock import Mock
 
-from softdev_model.system import BugEncounteredException, Chunk, Developer, Feature, SoftwareSystem
+from softdev_model.system import BugEncounteredException, Chunk, Feature, SoftwareSystem
 
 from random import Random
 
@@ -16,9 +16,6 @@ class ChunkTest(unittest.TestCase):
         """
         Mocks a single feature system and gives it two chunks.
         """
-
-        self.developer_mock = Mock(spec=Developer)
-        self.developer_mock.logical_name = "bob"
 
         feature_mock = Mock(spec=Feature)
         
@@ -51,7 +48,7 @@ class ChunkTest(unittest.TestCase):
         random_mock = Mock(spec=Random)
         random_mock.random = Mock(side_effect=[1.0, 0.5, 0.51])        
 
-        self.fixture_chunks[0].modify(self.developer_mock, random_mock)
+        self.fixture_chunks[0].modify(random_mock)
         
         self.assertEqual(1, len(self.fixture_chunks[0].bugs), "Unexpected number of bugs")
 
@@ -59,7 +56,7 @@ class ChunkTest(unittest.TestCase):
         random_mock = Mock(spec=Random)
         random_mock.random = Mock(side_effect=[0.1, 0.51])        
 
-        self.fixture_chunks[0].modify(self.developer_mock, random_mock)
+        self.fixture_chunks[0].modify(random_mock)
         
         self.assertEqual(1, len(self.fixture_chunks[0].dependencies))
 
@@ -67,7 +64,7 @@ class ChunkTest(unittest.TestCase):
         random_mock = Mock(spec=Random)
         random_mock.random = Mock(side_effect=[0.1, 0.51, 0.05])  
               
-        self.fixture_chunks[0].modify(self.developer_mock, random_mock)
+        self.fixture_chunks[0].modify(random_mock)
         self.fixture_chunks[0].refactor(random_mock)
         self.assertEqual(0, len(self.fixture_chunks[0].dependencies))
 
@@ -75,7 +72,7 @@ class ChunkTest(unittest.TestCase):
         random_mock = Mock(spec=Random)        
         
         random_mock.random = Mock(side_effect=[0.1, 0.49, 0.51])        
-        self.fixture_chunks[0].modify(self.developer_mock, random_mock)
+        self.fixture_chunks[0].modify(random_mock)
         
         random_mock.choice = Mock(side_effect=[next(iter(self.fixture_chunks[0].bugs))])
         random_mock.random = Mock(side_effect=[0.001])
@@ -88,7 +85,7 @@ class ChunkTest(unittest.TestCase):
         random_mock = Mock(spec=Random)
 
         random_mock.random = Mock(side_effect=[0.1, 0.49, 0.51])
-        self.fixture_chunks[0].modify(self.developer_mock, random_mock)
+        self.fixture_chunks[0].modify(random_mock)
         
         random_mock.random = Mock(side_effect=[0.011])
         self.fixture_chunks[0].operate(random_mock)
@@ -97,7 +94,7 @@ class ChunkTest(unittest.TestCase):
         random_mock = Mock(spec=Random)
 
         random_mock.random = Mock(side_effect=[0.1, 0.49, 0.51])        
-        self.fixture_chunks[0].modify(self.developer_mock, random_mock)
+        self.fixture_chunks[0].modify(random_mock)
         
         random_mock.random = Mock(side_effect=[0.01])
         with self.assertRaises(BugEncounteredException):

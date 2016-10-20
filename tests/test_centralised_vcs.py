@@ -4,16 +4,12 @@ from mock import Mock
 
 from random import Random
 
-from softdev_model.system import Developer, CentralisedVCSServer, SoftwareSystem
+from softdev_model.system import CentralisedVCSServer, SoftwareSystem
 
 
 class CentralisedVCSTest(unittest.TestCase):
 
     def setUp(self):
-        self.alice = Mock(Developer)
-        self.alice.logical_name = "alice"
-        self.bob = Mock(Developer)
-        self.bob.logical_name = "bob"
 
         self.software_system = SoftwareSystem()
         feature = self.software_system.add_feature(0, 2)
@@ -25,51 +21,53 @@ class CentralisedVCSTest(unittest.TestCase):
         self.centralised_vcs_client_bob = self.centralised_vcs_server.checkout()
 
     def test_checkout(self):
-        self.assertEquals([0], self.centralised_vcs_client_alice.working_copy.chunk_names)
+        self.assertEquals(["0.0"], self.centralised_vcs_client_alice.working_copy.chunk_names)
 
     def test_checkout_and_update(self):
 
         random_mock = Mock(spec=Random)
 
-        self.centralised_vcs_client_alice.update(self.alice, random_mock)
+        self.centralised_vcs_client_alice.update(random_mock)
 
-        self.assertEquals([0], self.centralised_vcs_client_alice.working_copy.chunk_names)
+        self.assertEquals(["0.0"], self.centralised_vcs_client_alice.working_copy.chunk_names)
 
     def _alice_modifies_a_chunk_in_working_copy(self):
         random_mock = Mock(spec=Random)
         random_mock.randint = Mock(side_effect=[456])
         random_mock.random = Mock(side_effect=[1.0])
 
-        self.centralised_vcs_client_alice.working_copy.get_chunk(self.chunk.logical_name).modify("alice", random_mock)
+        chunk = self.centralised_vcs_client_alice.working_copy.get_chunk(self.chunk.fully_qualified_name)
+        chunk.modify(random_mock)
 
     def _bob_modifies_a_chunk_in_working_copy(self):
         random_mock = Mock(spec=Random)
         random_mock.randint = Mock(side_effect=[789])
         random_mock.random = Mock(side_effect=[1.0])
 
-        self.centralised_vcs_client_bob.working_copy.get_chunk(self.chunk.logical_name).modify("bob", random_mock)
+        chunk = self.centralised_vcs_client_bob.working_copy.get_chunk(self.chunk.fully_qualified_name)
+        chunk.modify(random_mock)
 
     def _alice_updates_working_copy_and_commits_chunk(self):
         random_mock = Mock(spec=Random)
         random_mock.randint = Mock()
         random_mock.random = Mock()
 
-        self.centralised_vcs_client_alice.update(self.alice, random_mock)
+        self.centralised_vcs_client_alice.update(random_mock)
         self.centralised_vcs_client_alice.commit()
-        self.centralised_vcs_client_alice.update(self.alice, random_mock)
+        self.centralised_vcs_client_alice.update(random_mock)
 
     def _bob_updates_and_conflicts_working_copy(self):
         random_mock = Mock(spec=Random)
         random_mock.random = Mock(side_effect=[1.0])
 
-        self.centralised_vcs_client_bob.update(self.bob, random_mock)
+        self.centralised_vcs_client_bob.update(random_mock)
 
     def _bob_manually_resolves_conflict(self):
         random_mock = Mock(spec=Random)
         random_mock.randint = Mock(side_effect=[234])
         random_mock.random = Mock(side_effect=[0.1, 1.0])
 
-        self.centralised_vcs_client_bob.resolve(self.centralised_vcs_client_bob.conflicts[0], self.bob, random_mock)
+        self.centralised_vcs_client_bob.resolve(self.centralised_vcs_client_bob.conflicts[0], random_mock)
 
     def _bob_commits_and_updates_working_copy(self):
 
@@ -78,7 +76,7 @@ class CentralisedVCSTest(unittest.TestCase):
         random_mock = Mock(spec=Random)
 
         random_mock.random = Mock(side_effect=[])
-        self.centralised_vcs_client_bob.update(self.bob, random_mock)
+        self.centralised_vcs_client_bob.update(random_mock)
 
     def test_checkout_modify_update_and_commit(self):
 

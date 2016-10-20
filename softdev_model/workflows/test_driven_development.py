@@ -2,52 +2,52 @@
 @author: twsswt
 """
 
-from softdev_model.system import BugEncounteredException, DeveloperExhaustedException
+from specification import add_feature
+
+from testing import test_per_chunk_ratio
+from implementation import implement_feature
+from debugging import debug_feature
+from refactoring import refactor_feature
 
 
-class TestDrivenDevelopment(object):
-    """
-    Represents the sequence of activities in a tests driven development workflow.
-    """
+def implement_feature_tdd(
+        self,
+        centralised_vcs_client,
+        feature_logical_name,
+        feature_size,
+        random,
+        target_test_coverage_per_feature=1.0,
+        tests_per_chunk_ratio=1,
+        target_dependencies_per_feature=0):
 
-    def __init__(self,
-                 target_test_coverage_per_feature=1.0,
-                 target_dependencies_per_feature=0):
+    self.perform_task(add_feature, [centralised_vcs_client, feature_logical_name, feature_size, random])
 
-        self.target_test_coverage_per_feature = target_test_coverage_per_feature
-        self.target_dependencies_per_feature = target_dependencies_per_feature
-        self.chunk_count = 0
+    feature = centralised_vcs_client.working_copy.get_feature(feature_logical_name)
 
-    def work(self, random, software_system, developer, schedule):
-        # Complete main tasks.
+    self.perform_task(test_per_chunk_ratio,
+                      [centralised_vcs_client, feature, random, target_test_coverage_per_feature, 1])
+
+    self.perform_task(implement_feature, [centralised_vcs_client, feature, random])
+
+    self.perform_task(debug_feature, [centralised_vcs_client, feature, random])
+
+    self.perform_task(refactor_feature, [centralised_vcs_client, feature, random, target_dependencies_per_feature])
+
+
+def test_driven_development(
+        self,
+        centralised_vcs_server,
+        schedule,
+        random,
+        target_test_coverage_per_feature=1.0,
+        tests_per_chunk_ratio=1,
+        target_dependencies_per_feature=0):
+        """
+        Implements the sequence of activities in a tests driven development workflow.
+        """
+        centralised_vcs_client = centralised_vcs_server.checkout()
+
         for logical_name, feature_size in schedule:
-            feature = software_system.add_feature(logical_name, feature_size)
-            try:
-                self._ensure_sufficient_tests(developer, feature)
-                self._complete_feature(developer, feature, random)
-                self._refactor_feature(developer, feature, random)
-            except DeveloperExhaustedException:
-                software_system.features.remove(feature)
-
-    def _ensure_sufficient_tests(self, developer, feature):
-        while feature.test_coverage < self.target_test_coverage_per_feature:
-            developer.add_test(feature.software_system, len(feature.tests), feature)
-
-    def _complete_feature(self, developer, feature, random):
-        while not feature.is_implemented:
-            developer.extend_feature(self.chunk_count, feature, random)
-            self.chunk_count += 1
-            self._debug_feature(developer, feature, random)
-
-    @staticmethod
-    def _debug_feature(developer, feature, random):
-        while True:
-            try:
-                feature.exercise_tests()
-                break
-            except BugEncounteredException as e:
-                developer.debug(feature, e.bug, random)
-
-    def _refactor_feature(self, developer, feature, random):
-        while len(feature.dependencies) > self.target_dependencies_per_feature:
-            developer.refactor(feature, random)
+            self.perform_task(implement_feature_tdd,
+                [centralised_vcs_client, logical_name, feature_size, random,
+                 target_test_coverage_per_feature, target_dependencies_per_feature])
