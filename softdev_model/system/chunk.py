@@ -87,7 +87,7 @@ class Chunk(object):
         self._add_dependencies(random, system_chunks, self.probability_gain_system_dependency)
         self._add_dependencies(random, feature_chunks, self.probability_gain_feature_dependency)
 
-        self.local_content = random.randint(0, 100)
+        self.local_content = random.create_local_content()
 
         self._insert_bugs(random)
 
@@ -113,17 +113,16 @@ class Chunk(object):
             new_dependency = self.feature.software_system.get_chunk(dependency.logical_name)
             self.dependencies.add(new_dependency)
 
-    def _add_dependencies(self, my_random, candidate_chunks, threshold):
+    def _add_dependencies(self, random, candidate_chunks, threshold):
         for candidate in SortedSet(candidate_chunks, key=lambda c: c.logical_name):
-            p = my_random.random()
-            if p <= threshold:
+            if random.dependency_should_be_added(threshold):
                 self.add_dependency(candidate)
 
     def add_dependency(self, candidate):
         self.dependencies.add(candidate)
 
     def _insert_bugs(self, random):
-        while random.random() <= self.probability_new_bug:
+        while random.a_bug_should_be_inserted(self):
             self.add_bug(self.bug_count)
             self.bug_count += 1
 
@@ -139,26 +138,24 @@ class Chunk(object):
 
     def refactor(self, random):
         to_remove = set()
-        for existing_chunk in self.dependencies:
-            p = random.random()
-            if existing_chunk.feature == self.feature and p <= self.probability_lose_feature_dependency:
-                to_remove.add(existing_chunk)
-            elif p < self.probability_lose_system_dependency:
-                to_remove.add(existing_chunk)
+        for dependency in self.dependencies:
+
+            if random.dependency_should_be_removed(self, dependency):
+                to_remove.add(dependency)
 
         self.dependencies.difference_update(to_remove)
 
     def debug(self, random, bug=None):
 
         if len(self.bugs) == 0:
-            return
+            return False
 
-        elif not (bug is None) and random.random() <= self.probability_debug_known:
-            self.bugs.remove(bug)
-        else:
-            bug = random.choice(self.bugs)
-            if random.random() <= self.probability_debug_unknown:
+        if bug is None or bug not in self.bugs:
+            if random.unknown_bug_should_be_removed(self):
+                bug = random.choose_bug(self)
                 self.bugs.remove(bug)
+        elif random.known_bug_should_be_removed(self):
+            self.bugs.remove(bug)
 
     def operate(self, random):
         for bug in self.bugs_in_dependencies.union(self.bugs):

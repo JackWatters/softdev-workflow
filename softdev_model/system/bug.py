@@ -14,7 +14,7 @@ class Bug(object):
         return self.chunk.feature.software_system.probability_failure_on_demand
 
     def manifest(self, random):
-        if random.random() <= self.probability_failure_on_demand:
+        if random.bug_manifests_itself(self):
             raise BugEncounteredException(self)
 
     def __repr__(self):

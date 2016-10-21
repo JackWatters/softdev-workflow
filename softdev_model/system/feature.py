@@ -2,6 +2,8 @@ from .chunk import Chunk
 from .test import Test
 from sortedcontainers import SortedSet
 
+from random import Random
+
 """
 @author: tws
 """
@@ -58,7 +60,7 @@ class Feature(object):
 
     def extend(self, logical_name, random):
         chunk = self.add_chunk(logical_name)
-        chunks_to_modify = self._sample_chunks(random)
+        chunks_to_modify = random.sample_chunks(self.chunks)
         chunks_to_modify.add(chunk)
 
         for chunk_to_modify in chunks_to_modify:
@@ -77,20 +79,20 @@ class Feature(object):
                 detected_bug.chunk.debug(random, detected_bug)
 
     def refactor(self, random):
-        random.choice(self.chunks).refactor(random)
+        random.choose_chunk(self.chunks).refactor(random)
 
     def add_test(self, logical_name):
         test = Test(logical_name, self)
         self.tests.add(test)
         return test
 
-    def operate(self, my_random):
+    def operate(self, random):
         """
         Operates a random sample of the feature's implemented chunks if the feature has been implemented.
         """
         if self.is_implemented:
-            for sampled_chunk in self._sample_chunks(my_random):
-                sampled_chunk.operate(my_random)
+            for sampled_chunk in random.sample_chunks(self.chunks):
+                sampled_chunk.operate(random)
 
         else:
             raise InoperableFeatureException(self)
@@ -98,11 +100,6 @@ class Feature(object):
     def exercise_tests(self):
         for test in self.tests:
             test.exercise()
-
-    def _sample_chunks(self, random):
-        sample_cardinality = random.randint(0, len(self.chunks))
-        sample = random.sample(self.chunks, sample_cardinality)
-        return SortedSet(sample, key=lambda c: c.logical_name)
 
     def __str__(self):
         chunk_strings = map(lambda chunk: str(chunk), self.chunks)

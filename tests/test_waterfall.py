@@ -8,7 +8,7 @@ from mock import Mock
 import sys
 from random import Random
 
-from softdev_model.system import BugEncounteredException, CentralisedVCSServer, SoftwareSystem
+from softdev_model.system import BugEncounteredException, CentralisedVCSServer, SoftwareSystem, SystemRandom
 
 from softdev_model.workflows import waterfall
 
@@ -21,7 +21,7 @@ class WaterfallTest(unittest.TestCase):
 
         self.is_64bits = sys.maxsize > 2**32
 
-        self.random = Random(1)
+        self.random = SystemRandom(1)
         software_system = SoftwareSystem()
         self.centralised_vcs_server = CentralisedVCSServer(software_system)
 

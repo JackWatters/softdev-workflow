@@ -3,9 +3,7 @@
 """
 import unittest
 
-from softdev_model.system import BugEncounteredException, SoftwareSystem
-
-from random import Random
+from softdev_model.system import BugEncounteredException, SoftwareSystem, SystemRandom
 
 from mock import Mock
 
@@ -39,19 +37,26 @@ class SoftwareSystemTest(unittest.TestCase):
 
     def test_bugs(self):
 
-        random_mock = Mock(spec=Random)
+        random_mock = Mock(spec=SystemRandom)
 
         feature_a = self.software_system.add_feature('a', 5)
-        random_mock.sample = Mock(return_value=[])
-        random_mock.random = Mock(side_effect=[1.0, 0.0])
+        random_mock.sample_chunks = Mock(return_value=set())
+        random_mock.create_local_content=Mock(return_value=['123'])
+        random_mock.a_bug_should_be_inserted=Mock(side_effect=[True, False])
         chunk_1 = feature_a.extend('1', random_mock)
 
-        print "Adding Chunk 2."
-        random_mock.sample = Mock(return_value=[chunk_1])
-        random_mock.random = Mock(side_effect=[1.0, 0.0, 1.0, 1.0, 1.0])
+        random_mock.sample_chunks = Mock(return_value={chunk_1})
+        random_mock.create_local_content=Mock(return_value=['456'])
+        random_mock.dependency_should_be_added=Mock(side_effect=[False, True, True, True])
+        random_mock.a_bug_should_be_inserted=Mock(side_effect=[True, False, False])
+
         chunk_2 = feature_a.extend('2', random_mock)
 
-        print "Adding Chunk 4"
+        random_mock.sample_chunks = Mock(return_value={chunk_2})
+        random_mock.create_local_content = Mock(return_value=['789'])
+        random_mock.dependency_should_be_added = Mock(side_effect=[False, True, True, True])
+        random_mock.a_bug_should_be_inserted = Mock(side_effect=[False, False, True, False])
+
         random_mock.random = Mock(side_effect=[1.0, 1.0, 0.0, 1.0, 1.0, 0.0, 0.0, 0.0, 1.0])
         random_mock.sample = Mock(return_value=[chunk_2])
         feature_a.extend('4', random_mock)
@@ -70,7 +75,7 @@ class SoftwareSystemTest(unittest.TestCase):
         Regression tests using a seed random value for repeatability.
         """
 
-        random = Random()
+        random = SystemRandom()
         random.seed(1)
 
         for logical_name in range(0, 1):

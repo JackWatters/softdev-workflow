@@ -6,7 +6,7 @@ from random import Random
 
 from theatre_ag import AbstractClock, Actor
 
-from softdev_model.system import BugEncounteredException, CentralisedVCSServer, SoftwareSystem
+from softdev_model.system import BugEncounteredException, CentralisedVCSServer, SoftwareSystem, SystemRandom
 
 from softdev_model.workflows import test_driven_development
 
@@ -23,7 +23,7 @@ class TestDrivenDevelopmentTest(unittest.TestCase):
 
         self.centralised_vcs_server = CentralisedVCSServer(SoftwareSystem())
         self.schedule = [(0, 3), (1, 5), (2, 7)]
-        self.random = Random(1)
+        self.random = SystemRandom(1)
 
     def test_implement_default_system_and_operate_regression(self):
 
@@ -39,7 +39,7 @@ class TestDrivenDevelopmentTest(unittest.TestCase):
         if self.is_64bits:
             self.assertEquals(12, len(working_copy.last_trace))
         else:
-            self.assertEquals(24, len(working_copy.last_trace))
+            self.assertEquals(32, len(working_copy.last_trace))
 
 
 if __name__ == '__main__':

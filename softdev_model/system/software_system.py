@@ -6,7 +6,6 @@ import sys
 from sortedcontainers.sortedset import SortedSet
 
 from .feature import Feature
-from .test import Test
 
 
 class SoftwareSystem(object):

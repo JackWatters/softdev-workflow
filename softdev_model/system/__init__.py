@@ -4,4 +4,5 @@ from .chunk import Chunk
 from .feature import Feature, InoperableFeatureException
 from .software_project import SoftwareProject, SoftwareProjectGroup
 from .software_system import SoftwareSystem
+from .system_random import SystemRandom
 from .test import Test

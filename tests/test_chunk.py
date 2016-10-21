@@ -5,9 +5,7 @@ import unittest
 
 from mock import Mock
 
-from softdev_model.system import BugEncounteredException, Chunk, Feature, SoftwareSystem
-
-from random import Random
+from softdev_model.system import BugEncounteredException, Chunk, Feature, SoftwareSystem, SystemRandom
 
 
 class ChunkTest(unittest.TestCase):
@@ -30,11 +28,6 @@ class ChunkTest(unittest.TestCase):
         feature_mock.software_system.probability_gain_system_dependency = 0.05
         feature_mock.software_system.probability_lose_feature_dependency = 0.05
         feature_mock.software_system.probability_lose_system_dependency = 0.05
-        feature_mock.software_system.probability_new_bug = 0.5
-        feature_mock.software_system.probability_debug_known = 0.9
-        feature_mock.software_system.probability_debug_unknown = 0.01
-        feature_mock.software_system.probability_detection = 0.5
-        feature_mock.software_system.probability_failure_on_demand = 0.01
 
         self.fixture_chunks.append(Chunk(0, feature_mock))
         self.fixture_chunks.append(Chunk(1, feature_mock))
@@ -45,58 +38,60 @@ class ChunkTest(unittest.TestCase):
         pass
 
     def test_modify_create_bug(self):
-        random_mock = Mock(spec=Random)
-        random_mock.random = Mock(side_effect=[1.0, 0.5, 0.51])        
+        random_mock = Mock(spec=SystemRandom)
+        random_mock.a_bug_should_be_inserted = Mock(side_effect=[True, False])
 
         self.fixture_chunks[0].modify(random_mock)
-        
+
         self.assertEqual(1, len(self.fixture_chunks[0].bugs), "Unexpected number of bugs")
 
     def test_modify_create_dependency(self):
-        random_mock = Mock(spec=Random)
-        random_mock.random = Mock(side_effect=[0.1, 0.51])        
+        random_mock = Mock(spec=SystemRandom)
+        random_mock.a_bug_should_be_inserted = Mock(side_effect=[False])
+        random_mock.a_system_dependency_should_be_added = Mock(side_effect=[False])
 
         self.fixture_chunks[0].modify(random_mock)
         
         self.assertEqual(1, len(self.fixture_chunks[0].dependencies))
 
     def test_refactor(self):
-        random_mock = Mock(spec=Random)
-        random_mock.random = Mock(side_effect=[0.1, 0.51, 0.05])  
-              
+        random_mock = Mock(spec=SystemRandom)
+        random_mock.dependency_should_be_added = Mock (side_effect = [True])
+        random_mock.a_bug_should_be_inserted = Mock(side_effect=[False])
+        random_mock.dependency_should_be_removed = Mock(side_effect=[True])
+
         self.fixture_chunks[0].modify(random_mock)
         self.fixture_chunks[0].refactor(random_mock)
+
         self.assertEqual(0, len(self.fixture_chunks[0].dependencies))
 
     def test_debug(self):
-        random_mock = Mock(spec=Random)        
-        
-        random_mock.random = Mock(side_effect=[0.1, 0.49, 0.51])        
-        self.fixture_chunks[0].modify(random_mock)
-        
-        random_mock.choice = Mock(side_effect=[next(iter(self.fixture_chunks[0].bugs))])
-        random_mock.random = Mock(side_effect=[0.001])
-        
+        random_mock = Mock(spec=SystemRandom)
+
+        random_mock.unknown_bug_should_be_removed = Mock(return_value=True)
+
         self.fixture_chunks[0].debug(random_mock)
 
         self.assertEqual(len(self.fixture_chunks[0].bugs), 0)
 
     def test_operate_bug_not_manifest(self):
-        random_mock = Mock(spec=Random)
+        random_mock = Mock(spec=SystemRandom)
 
-        random_mock.random = Mock(side_effect=[0.1, 0.49, 0.51])
+        random_mock.dependency_should_be_added = Mock (side_effect = [False])
+        random_mock.a_bug_should_be_inserted = Mock(side_effect=[True, False])
         self.fixture_chunks[0].modify(random_mock)
         
-        random_mock.random = Mock(side_effect=[0.011])
+        random_mock.bug_manifests_itself = Mock(side_effect=[False])
         self.fixture_chunks[0].operate(random_mock)
 
     def test_operate_bug_manifest(self):
-        random_mock = Mock(spec=Random)
+        random_mock = Mock(spec=SystemRandom)
+        random_mock.dependency_should_be_added = Mock (side_effect = [False])
+        random_mock.a_bug_should_be_inserted = Mock(side_effect=[True, False])
 
-        random_mock.random = Mock(side_effect=[0.1, 0.49, 0.51])        
         self.fixture_chunks[0].modify(random_mock)
         
-        random_mock.random = Mock(side_effect=[0.01])
+        random_mock.bug_manifests_itself = Mock(side_effect=[True])
         with self.assertRaises(BugEncounteredException):
             self.fixture_chunks[0].operate(random_mock)
 
