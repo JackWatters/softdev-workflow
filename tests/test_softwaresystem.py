@@ -16,6 +16,46 @@ class SoftwareSystemTest(unittest.TestCase):
         self.software_system = SoftwareSystem()
         self.chunk_count = 0
 
+    def test_add_feature(self):
+        self.software_system.add_feature('a', 1)
+        self.software_system.add_feature('b', 1)
+
+        self.assertEquals(['a', 'b'], map(lambda f: f.logical_name, self.software_system.features))
+
+    def test_get_feature(self):
+        self.software_system.add_feature('a', 2)
+        feature = self.software_system.get_feature('a')
+
+        self.assertEquals('a', feature.logical_name)
+
+    def test_chunks(self):
+        feature_a = self.software_system.add_feature('a', 1)
+        feature_b = self.software_system.add_feature('b', 1)
+
+        feature_b.add_chunk('2')
+        feature_a.add_chunk('1')
+
+        self.assertEquals(['a.1', 'b.2'], self.software_system.chunk_names)
+
+    def test_bugs(self):
+
+        random_mock = Mock(spec=Random)
+
+        feature_a = self.software_system.add_feature('a', 5)
+        random_mock.sample = Mock(return_value=[])
+        random_mock.random = Mock(side_effect=[1.0, 0.0])
+        chunk_1 = feature_a.extend('1', random_mock)
+
+        print "Adding Chunk 2."
+        random_mock.sample = Mock(return_value=[chunk_1])
+        random_mock.random = Mock(side_effect=[1.0, 0.0, 1.0, 1.0, 1.0])
+        chunk_2 = feature_a.extend('2', random_mock)
+
+        print "Adding Chunk 4"
+        random_mock.random = Mock(side_effect=[1.0, 1.0, 0.0, 1.0, 1.0, 0.0, 0.0, 0.0, 1.0])
+        random_mock.sample = Mock(return_value=[chunk_2])
+        feature_a.extend('4', random_mock)
+
     def complete_feature(self, logical_name, size, random):
         feature = self.software_system.add_feature(logical_name, size)
         while not feature.is_implemented:

@@ -173,12 +173,12 @@ class Chunk(object):
 
         bugs = ", ".join(map(lambda bug: str(bug), self.bugs))
 
-        return "c_%d:[%s]:[%s]->(in[%s],ex[%s])" % \
-               (self.logical_name, self.local_content, bugs, feature_dependencies, system_dependencies)
+        return "c_%s:[%s]:[%s]->(in[%s],ex[%s])" % \
+               (str(self.logical_name), self.local_content, bugs, feature_dependencies, system_dependencies)
 
     @property
     def fully_qualified_name(self):
         return "%s.%s" %(str(self.feature.logical_name), str(self.logical_name))
 
     def __repr__(self):
-        return "c%d" % self.logical_name
+        return "c%s" % str(self.logical_name)

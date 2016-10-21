@@ -40,7 +40,7 @@ class SoftwareSystem(object):
     @property
     def chunks(self):
         chunk_sets = map(lambda f: frozenset(f.chunks), self.features)
-        return reduce(lambda a, b: a.union(b), chunk_sets, SortedSet(key=lambda c: c.logical_name))
+        return reduce(lambda a, b: a.union(b), chunk_sets, SortedSet(key=lambda c: c.fully_qualified_name))
 
     def get_chunk(self, fully_qualified_name):
         result = filter(lambda chunk: chunk.fully_qualified_name == fully_qualified_name, self.chunks)

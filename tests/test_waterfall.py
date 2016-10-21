@@ -40,10 +40,12 @@ class WaterfallTest(unittest.TestCase):
             self.random.seed(1)
             vcs_client.working_copy.operate(self.random, 10000)
 
+        print vcs_client.working_copy
+
         if self.is_64bits:
             self.assertEquals(88, len(vcs_client.working_copy.last_trace))
         else:
-            self.assertEquals(89, len(vcs_client.working_copy.last_trace))
+            self.assertEquals(36, len(vcs_client.working_copy.last_trace))
 
     def test_implement_system_with_low_effectiveness_tests_and_operate_regression(self):
         self.centralised_vcs_server.master.test_effectiveness = 0.1

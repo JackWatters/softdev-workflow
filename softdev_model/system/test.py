@@ -12,7 +12,6 @@ class Test(object):
 
     def __init__(self, logical_name, feature):
         self.logical_name = logical_name
-
         self.feature = feature
 
     @property
@@ -35,7 +34,7 @@ class Test(object):
 
         for bug in SortedSet(covered_bugs, key=lambda b: b.fully_qualified_name):
             rand = Random()
-            bug_test_hash = hash((self.logical_name, bug.fully_qualified_name))
+            bug_test_hash = hash((self.fully_qualified_name, bug.fully_qualified_name))
             rand.seed(bug_test_hash)
             p = rand.random()
             if p <= self.effectiveness:
@@ -65,7 +64,7 @@ class Test(object):
 
     @property
     def fully_qualified_name(self):
-        return ("%s.%s") % (str(self.feature.logical_name), str(self.logical_name))
+        return "%s.%s" % (str(self.feature.logical_name), str(self.logical_name))
 
     def exercise(self):
         if len(self._bugs) > 0:
@@ -77,4 +76,4 @@ class Test(object):
         return "t_%s[%s]" % (str(self.fully_qualified_name), bugs_string)
 
     def __repr__(self):
-        return "t_%d" % self.logical_name
+        return "t_%s" % str(self.fully_qualified_name)
