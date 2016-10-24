@@ -56,7 +56,7 @@ class ChunkTest(unittest.TestCase):
 
     def test_refactor(self):
         random_mock = Mock(spec=SystemRandom)
-        random_mock.dependency_should_be_added = Mock (side_effect = [True])
+        random_mock.dependency_should_be_added = Mock(side_effect=[True])
         random_mock.a_bug_should_be_inserted = Mock(side_effect=[False])
         random_mock.dependency_should_be_removed = Mock(side_effect=[True])
 
@@ -77,7 +77,7 @@ class ChunkTest(unittest.TestCase):
     def test_operate_bug_not_manifest(self):
         random_mock = Mock(spec=SystemRandom)
 
-        random_mock.dependency_should_be_added = Mock (side_effect = [False])
+        random_mock.dependency_should_be_added = Mock(side_effect=[False])
         random_mock.a_bug_should_be_inserted = Mock(side_effect=[True, False])
         self.fixture_chunks[0].modify(random_mock)
         
@@ -86,7 +86,7 @@ class ChunkTest(unittest.TestCase):
 
     def test_operate_bug_manifest(self):
         random_mock = Mock(spec=SystemRandom)
-        random_mock.dependency_should_be_added = Mock (side_effect = [False])
+        random_mock.dependency_should_be_added = Mock(side_effect=[False])
         random_mock.a_bug_should_be_inserted = Mock(side_effect=[True, False])
 
         self.fixture_chunks[0].modify(random_mock)

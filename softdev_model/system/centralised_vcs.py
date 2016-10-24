@@ -127,18 +127,17 @@ class CentralisedVCSClient(object):
                 self.working_copy.add_feature(working_copy_feature.logical_name, working_copy_feature.size)
 
         for new_working_base_chunk in self.working_base.chunks:
-            chunk_logical_name = new_working_base_chunk.logical_name
-            chunk_fully_qualfied_name = new_working_base_chunk.fully_qualified_name
+            chunk_fully_qualified_name = new_working_base_chunk.fully_qualified_name
 
-            working_copy_chunk = self.working_copy.get_chunk(chunk_fully_qualfied_name)
+            working_copy_chunk = self.working_copy.get_chunk(chunk_fully_qualified_name)
 
             if working_copy_chunk is None:
                 working_copy_feature = self.working_copy.get_feature(new_working_base_chunk.feature.logical_name)
-                working_copy_chunk = working_copy_feature.add_chunk(chunk_fully_qualfied_name)
+                working_copy_chunk = working_copy_feature.add_chunk(chunk_fully_qualified_name)
                 working_copy_chunk.overwrite_with(new_working_base_chunk)
 
             else:
-                old_working_base_chunk = old_working_base.get_chunk(chunk_fully_qualfied_name)
+                old_working_base_chunk = old_working_base.get_chunk(chunk_fully_qualified_name)
 
                 if old_working_base_chunk is not None and old_working_base_chunk != new_working_base_chunk:
 

@@ -175,7 +175,7 @@ class Chunk(object):
 
     @property
     def fully_qualified_name(self):
-        return "%s.%s" %(str(self.feature.logical_name), str(self.logical_name))
+        return "%s.%s" % (str(self.feature.logical_name), str(self.logical_name))
 
     def __repr__(self):
         return "c%s" % str(self.logical_name)

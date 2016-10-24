@@ -2,6 +2,8 @@ from theatre_ag import default_cost
 
 from change_management import commit_changes
 
+
+# noinspection PyUnusedLocal
 @default_cost(1)
 def add_chunk(self, chunk_logical_name, feature, random):
     feature.extend(chunk_logical_name, random)

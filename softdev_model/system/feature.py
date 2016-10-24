@@ -1,12 +1,11 @@
-from .chunk import Chunk
-from .test import Test
-from sortedcontainers import SortedSet
-
-from random import Random
-
 """
 @author: tws
 """
+
+
+from .chunk import Chunk
+from .test import Test
+from sortedcontainers import SortedSet
 
 
 class Feature(object):
@@ -30,7 +29,7 @@ class Feature(object):
     @property
     def bugs(self):
         bug_sets = map(lambda c: frozenset(c.bugs), self.chunks)
-        return reduce(lambda a, b: a.union(b), bug_sets, set())
+        return reduce(lambda a, b: a.union(b), bug_sets, SortedSet(key=lambda b: b.fully_qualified_name))
 
     @property
     def test_coverage(self):

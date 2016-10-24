@@ -5,6 +5,7 @@ from softdev_model.system import BugEncounteredException
 from .change_management import commit_changes
 
 
+# noinspection PyUnusedLocal
 @default_cost(1)
 def debug(self, feature, bug, random):
     feature.debug(random, bug)

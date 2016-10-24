@@ -25,7 +25,8 @@ def implement_feature_tdd(
     feature = centralised_vcs_client.working_copy.get_feature(feature_logical_name)
 
     self.perform_task(test_per_chunk_ratio,
-                      [centralised_vcs_client, feature, random, target_test_coverage_per_feature, 1])
+                      [centralised_vcs_client, feature, random, target_test_coverage_per_feature,
+                       tests_per_chunk_ratio])
 
     self.perform_task(implement_feature, [centralised_vcs_client, feature, random])
 
@@ -49,5 +50,6 @@ def test_driven_development(
 
         for logical_name, feature_size in schedule:
             self.perform_task(implement_feature_tdd,
-                [centralised_vcs_client, logical_name, feature_size, random,
-                 target_test_coverage_per_feature, target_dependencies_per_feature])
+                              [centralised_vcs_client, logical_name, feature_size, random,
+                               target_test_coverage_per_feature, tests_per_chunk_ratio,
+                               target_dependencies_per_feature])

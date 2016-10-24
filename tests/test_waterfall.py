@@ -6,7 +6,6 @@ import unittest
 from mock import Mock
 
 import sys
-from random import Random
 
 from softdev_model.system import BugEncounteredException, CentralisedVCSServer, SoftwareSystem, SystemRandom
 
@@ -25,7 +24,7 @@ class WaterfallTest(unittest.TestCase):
         software_system = SoftwareSystem()
         self.centralised_vcs_server = CentralisedVCSServer(software_system)
 
-        self.clock = Mock (spec=AbstractClock)
+        self.clock = Mock(spec=AbstractClock)
 
         self.developer = Actor("alice", self.clock)
 
@@ -39,8 +38,6 @@ class WaterfallTest(unittest.TestCase):
         with self.assertRaises(BugEncounteredException):
             self.random.seed(1)
             vcs_client.working_copy.operate(self.random, 10000)
-
-        print vcs_client.working_copy
 
         if self.is_64bits:
             self.assertEquals(88, len(vcs_client.working_copy.last_trace))

@@ -27,9 +27,9 @@ def waterfall(
 
         self.perform_task(
             complete_system_test_suite,
-              [centralised_vcs_client, random,
-               target_test_coverage_per_feature,
-               tests_per_chunk_ratio])
+            [centralised_vcs_client, random,
+                target_test_coverage_per_feature,
+                tests_per_chunk_ratio])
 
         self.perform_task(debug_system, [centralised_vcs_client, random])
         self.perform_task(refactor_system, [centralised_vcs_client, random, target_dependencies_per_feature])

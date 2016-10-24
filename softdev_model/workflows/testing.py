@@ -3,6 +3,7 @@ from theatre_ag import default_cost
 from change_management import commit_changes
 
 
+# noinspection PyUnusedLocal
 @default_cost(1)
 def add_test(self, logical_name, feature):
     feature.add_test(logical_name)
@@ -35,7 +36,5 @@ def complete_system_test_suite(
 
     for feature in centralised_vcs_client.working_copy.features:
         self.perform_task(test_per_chunk_ratio,
-                          [centralised_vcs_client,
-                 feature, random,
-                 target_test_coverage_per_feature,
-                 target_minimum_tests_per_chunk])
+                          [centralised_vcs_client, feature, random, target_test_coverage_per_feature,
+                           target_minimum_tests_per_chunk])

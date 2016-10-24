@@ -2,7 +2,6 @@ import sys
 import unittest
 
 from mock import Mock
-from random import Random
 
 from theatre_ag import AbstractClock, Actor
 

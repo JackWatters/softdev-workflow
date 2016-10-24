@@ -36,10 +36,17 @@ class SoftwareSystem(object):
         self.features = SortedSet(key=lambda f: f.logical_name)
         self.successful_operations = []
 
-    @property
-    def chunks(self):
-        chunk_sets = map(lambda f: frozenset(f.chunks), self.features)
-        return reduce(lambda a, b: a.union(b), chunk_sets, SortedSet(key=lambda c: c.fully_qualified_name))
+    def add_feature(self, logical_name, size):
+        feature = Feature(self, logical_name, size)
+        self.features.add(feature)
+        return feature
+
+    def get_feature(self, logical_name):
+        result = filter(lambda f: f.logical_name == logical_name, self.features)
+        if len(result) is 0:
+            return None
+        else:
+            return result[0]
 
     def get_chunk(self, fully_qualified_name):
         result = filter(lambda chunk: chunk.fully_qualified_name == fully_qualified_name, self.chunks)
@@ -47,6 +54,11 @@ class SoftwareSystem(object):
             return None
         else:
             return result[0]
+
+    @property
+    def chunks(self):
+        chunk_sets = map(lambda f: frozenset(f.chunks), self.features)
+        return reduce(lambda a, b: a.union(b), chunk_sets, SortedSet(key=lambda c: c.fully_qualified_name))
 
     @property
     def chunk_names(self):
@@ -65,18 +77,6 @@ class SoftwareSystem(object):
     def bugs(self):
         bug_sets = map(lambda c: frozenset(c.bugs), self.chunks)
         return reduce(lambda a, b: a.union(b), bug_sets, SortedSet(key=lambda bug: bug.fully_qualified_name))
-
-    def add_feature(self, logical_name, size):
-        feature = Feature(self, logical_name, size)
-        self.features.add(feature)
-        return feature
-
-    def get_feature(self, logical_name):
-        result = filter(lambda f: f.logical_name == logical_name, self.features)
-        if len(result) is 0:
-            return None
-        else:
-            return result[0]
 
     def operate(self, random, limit=sys.maxint):
         current_operations = []

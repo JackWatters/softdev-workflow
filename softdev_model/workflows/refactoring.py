@@ -3,6 +3,7 @@ from theatre_ag import default_cost
 from change_management import commit_changes
 
 
+# noinspection PyUnusedLocal
 @default_cost(1)
 def refactoring(self, feature, random):
     feature.refactor(random)

@@ -5,6 +5,7 @@
 
 import time
 
+from theatre_ag import Actor, AbstractClock
 
 from .bug import BugEncounteredException
 from .feature import InoperableFeatureException
@@ -36,10 +37,8 @@ class SoftwareProject(object):
         self.max_trace_length = max_trace_length
 
     def build_and_operate(self):
-        try:
-            self.workflow.work(self.random, self.centralised_vcs_server, self.developer, self.schedule)
-        except ActorExhaustedException:
-            pass
+        self.workflow.work(self.random, self.centralised_vcs_server, self.developer, self.schedule)
+
         for _ in range(0, self.number_of_traces):
             try:
                 self.centralised_vcs_server.master.operate(self.random, self.max_trace_length)
@@ -49,7 +48,7 @@ class SoftwareProject(object):
 
 class SoftwareProjectGroup(object):
 
-    def __init__(self, workflow, person_time, schedule, number_of_traces, max_trace_length, n):
+    def __init__(self, workflow, schedule, number_of_traces, max_trace_length, n):
         self.software_projects = list()
 
         for seed in range(0, n):
@@ -57,7 +56,7 @@ class SoftwareProjectGroup(object):
                 random=Random(seed),
                 centralised_vcs_server=CentralisedVCSServer(SoftwareSystem()),
                 workflow=workflow(),
-                developer=Developer(person_time),
+                developer=Actor('alice', AbstractClock()),
                 schedule=schedule,
                 number_of_traces=number_of_traces,
                 max_trace_length=max_trace_length)
