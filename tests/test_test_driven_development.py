@@ -1,13 +1,9 @@
 import sys
 import unittest
 
-from mock import Mock
-
-from theatre_ag import AbstractClock, Actor
-
 from softdev_model.system import BugEncounteredException, CentralisedVCSServer, SoftwareSystem, SystemRandom
 
-from softdev_model.workflows import test_driven_development
+from softdev_model.workflows import TestDrivenDevelopment
 
 
 class TestDrivenDevelopmentTest(unittest.TestCase):
@@ -16,17 +12,15 @@ class TestDrivenDevelopmentTest(unittest.TestCase):
 
         self.is_64bits = sys.maxsize > 2 ** 32
 
-        clock = Mock(spec=AbstractClock)
-        clock.current_tick = -1
-        self.developer = Actor("alice", clock)
-
         self.centralised_vcs_server = CentralisedVCSServer(SoftwareSystem())
         self.schedule = [(0, 3), (1, 5), (2, 7)]
         self.random = SystemRandom(1)
 
+        self.test_driven_development = TestDrivenDevelopment(self.centralised_vcs_server)
+
     def test_implement_default_system_and_operate_regression(self):
 
-        self.developer.perform_task(test_driven_development, [self.centralised_vcs_server, self.schedule, self.random])
+        self.test_driven_development.allocate_tasks(self.schedule, self.random)
 
         self.random.seed(1)
 

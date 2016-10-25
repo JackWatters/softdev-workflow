@@ -27,7 +27,6 @@ class Bug(object):
 
 class BugEncounteredException(Exception):
     def __init__(self, bug):
-        assert isinstance(bug, Bug)
         self.bug = bug
 
     def __str__(self):

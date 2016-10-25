@@ -1,19 +1,29 @@
-from theatre_ag import default_cost
+from theatre_ag import workflow
 from softdev_model.system import CentralisedVCSException
 
 
-@default_cost(1)
-def resolve(self, conflict, centralised_vcs_client, random):
-    centralised_vcs_client.resolve(conflict, self, random)
+class ChangeManagement(object):
 
+    def __init__(self, centralised_vcs_server):
+        self.centralised_vcs_server = centralised_vcs_server
+        self.centralised_vcs_client = None
 
-def commit_changes(self, centralised_vcs_client, random):
-    while True:
-        try:
-            centralised_vcs_client.commit()
-            centralised_vcs_client.update(random)
-            break
-        except CentralisedVCSException:
-            centralised_vcs_client.update(random)
-            for conflict in centralised_vcs_client.conflicts:
-                self.perform_task(resolve, [conflict, centralised_vcs_client, random])
+    @workflow(1)
+    def resolve(self, conflict, random):
+        self.centralised_vcs_client.resolve(conflict, random)
+
+    @workflow(0)
+    def commit_changes(self, random):
+        while True:
+            try:
+                self.centralised_vcs_client.commit()
+                self.centralised_vcs_client.update(random)
+                break
+            except CentralisedVCSException:
+                self.centralised_vcs_client.update(random)
+                for conflict in self.centralised_vcs_client.conflicts:
+                    self.resolve(conflict, random)
+
+    @workflow(0)
+    def checkout(self):
+        self.centralised_vcs_client = self.centralised_vcs_server.checkout()

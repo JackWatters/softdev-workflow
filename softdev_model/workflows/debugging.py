@@ -1,31 +1,33 @@
-from theatre_ag import default_cost
+from theatre_ag import workflow
 
 from softdev_model.system import BugEncounteredException
 
-from .change_management import commit_changes
+from .change_management import ChangeManagement
 
 
-# noinspection PyUnusedLocal
-@default_cost(1)
-def debug(self, feature, bug, random):
-    feature.debug(random, bug)
+class Debugging(ChangeManagement, object):
 
+    @workflow(1)
+    def debug(self, feature, bug, random):
+        feature.debug(random, bug)
 
-def debug_test(self, test, centralised_vcs_client, random):
-    while True:
-        try:
-            test.exercise()
-            break
-        except BugEncounteredException as e:
-            self.perform_task(debug, [test.feature, e.bug, random])
-            self.perform_task(commit_changes, [centralised_vcs_client, random])
+    @workflow()
+    def debug_test(self, test, random):
+        while True:
+            try:
+                test.exercise()
+                break
+            except BugEncounteredException as e:
+                self.debug(test.feature, e.bug, random)
+                self.commit_changes(random)
 
+    @workflow()
+    def debug_feature(self, feature, random):
+        for test in feature.tests:
+            self.debug_test(test, random)
 
-def debug_feature(self, centralised_vcs_client, feature, random):
-    for test in feature.tests:
-        self.perform_task(debug_test, [test, centralised_vcs_client, random])
-
-
-def debug_system(self, centralised_vcs_client, random):
-    for test in centralised_vcs_client.working_copy.tests:
-        self.perform_task(debug_test, [test, centralised_vcs_client, random])
+    @workflow()
+    def debug_system(self, random):
+        self.checkout()
+        for test in self.centralised_vcs_client.working_copy.tests:
+            self.debug_test(test, random)

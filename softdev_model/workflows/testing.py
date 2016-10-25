@@ -1,40 +1,35 @@
-from theatre_ag import default_cost
+from theatre_ag import workflow
 
-from change_management import commit_changes
-
-
-# noinspection PyUnusedLocal
-@default_cost(1)
-def add_test(self, logical_name, feature):
-    feature.add_test(logical_name)
+from change_management import ChangeManagement
 
 
-def test_per_chunk_ratio(
-        self,
-        centralised_vcs_client,
-        feature,
-        random,
-        target_test_coverage_per_feature=1.0,
-        target_tests_per_chunk_ratio=1):
+class Testing(ChangeManagement, object):
 
-    test_count = 0
+    def __init__(self, centralised_vcs_server, target_test_coverage_per_feature=1.0, target_tests_per_chunk_ratio=1):
+        ChangeManagement.__init__(self, centralised_vcs_server)
+        self.target_test_coverage_per_feature = target_test_coverage_per_feature
+        self.target_tests_per_chunk_ratio = target_tests_per_chunk_ratio
 
-    while feature.test_coverage < target_test_coverage_per_feature or \
-            feature.tests_per_chunk_ratio < target_tests_per_chunk_ratio:
+    @workflow(1)
+    def add_test(self, logical_name, feature):
+        feature.add_test(logical_name)
 
-        self.perform_task(add_test, [test_count, feature])
-        test_count += 1
-        self.perform_task(commit_changes, [centralised_vcs_client, random])
+    @workflow()
+    def test_per_chunk_ratio(self, feature, random):
 
+        test_count = 0
 
-def complete_system_test_suite(
-        self,
-        centralised_vcs_client,
-        random,
-        target_test_coverage_per_feature=1.0,
-        target_minimum_tests_per_chunk=1):
+        while feature.test_coverage < self.target_test_coverage_per_feature or \
+                feature.tests_per_chunk_ratio < self.target_tests_per_chunk_ratio:
 
-    for feature in centralised_vcs_client.working_copy.features:
-        self.perform_task(test_per_chunk_ratio,
-                          [centralised_vcs_client, feature, random, target_test_coverage_per_feature,
-                           target_minimum_tests_per_chunk])
+            self.add_test(test_count, feature)
+            test_count += 1
+            self.commit_changes(random)
+
+    @workflow()
+    def complete_system_test_suite(self, random):
+
+        self.checkout()
+
+        for feature in self.centralised_vcs_client.working_copy.features:
+            self.test_per_chunk_ratio(feature, random)
