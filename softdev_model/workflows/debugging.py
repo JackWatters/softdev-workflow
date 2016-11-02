@@ -1,17 +1,19 @@
-from theatre_ag import workflow
+from theatre_ag import default_cost, Workflow
 
 from softdev_model.system import BugEncounteredException
 
-from .change_management import ChangeManagement
 
+class Debugging(Workflow):
 
-class Debugging(ChangeManagement, object):
+    def __init__(self, actor, change_management):
+        super(Debugging, self).__init__(actor)
+        self.change_management = change_management
 
-    @workflow(1)
+    @default_cost(1)
     def debug(self, feature, bug, random):
         feature.debug(random, bug)
 
-    @workflow()
+    @default_cost()
     def debug_test(self, test, random):
         while True:
             try:
@@ -19,15 +21,15 @@ class Debugging(ChangeManagement, object):
                 break
             except BugEncounteredException as e:
                 self.debug(test.feature, e.bug, random)
-                self.commit_changes(random)
+                self.change_management.commit_changes(random)
 
-    @workflow()
+    @default_cost()
     def debug_feature(self, feature, random):
         for test in feature.tests:
             self.debug_test(test, random)
 
-    @workflow()
+    @default_cost()
     def debug_system(self, random):
-        self.checkout()
-        for test in self.centralised_vcs_client.working_copy.tests:
+        self.change_management.checkout()
+        for test in self.change_management.centralised_vcs_client.working_copy.tests:
             self.debug_test(test, random)

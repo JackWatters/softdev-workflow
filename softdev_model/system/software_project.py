@@ -5,7 +5,7 @@
 
 import time
 
-from theatre_ag import Actor, AbstractClock
+from theatre_ag import Actor, SynchronizingClock
 
 from .bug import BugEncounteredException
 from .feature import InoperableFeatureException
@@ -56,7 +56,7 @@ class SoftwareProjectGroup(object):
                 random=Random(seed),
                 centralised_vcs_server=CentralisedVCSServer(SoftwareSystem()),
                 workflow=workflow(),
-                developer=Actor('alice', AbstractClock()),
+                developer=Actor('alice', SynchronizingClock()),
                 schedule=schedule,
                 number_of_traces=number_of_traces,
                 max_trace_length=max_trace_length)

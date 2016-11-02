@@ -45,6 +45,8 @@ class SoftwareSystemTest(unittest.TestCase):
         random_mock.a_bug_should_be_inserted = Mock(side_effect=[True, False])
         chunk_1 = feature_a.extend('1', random_mock)
 
+        print self.software_system.bugs
+
         random_mock.sample_chunks = Mock(return_value={chunk_1})
         random_mock.create_local_content = Mock(return_value=['456'])
         random_mock.dependency_should_be_added = Mock(side_effect=[False, True, True, True])
@@ -59,7 +61,7 @@ class SoftwareSystemTest(unittest.TestCase):
 
         feature_a.extend('4', random_mock)
 
-        self.assertEquals(['a.1.0', 'a.2.0'], map(lambda b: b.fully_qualified_name, self.software_system.bugs))
+        self.assertEquals(['a.1.0', 'a.1.1'], map(lambda b: b.fully_qualified_name, self.software_system.bugs))
 
     def test_tests(self):
 

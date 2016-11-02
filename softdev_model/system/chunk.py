@@ -93,7 +93,7 @@ class Chunk(object):
 
     def merge(self, source_chunk, random):
         for dependency in source_chunk.dependencies:
-            working_copy_dependency = self.feature.software_system.get_chunk(dependency.logical_name)
+            working_copy_dependency = self.feature.software_system.get_chunk(dependency.fully_qualified_name)
             self.dependencies.add(working_copy_dependency)
 
         self.modify(random)
@@ -110,7 +110,7 @@ class Chunk(object):
 
         self.dependencies.clear()
         for dependency in source_chunk.dependencies:
-            new_dependency = self.feature.software_system.get_chunk(dependency.logical_name)
+            new_dependency = self.feature.software_system.get_chunk(dependency.fully_qualified_name)
             self.dependencies.add(new_dependency)
 
     def _add_dependencies(self, random, candidate_chunks, threshold):
@@ -178,4 +178,4 @@ class Chunk(object):
         return "%s.%s" % (str(self.feature.logical_name), str(self.logical_name))
 
     def __repr__(self):
-        return "c%s" % str(self.logical_name)
+        return "c%s" % str(self.fully_qualified_name)

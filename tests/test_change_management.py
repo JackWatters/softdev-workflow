@@ -1,6 +1,10 @@
 import unittest
 from mock import Mock
 
+from threading import _RLock
+
+from theatre_ag import Actor, SynchronizingClock
+
 from softdev_model.system import CentralisedVCSClient, CentralisedVCSServer, Conflict, SystemRandom
 from softdev_model.workflows import ChangeManagement
 
@@ -12,7 +16,12 @@ class ChangeManagementTestCase(unittest.TestCase):
         self.centralised_vcs_client = Mock(spec=CentralisedVCSClient)
         self.centralised_vcs_server.checkout = Mock(return_value=self.centralised_vcs_client)
 
-        self.change_management = ChangeManagement(self.centralised_vcs_server)
+        self.actor = Mock(spec=Actor)
+        self.actor.busy = Mock(spec=_RLock)
+        self.actor.clock = Mock(spec=SynchronizingClock)
+        self.actor.completed_tasks = Mock(spec=list)
+
+        self.change_management = ChangeManagement(self.actor, self.centralised_vcs_server)
 
     def test_checkout(self):
 

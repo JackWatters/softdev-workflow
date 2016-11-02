@@ -1,28 +1,27 @@
-from theatre_ag import workflow
-
-from change_management import ChangeManagement
+from theatre_ag import default_cost, Workflow
 
 
-class Refactoring(ChangeManagement, object):
+class Refactoring(Workflow):
 
-    def __init__(self, centralised_vcs_server, target_dependencies_per_feature=0):
-        ChangeManagement.__init__(self, centralised_vcs_server)
+    def __init__(self, actor, change_management, target_dependencies_per_feature=0):
+        super(Refactoring, self).__init__(actor)
+        self.change_management = change_management
         self.target_dependencies_per_feature = target_dependencies_per_feature
 
-    @workflow(1)
+    @default_cost(1)
     def refactoring(self, feature, random):
         feature.refactor(random)
 
-    @workflow()
+    @default_cost()
     def refactor_feature(self, feature, random):
         while len(feature.dependencies) > self.target_dependencies_per_feature:
             self.refactoring(feature, random)
-            self.commit_changes(random)
+            self.change_management.commit_changes(random)
 
-    @workflow()
+    @default_cost()
     def refactor_system(self, random):
 
-        self.checkout()
+        self.change_management.checkout()
 
-        for feature in self.centralised_vcs_client.working_copy.features:
+        for feature in self.change_management.centralised_vcs_client.working_copy.features:
             self.refactor_feature(feature, random)

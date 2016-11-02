@@ -10,7 +10,7 @@ from softdev_model.system import BugEncounteredException, CentralisedVCSServer, 
 from softdev_model.workflows import Waterfall
 
 
-class WaterfallTest(unittest.TestCase):
+class WaterfallRegressionTestCase(unittest.TestCase):
 
     def setUp(self):
 
@@ -21,7 +21,7 @@ class WaterfallTest(unittest.TestCase):
         self.centralised_vcs_server = CentralisedVCSServer(software_system)
         self.waterfall = Waterfall(self.centralised_vcs_server)
 
-    def test_implement_default_system_and_operate_regression(self):
+    def test_implement_default_system_and_operate(self):
 
         self.waterfall.allocate_tasks([(0, 3), (1, 5), (2, 7)], self.random)
 
@@ -36,7 +36,7 @@ class WaterfallTest(unittest.TestCase):
         else:
             self.assertEquals(27, len(vcs_client.working_copy.last_trace))
 
-    def test_implement_system_with_low_effectiveness_tests_and_operate_regression(self):
+    def test_implement_system_with_low_effectiveness_tests_and_operate(self):
 
         self.centralised_vcs_server.master.test_effectiveness = 0.1
 
@@ -53,7 +53,7 @@ class WaterfallTest(unittest.TestCase):
         else:
             self.assertEquals(0, len(software_system.last_trace))
 
-    def test_implement_system_with_high_effectiveness_tests_and_operate_regression(self):
+    def test_implement_system_with_high_effectiveness_tests_and_operate(self):
         self.centralised_vcs_server.master.test_effectiveness = 1.0
 
         self.waterfall.allocate_tasks([(0, 3), (1, 5), (2, 7)], self.random)

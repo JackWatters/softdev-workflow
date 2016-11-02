@@ -82,11 +82,12 @@ class CentralisedVCSServer(object):
     def receive_commit(self, working_copy, version):
         self.lock.acquire()
         if version < self.version:
+            self.lock.release()
             raise CentralisedVCSException()
         else:
             self.master = copy_software_system(working_copy)
             self.version += 1
-        self.lock.release()
+            self.lock.release()
 
 
 class CentralisedVCSClient(object):
@@ -124,18 +125,25 @@ class CentralisedVCSClient(object):
         for working_base_feature in self.working_base.features:
             working_copy_feature = self.working_copy.get_feature(working_base_feature.logical_name)
             if working_copy_feature is None:
-                self.working_copy.add_feature(working_copy_feature.logical_name, working_copy_feature.size)
+                self.working_copy.add_feature(working_base_feature.logical_name, working_base_feature.size)
+
+        new_chunks = set()
+
+        for new_working_base_chunk in self.working_base.chunks:
+            chunk_fully_qualified_name = new_working_base_chunk.fully_qualified_name
+            working_copy_chunk = self.working_copy.get_chunk(chunk_fully_qualified_name)
+            if working_copy_chunk is None:
+                working_copy_feature = self.working_copy.get_feature(new_working_base_chunk.feature.logical_name)
+                working_copy_chunk = working_copy_feature.add_chunk(new_working_base_chunk.logical_name)
+                new_chunks.add(working_copy_chunk)
 
         for new_working_base_chunk in self.working_base.chunks:
             chunk_fully_qualified_name = new_working_base_chunk.fully_qualified_name
 
             working_copy_chunk = self.working_copy.get_chunk(chunk_fully_qualified_name)
 
-            if working_copy_chunk is None:
-                working_copy_feature = self.working_copy.get_feature(new_working_base_chunk.feature.logical_name)
-                working_copy_chunk = working_copy_feature.add_chunk(chunk_fully_qualified_name)
+            if working_copy_chunk in new_chunks:
                 working_copy_chunk.overwrite_with(new_working_base_chunk)
-
             else:
                 old_working_base_chunk = old_working_base.get_chunk(chunk_fully_qualified_name)
 
