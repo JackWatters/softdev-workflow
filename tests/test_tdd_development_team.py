@@ -17,7 +17,7 @@ class MyTestCase(unittest.TestCase):
         self.tdd_development_team = TDDDevelopmentTeam(self.clock, self.centralised_vcs)
 
     def test_add_developer(self):
-        self.tdd_development_team.add_tdd_developer('alice')
+        self.tdd_development_team.add_developer('alice')
 
         self.assertEqual(1, len(self.tdd_development_team.developers))
 

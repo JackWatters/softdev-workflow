@@ -14,7 +14,7 @@ class TDDDevelopmentTeam(object):
 
         self.developers = list()
 
-    def add_tdd_developer(self, logical_name):
+    def add_developer(self, logical_name):
         actor = Actor(logical_name, self.clock)
         actor.add_workflow(TestDrivenDevelopment, self.centralised_vcs_server)
         self.developers.append(actor)
@@ -28,3 +28,8 @@ class TDDDevelopmentTeam(object):
 
         for developer in self.developers:
             developer.shutdown()
+
+    @property
+    def release(self):
+        return self.centralised_vcs_server.checkout().working_copy
+

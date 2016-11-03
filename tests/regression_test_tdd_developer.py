@@ -61,13 +61,15 @@ class TDDDeveloperRegressionTestCase(unittest.TestCase):
     def test_tdd_development_team(self):
 
         self.tdd_development_team = TDDDevelopmentTeam(self.clock, self.centralised_vcs_server)
-        self.tdd_development_team.add_tdd_developer('alice')
-        self.tdd_development_team.add_tdd_developer('bob')
+        self.tdd_development_team.add_developer('alice')
+        self.tdd_development_team.add_developer('bob')
 
         self.clock.start()
         self.tdd_development_team.build_software_system(self.product_backlog, self.random)
         self.clock.shutdown()
-        print self.tdd_development_team.developers[0].last_completed_task
+        print self.tdd_development_team.developers[0].completed_tasks[0].sub_tasks
+        print self.tdd_development_team.developers[1].completed_tasks[0].sub_tasks
+
         print self.clock.current_tick
 
 
