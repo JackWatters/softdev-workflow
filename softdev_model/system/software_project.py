@@ -5,12 +5,13 @@
 
 import time
 
-from theatre_ag import Actor, SynchronizingClock
+from theatre_ag import SynchronizingClock
 
 from .bug import BugEncounteredException
+from .centralised_vcs import CentralisedVCSServer
 from .feature import InoperableFeatureException
 from .software_system import SoftwareSystem
-from .centralised_vcs import CentralisedVCSServer
+from .tdd_development_team import TDDDevelopmentTeam
 
 from random import Random
 
@@ -19,47 +20,52 @@ class SoftwareProject(object):
     """
     Represents the overall state and behaviour of a software project.
     """
+
     def __init__(self,
                  random,
-                 centralised_vcs_server,
-                 workflow,
-                 developer,
+                 development_team,
                  schedule,
                  number_of_traces,
                  max_trace_length):
 
         self.random = random
-        self.centralised_vcs_server = centralised_vcs_server
-        self.workflow = workflow
-        self.developer = developer
+        self.development_team = development_team
         self.schedule = schedule
         self.number_of_traces = number_of_traces
         self.max_trace_length = max_trace_length
 
     def build_and_operate(self):
-        self.workflow.work(self.random, self.centralised_vcs_server, self.developer, self.schedule)
+        self.development_team.build_software_system(self.schedule, self.random)
 
         for _ in range(0, self.number_of_traces):
             try:
-                self.centralised_vcs_server.master.operate(self.random, self.max_trace_length)
+                self.software_system.operate(self.random, self.max_trace_length)
             except (BugEncounteredException, InoperableFeatureException):
                 pass
+
+    @property
+    def software_system(self):
+        return self.development_team.release
 
 
 class SoftwareProjectGroup(object):
 
-    def __init__(self, workflow, schedule, number_of_traces, max_trace_length, n):
+    def __init__(self, schedule, number_of_developers, number_of_traces, max_trace_length, n):
         self.software_projects = list()
 
         for seed in range(0, n):
+
+            development_team = TDDDevelopmentTeam(SynchronizingClock(), CentralisedVCSServer(SoftwareSystem()))
+
+            for logical_name in range(0, number_of_developers):
+                development_team.add_developer(logical_name)
+
             software_project = SoftwareProject(
-                random=Random(seed),
-                centralised_vcs_server=CentralisedVCSServer(SoftwareSystem()),
-                workflow=workflow(),
-                developer=Actor('alice', SynchronizingClock()),
-                schedule=schedule,
-                number_of_traces=number_of_traces,
-                max_trace_length=max_trace_length)
+                Random(seed),
+                development_team,
+                schedule,
+                number_of_traces,
+                max_trace_length)
 
             self.software_projects.append(software_project)
 
