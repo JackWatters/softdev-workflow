@@ -18,7 +18,7 @@ class Chunk(object):
 
         self.local_content = local_content
 
-        self.dependencies = SortedSet(key=lambda d: d.logical_name)
+        self.dependencies = SortedSet(key=lambda d: d.fully_qualified_name)
         self.bugs = SortedSet(key=lambda b: b.logical_name)
 
         self.bug_count = 0
