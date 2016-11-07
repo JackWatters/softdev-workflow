@@ -35,7 +35,7 @@ class SoftwareProject(object):
         self.max_trace_length = max_trace_length
 
     def build_and_operate(self):
-        self.development_team.build_software_system(self.schedule, self.random)
+        self.development_team.perform()
 
         for _ in range(0, self.number_of_traces):
             try:

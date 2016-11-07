@@ -28,7 +28,7 @@ class SoftwareProjectTestCase(unittest.TestCase):
 
         self.software_project.build_and_operate()
 
-        self.mock_development_team.build_software_system.assert_called_once_with(self.mock_schedule, self.mock_random)
+        self.mock_development_team.perform.assert_called_once_with()
 
         self.mock_development_team.release.operate.assert_called_with(self.mock_random, 1000)
 
