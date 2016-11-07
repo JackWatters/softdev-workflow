@@ -7,5 +7,5 @@ from test_softwaresystem import SoftwareSystemTest
 from test_test import TestTest
 from test_test_driven_development import TestDrivenDevelopmentTestCase
 
-from regression_test_tdd_developer import TDDDeveloperRegressionTestCase
-from regression_test_waterfall import WaterfallRegressionTestCase
+#from regression_test_tdd_developer import TDDDeveloperRegressionTestCase
+#from regression_test_waterfall import WaterfallRegressionTestCase

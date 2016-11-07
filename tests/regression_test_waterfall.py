@@ -7,86 +7,63 @@ import sys
 
 from theatre_ag import Actor, SynchronizingClock
 
-from softdev_model.system import BugEncounteredException, CentralisedVCSServer, SoftwareSystem, SystemRandom
-
-from softdev_model.workflows import Waterfall
+from softdev_model.system import BugEncounteredException, CentralisedVCSServer, SoftwareSystem, SystemRandom, \
+    UserStory, WaterfallDevelopmentTeam
 
 
 class WaterfallRegressionTestCase(unittest.TestCase):
 
     def setUp(self):
 
-        self.is_64bits = sys.maxsize > 2**32
+        self.is_64bits = sys.maxsize > 2 ** 32
+
+        self.clock = SynchronizingClock(max_ticks=100000)
+
+        self.centralised_vcs_server = CentralisedVCSServer(SoftwareSystem())
+
+        self.specification = list()
+
+        self.specification.append(UserStory(0, 3, 1))
+        self.specification.append(UserStory(1, 5, 2))
+        self.specification.append(UserStory(2, 7, 3))
 
         self.random = SystemRandom(1)
-        software_system = SoftwareSystem()
-        self.centralised_vcs_server = CentralisedVCSServer(software_system)
 
-        self.clock = SynchronizingClock(max_ticks=1000)
-        self.team_manager = Actor('manager', self.clock)
+        self.development_team = WaterfallDevelopmentTeam(
+            self.clock, self.centralised_vcs_server, self.specification, self.random)
 
-        self.developers = {Actor('alice', self.clock), Actor('bob', self.clock)}
+        self.development_team.add_member('manager')
+        self.development_team.add_member('alice')
 
-        self.waterfall = Waterfall(self.team_manager, self.developers, self.centralised_vcs_server)
+    def assert_operate_to_desired_trace_length(self, x64_bit_result=10000, x32_bit_result=10000, limit=10000):
+
+        try:
+            self.clock.start()
+            self.development_team.perform()
+            self.clock.shutdown()
+
+            working_copy = self.centralised_vcs_server.checkout().working_copy
+
+            working_copy.operate(self.random, limit)
+
+        except BugEncounteredException:
+            pass
+
+        if self.is_64bits:
+            self.assertEquals(x64_bit_result, len(working_copy.last_trace))
+        else:
+            self.assertEquals(x32_bit_result, len(working_copy.last_trace))
 
     def test_implement_default_system_and_operate(self):
-
-        self.team_manager.allocate_task(
-            self.waterfall, self.waterfall.allocate_tasks, [[(0, 3), (1, 5), (2, 7)], self.random])
-
-        self.team_manager.start()
-
-        for developer in self.developers:
-            developer.start()
-
-        self.clock.start()
-
-        self.team_manager.shutdown()
-        for developer in self.developers:
-            developer.shutdown()
-
-        for developer in self.developers:
-            print developer.completed_tasks
-
-        vcs_client = self.centralised_vcs_server.checkout()
-
-        with self.assertRaises(BugEncounteredException):
-            self.random.seed(1)
-            vcs_client.working_copy.operate(self.random, 10000)
-
-        if self.is_64bits:
-            self.assertEquals(88, len(vcs_client.working_copy.last_trace))
-        else:
-            self.assertEquals(27, len(vcs_client.working_copy.last_trace))
+        self.assert_operate_to_desired_trace_length(12, 151)
 
     def test_implement_system_with_low_effectiveness_tests_and_operate(self):
-
         self.centralised_vcs_server.master.test_effectiveness = 0.1
-
-        self.waterfall.allocate_tasks([(0, 3), (1, 5), (2, 7)], self.random)
-
-        software_system = self.centralised_vcs_server.checkout().working_copy
-
-        with self.assertRaises(BugEncounteredException):
-            self.random.seed(1)
-            software_system.operate(self.random, 10000)
-
-        if self.is_64bits:
-            self.assertEquals(88, len(software_system.last_trace))
-        else:
-            self.assertEquals(0, len(software_system.last_trace))
+        self.assert_operate_to_desired_trace_length(12, 8)
 
     def test_implement_system_with_high_effectiveness_tests_and_operate(self):
         self.centralised_vcs_server.master.test_effectiveness = 1.0
-
-        self.waterfall.allocate_tasks([(0, 3), (1, 5), (2, 7)], self.random)
-
-        self.random.seed(1)
-
-        software_system = self.centralised_vcs_server.checkout().working_copy
-
-        software_system.operate(self.random, 10000)
-        self.assertEquals(10000, len(software_system.last_trace))
+        self.assert_operate_to_desired_trace_length()
 
 
 if __name__ == "__main__":

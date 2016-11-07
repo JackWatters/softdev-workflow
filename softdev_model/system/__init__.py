@@ -8,3 +8,4 @@ from .system_random import SystemRandom
 from .tdd_development_team import TDDDevelopmentTeam
 from .test import Test
 from .user_story import UserStory
+from .waterfall_development_team import WaterfallDevelopmentTeam

@@ -41,22 +41,31 @@ class Waterfall(Workflow):
 
         chosen_developer = reduce(
             lambda d1, d2: d1 if d1.task_queue.qsize() < d2.task_queue.qsize() else d2,
-            self.developers)
-
+            self.developers[1:])
         return chosen_developer
+
+    def __repr__(self):
+        return "Waterfall(%f, %d, %d)" % (
+            self.target_test_coverage_per_feature,
+            self.tests_per_chunk_ratio,
+            self.target_dependencies_per_feature)
+
+    def __str__(self):
+        return "Waterfall"
 
     @default_cost(1)
     def allocate_tasks(self, schedule, random):
 
         tasks = set()
 
-        for logical_name, feature_size in schedule:
+        for user_story in schedule:
 
             developer = self.choose_developer()
             specification_task = Specification(developer, ChangeManagement(developer, self.centralised_vcs_server))
 
             task = developer.allocate_task(
-                specification_task, specification_task.add_feature, [logical_name, feature_size, random])
+                specification_task, specification_task.add_feature,
+                [user_story.logical_name, user_story.size, random])
             tasks.add(task)
 
         for task in tasks:
