@@ -40,3 +40,9 @@ class SystemRandom(Random):
 
     def bug_manifests_itself(self, bug):
         return self.random() <= bug.probability_failure_on_demand
+
+    def __str__(self):
+        return super(Random, self).__str__()
+
+    def __repr__(self):
+        return "random"
