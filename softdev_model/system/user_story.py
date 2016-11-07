@@ -12,3 +12,6 @@ class UserStory:
 
     def __str__(self):
         return "UserStory(%s,%d,%d)" % (self.logical_name, self.size, self.priority)
+
+    def __repr__(self):
+        return self.__str__()
