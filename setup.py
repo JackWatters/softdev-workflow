@@ -8,8 +8,7 @@ setup(
     url='https://github.com/twsswt/software-dev',
     dependency_links=[
         'https://github.com/twsswt/fuzzi-moss/tarball/master#egg=fuzzi_moss-0.1',
-        'https://github.com/twsswt/theatre_ag/tarball/master#egg=theatre_ag-0.1'
-                      ],
+        'https://github.com/twsswt/theatre_ag/tarball/master#egg=theatre_ag-0.1'],
     license='',
     author='Tim Storer',
     author_email='timothy.storer@glasgow.ac.uk',
