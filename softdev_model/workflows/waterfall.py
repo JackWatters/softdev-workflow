@@ -2,7 +2,7 @@
 @author: twsswt
 """
 
-from theatre_ag import default_cost
+from theatre_ag import default_cost, Workflow, Idling
 
 from .change_management import ChangeManagement
 from .implementation import Implementation
@@ -12,53 +12,105 @@ from .specification import Specification
 from .refactoring import Refactoring
 
 
-class Waterfall(Refactoring, Debugging, Implementation, Testing, Specification, ChangeManagement):
+class Waterfall(Workflow):
 
     def __init__(self,
+                 actor,
+                 developers,
                  centralised_vcs_server,
                  target_test_coverage_per_feature=1.0,
                  tests_per_chunk_ratio=0,
                  target_dependencies_per_feature=1):
 
-        ChangeManagement.__init__(self, centralised_vcs_server)
-        Specification.__init__(self, centralised_vcs_server)
-        Implementation.__init__(self, centralised_vcs_server)
-        Testing.__init__(self, centralised_vcs_server, target_test_coverage_per_feature, tests_per_chunk_ratio)
-        Debugging.__init__(self, centralised_vcs_server)
-        Refactoring.__init__(self, centralised_vcs_server, target_dependencies_per_feature)
+        super(Waterfall, self).__init__(actor)
 
-    @default_cost()
-    def allocate_tasks(
-            self,
-            schedule,
-            random):
-        """
-        Implements the default_cost in a waterfall software development process.
-        """
-        self.complete_specification(schedule, random)
-        self.implement_system(random)
-        self.complete_system_test_suite(random)
-        self.debug_system(random)
-        self.refactor_system(random)
+        self.developers = developers
 
+        self.centralised_vcs_server = centralised_vcs_server
+        self.target_test_coverage_per_feature = target_test_coverage_per_feature
+        self.tests_per_chunk_ratio = tests_per_chunk_ratio
+        self.target_dependencies_per_feature = target_dependencies_per_feature
 
-class AllocateTasks(object):
-
-    def __init__(self, development_team):
-        self.development_team = development_team
+        self.change_management = ChangeManagement(actor, centralised_vcs_server)
+        self.idling = Idling(actor)
 
     @default_cost()
     def choose_developer(self):
-        if len(self.development_team.developers) == 0:
+        if len(self.developers) == 0:
             return None
-        chosen_developer = reduce(lambda d1, d2: len(), self.development_team.developers)
+
+        chosen_developer = reduce(
+            lambda d1, d2: d1 if d1.task_queue.qsize() < d2.task_queue.qsize() else d2,
+            self.developers)
 
         return chosen_developer
 
-    @default_cost()
+    @default_cost(1)
     def allocate_tasks(self, schedule, random):
-        self.checkout()
+
+        tasks = set()
 
         for logical_name, feature_size in schedule:
+
             developer = self.choose_developer()
-            developer.allocate_task(developer.implement_feature_tdd, [logical_name, feature_size, random])
+            specification_task = Specification(developer, ChangeManagement(developer, self.centralised_vcs_server))
+
+            task = developer.allocate_task(
+                specification_task, specification_task.add_feature, [logical_name, feature_size, random])
+            tasks.add(task)
+
+        for task in tasks:
+            self.idling.idle_until(task)
+
+        self.change_management.checkout()
+
+        for feature in self.change_management.centralised_vcs_client.working_copy.features:
+
+            developer = self.choose_developer()
+            implementation_task = Implementation(developer, ChangeManagement(developer, self.centralised_vcs_server))
+
+            task = developer.allocate_task(
+                implementation_task, implementation_task.implement_feature, [feature.logical_name, random])
+
+            tasks.add(task)
+
+        for task in tasks:
+            self.idling.idle_until(task)
+
+        for feature in self.change_management.centralised_vcs_client.working_copy.features:
+
+            developer = self.choose_developer()
+            testing_task = Testing(developer, ChangeManagement(developer, self.centralised_vcs_server))
+
+            task = developer.allocate_task(
+                testing_task, testing_task.test_per_chunk_ratio, [feature.logical_name, random])
+
+            tasks.add(task)
+
+        for task in tasks:
+            self.idling.idle_until(task)
+
+        for feature in self.change_management.centralised_vcs_client.working_copy.features:
+            developer = self.choose_developer()
+            debugging_task = Debugging(developer, ChangeManagement(developer, self.centralised_vcs_server))
+
+            task = developer.allocate_task(
+                debugging_task, debugging_task.debug_feature, [feature.logical_name, random])
+
+            tasks.add(task)
+
+        for task in tasks:
+            self.idling.idle_until(task)
+
+        for feature in self.change_management.centralised_vcs_client.working_copy.features:
+            developer = self.choose_developer()
+            refactoring_task = Refactoring(developer, ChangeManagement(developer, self.centralised_vcs_server))
+
+            task = developer.allocate_task(
+                refactoring_task, refactoring_task.refactor_feature, [feature.logical_name, random])
+
+            tasks.add(task)
+
+        for task in tasks:
+            self.idling.idle_until(task)
+

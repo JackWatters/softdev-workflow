@@ -14,7 +14,11 @@ class Testing(Workflow):
         feature.add_test(logical_name)
 
     @default_cost()
-    def test_per_chunk_ratio(self, feature, random):
+    def test_per_chunk_ratio(self, feature_logical_name, random):
+
+        self.change_management.checkout()
+
+        feature = self.change_management.centralised_vcs_client.working_copy.get_feature(feature_logical_name)
 
         test_count = 0
 

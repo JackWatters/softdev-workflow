@@ -26,28 +26,25 @@ class TestDrivenDevelopment(Workflow):
 
         Workflow.__init__(self, actor)
 
-        self.change_management = ChangeManagement(actor, centralised_vcs_server)
-        self.specification = Specification(actor, self.change_management)
-        self.testing = Testing(actor, self.change_management, target_test_coverage_per_feature, tests_per_chunk_ratio)
-        self.implementation = Implementation(actor, self.change_management)
-        self.debugging = Debugging(actor, self.change_management)
-        self.refactoring = Refactoring(actor, self.change_management, target_dependencies_per_feature)
+        change_management = ChangeManagement(actor, centralised_vcs_server)
+        self.specification = Specification(actor, change_management)
+        self.testing = Testing(actor, change_management, target_test_coverage_per_feature, tests_per_chunk_ratio)
+        self.implementation = Implementation(actor, change_management)
+        self.debugging = Debugging(actor, change_management)
+        self.refactoring = Refactoring(actor, change_management, target_dependencies_per_feature)
 
     @default_cost()
     def implement_feature_tdd(self, user_story, random):
         """
         Implements the sequence of activities in a tests driven development workflow.
         """
-        self.change_management.checkout()
 
         self.specification.add_feature(user_story.logical_name, user_story.size, random)
 
-        feature = self.change_management.centralised_vcs_client.working_copy.get_feature(user_story.logical_name)
-
-        self.testing.test_per_chunk_ratio(feature, random)
-        self.implementation.implement_feature(feature, random)
-        self.debugging.debug_feature(feature, random)
-        self.refactoring.refactor_feature(feature, random)
+        self.testing.test_per_chunk_ratio(user_story.logical_name, random)
+        self.implementation.implement_feature(user_story.logical_name, random)
+        self.debugging.debug_feature(user_story.logical_name, random)
+        self.refactoring.refactor_feature(user_story.logical_name, random)
 
     @default_cost()
     def work_from_backlog(self, product_backlog, random):

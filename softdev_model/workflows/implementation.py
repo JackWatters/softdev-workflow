@@ -12,7 +12,12 @@ class Implementation(Workflow):
         feature.extend(chunk_logical_name, random)
 
     @default_cost()
-    def implement_feature(self, feature, random):
+    def implement_feature(self, logical_name, random):
+
+        self.change_management.checkout()
+
+        feature = self.change_management.centralised_vcs_client.working_copy.get_feature(logical_name)
+
         chunk_count = 0
         while not feature.is_implemented:
             self.add_chunk(chunk_count, feature, random)

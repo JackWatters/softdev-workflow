@@ -42,17 +42,17 @@ class TDDDeveloperRegressionTestCase(unittest.TestCase):
 
     def test_tdd_developer(self):
 
-        tdd_developer_1 = Actor("alice", self.clock)
+        tdd_developer = Actor("alice", self.clock)
 
-        test_driven_development_1 = TestDrivenDevelopment(tdd_developer_1, self.centralised_vcs_server)
+        test_driven_development = TestDrivenDevelopment(tdd_developer, self.centralised_vcs_server)
 
-        tdd_developer_1.allocate_task(
-            test_driven_development_1.work_from_backlog, [self.product_backlog, self.random])
+        tdd_developer.allocate_task(
+            test_driven_development,
+            test_driven_development.work_from_backlog, [self.product_backlog, self.random])
 
-        tdd_developer_1.start()
+        tdd_developer.start()
         self.clock.start()
-
-        tdd_developer_1.shutdown()
+        tdd_developer.shutdown()
 
         self.random.seed(1)
 
@@ -67,11 +67,6 @@ class TDDDeveloperRegressionTestCase(unittest.TestCase):
         self.clock.start()
         self.tdd_development_team.build_software_system(self.product_backlog, self.random)
         self.clock.shutdown()
-        print self.tdd_development_team.developers[0].completed_tasks[0].sub_tasks
-        print self.tdd_development_team.developers[1].completed_tasks[0].sub_tasks
-
-        print self.clock.current_tick
-
 
 if __name__ == '__main__':
     unittest.main()

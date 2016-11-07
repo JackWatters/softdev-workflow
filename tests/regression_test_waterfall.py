@@ -5,6 +5,8 @@ import unittest
 
 import sys
 
+from theatre_ag import Actor, SynchronizingClock
+
 from softdev_model.system import BugEncounteredException, CentralisedVCSServer, SoftwareSystem, SystemRandom
 
 from softdev_model.workflows import Waterfall
@@ -19,11 +21,32 @@ class WaterfallRegressionTestCase(unittest.TestCase):
         self.random = SystemRandom(1)
         software_system = SoftwareSystem()
         self.centralised_vcs_server = CentralisedVCSServer(software_system)
-        self.waterfall = Waterfall(self.centralised_vcs_server)
+
+        self.clock = SynchronizingClock(max_ticks=1000)
+        self.team_manager = Actor('manager', self.clock)
+
+        self.developers = {Actor('alice', self.clock), Actor('bob', self.clock)}
+
+        self.waterfall = Waterfall(self.team_manager, self.developers, self.centralised_vcs_server)
 
     def test_implement_default_system_and_operate(self):
 
-        self.waterfall.allocate_tasks([(0, 3), (1, 5), (2, 7)], self.random)
+        self.team_manager.allocate_task(
+            self.waterfall, self.waterfall.allocate_tasks, [[(0, 3), (1, 5), (2, 7)], self.random])
+
+        self.team_manager.start()
+
+        for developer in self.developers:
+            developer.start()
+
+        self.clock.start()
+
+        self.team_manager.shutdown()
+        for developer in self.developers:
+            developer.shutdown()
+
+        for developer in self.developers:
+            print developer.completed_tasks
 
         vcs_client = self.centralised_vcs_server.checkout()
 

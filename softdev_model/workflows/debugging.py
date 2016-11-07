@@ -24,7 +24,12 @@ class Debugging(Workflow):
                 self.change_management.commit_changes(random)
 
     @default_cost()
-    def debug_feature(self, feature, random):
+    def debug_feature(self, logical_name, random):
+
+        self.change_management.checkout()
+
+        feature = self.change_management.centralised_vcs_client.working_copy.get_feature(logical_name)
+
         for test in feature.tests:
             self.debug_test(test, random)
 

@@ -16,12 +16,12 @@ class TDDDevelopmentTeam(object):
 
     def add_developer(self, logical_name):
         actor = Actor(logical_name, self.clock)
-        actor.add_workflow(TestDrivenDevelopment, self.centralised_vcs_server)
         self.developers.append(actor)
 
     def build_software_system(self, product_backlog, random):
         for developer in self.developers:
-            developer.allocate_task(developer.repertoire[0].work_from_backlog, [product_backlog, random])
+            tdd_task = TestDrivenDevelopment(developer, self.centralised_vcs_server)
+            developer.allocate_task(tdd_task, tdd_task.work_from_backlog, [product_backlog, random])
 
         for developer in self.developers:
             developer.start()

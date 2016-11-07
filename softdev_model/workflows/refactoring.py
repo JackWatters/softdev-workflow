@@ -13,7 +13,12 @@ class Refactoring(Workflow):
         feature.refactor(random)
 
     @default_cost()
-    def refactor_feature(self, feature, random):
+    def refactor_feature(self, logical_name, random):
+
+        self.change_management.checkout()
+
+        feature = self.change_management.centralised_vcs_client.working_copy.get_feature(logical_name)
+
         while len(feature.dependencies) > self.target_dependencies_per_feature:
             self.refactoring(feature, random)
             self.change_management.commit_changes(random)
