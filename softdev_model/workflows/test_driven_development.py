@@ -38,9 +38,7 @@ class TestDrivenDevelopment(Workflow):
         """
         Implements the sequence of activities in a tests driven development workflow.
         """
-
         self.specification.add_feature(user_story.logical_name, user_story.size, random)
-
         self.testing.test_per_chunk_ratio(user_story.logical_name, random)
         self.implementation.implement_feature(user_story.logical_name, random)
         self.debugging.debug_feature(user_story.logical_name, random)
