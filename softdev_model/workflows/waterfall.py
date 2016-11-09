@@ -60,11 +60,11 @@ class Waterfall(object):
         for user_story in schedule:
 
             developer = self.choose_developer()
-            specification_task = Specification(developer, ChangeManagement(developer, self.centralised_vcs_server))
-
+            specification_task = Specification(ChangeManagement(self.centralised_vcs_server))
             task = developer.allocate_task(
                 specification_task, specification_task.add_feature,
                 [user_story.logical_name, user_story.size, random])
+
             tasks.add(task)
 
         for task in tasks:
@@ -75,7 +75,7 @@ class Waterfall(object):
         for feature in self.change_management.centralised_vcs_client.working_copy.features:
 
             developer = self.choose_developer()
-            implementation_task = Implementation(developer, ChangeManagement(developer, self.centralised_vcs_server))
+            implementation_task = Implementation(ChangeManagement(self.centralised_vcs_server))
 
             task = developer.allocate_task(
                 implementation_task, implementation_task.implement_feature, [feature.logical_name, random])
@@ -88,7 +88,7 @@ class Waterfall(object):
         for feature in self.change_management.centralised_vcs_client.working_copy.features:
 
             developer = self.choose_developer()
-            testing_task = Testing(developer, ChangeManagement(developer, self.centralised_vcs_server))
+            testing_task = Testing( ChangeManagement(self.centralised_vcs_server))
 
             task = developer.allocate_task(
                 testing_task, testing_task.test_per_chunk_ratio, [feature.logical_name, random])
@@ -100,7 +100,7 @@ class Waterfall(object):
 
         for feature in self.change_management.centralised_vcs_client.working_copy.features:
             developer = self.choose_developer()
-            debugging_task = Debugging(developer, ChangeManagement(developer, self.centralised_vcs_server))
+            debugging_task = Debugging( ChangeManagement(self.centralised_vcs_server))
 
             task = developer.allocate_task(
                 debugging_task, debugging_task.debug_feature, [feature.logical_name, random])
@@ -112,7 +112,7 @@ class Waterfall(object):
 
         for feature in self.change_management.centralised_vcs_client.working_copy.features:
             developer = self.choose_developer()
-            refactoring_task = Refactoring(developer, ChangeManagement(developer, self.centralised_vcs_server))
+            refactoring_task = Refactoring(ChangeManagement(self.centralised_vcs_server))
 
             task = developer.allocate_task(
                 refactoring_task, refactoring_task.refactor_feature, [feature.logical_name, random])

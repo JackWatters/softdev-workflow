@@ -14,7 +14,7 @@ from .debugging import Debugging
 from .refactoring import Refactoring
 
 
-class TestDrivenDevelopment():
+class TestDrivenDevelopment(object):
 
     is_workflow = True
 

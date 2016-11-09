@@ -18,7 +18,7 @@ class WaterfallDevelopmentTeam(Team):
 
         team_manager = self.team_members[0]
 
-        waterfall_task = Waterfall(team_manager, self.team_members, self.centralised_vcs_server)
+        waterfall_task = Waterfall(self.team_members, self.centralised_vcs_server)
 
         team_manager.allocate_task(
             waterfall_task, waterfall_task.allocate_tasks, [self.specification, self.random])

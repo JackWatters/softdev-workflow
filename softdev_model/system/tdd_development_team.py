@@ -16,7 +16,7 @@ class TDDDevelopmentTeam(Team):
 
     def allocate_tasks(self):
         for developer in self.team_members:
-            tdd_task = TestDrivenDevelopment(developer, self.centralised_vcs_server)
+            tdd_task = TestDrivenDevelopment(self.centralised_vcs_server)
             developer.allocate_task(tdd_task, tdd_task.work_from_backlog, [self.product_backlog, self.random])
 
     @property
