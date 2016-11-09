@@ -1,10 +1,11 @@
-from theatre_ag import default_cost, Workflow
+from theatre_ag import default_cost
 
 
-class Implementation(Workflow):
+class Implementation(object):
 
-    def __init__(self, actor, change_management):
-        super(Implementation, self).__init__(actor)
+    is_workflow = True
+
+    def __init__(self, change_management):
         self.change_management = change_management
 
     @default_cost(1)

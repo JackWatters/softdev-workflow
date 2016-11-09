@@ -21,7 +21,7 @@ class ChangeManagementTestCase(unittest.TestCase):
         self.actor.clock = Mock(spec=SynchronizingClock)
         self.actor.completed_tasks = Mock(spec=list)
 
-        self.change_management = ChangeManagement(self.actor, self.centralised_vcs_server)
+        self.change_management = ChangeManagement(self.centralised_vcs_server)
 
     def test_checkout(self):
 

@@ -22,11 +22,6 @@ class TestDrivenDevelopmentTestCase(unittest.TestCase):
         self.mock_centralised_vcs_client.working_copy = Mock(spec=SoftwareSystem)
         self.mock_centralised_vcs_server.checkout = Mock(return_value=self.mock_centralised_vcs_client)
 
-        self.actor = Mock(spec=Actor)
-        self.actor.busy = Mock(spec=_RLock)
-        self.actor.clock = Mock(spec=SynchronizingClock)
-        self.actor.completed_tasks = Mock(spec=list)
-
         self.mock_feature = Mock(spec=Feature)
 
         self.mock_feature.tests_per_chunk_ratio = 0
@@ -84,7 +79,7 @@ class TestDrivenDevelopmentTestCase(unittest.TestCase):
 
         self.configure_system_development_mocks()
 
-        self.test_driven_development = TestDrivenDevelopment(self.actor, self.mock_centralised_vcs_server)
+        self.test_driven_development = TestDrivenDevelopment(self.mock_centralised_vcs_server)
 
         self.user_story = UserStory('mock_story', 1, 0)
 

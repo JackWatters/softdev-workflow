@@ -4,7 +4,7 @@
 
 from Queue import Empty
 
-from theatre_ag import default_cost, Workflow
+from theatre_ag import default_cost
 
 from .change_management import ChangeManagement
 from specification import Specification
@@ -14,24 +14,23 @@ from .debugging import Debugging
 from .refactoring import Refactoring
 
 
-class TestDrivenDevelopment(Workflow):
+class TestDrivenDevelopment():
+
+    is_workflow = True
 
     def __init__(self,
-                 actor,
                  centralised_vcs_server,
                  target_test_coverage_per_feature=1.0,
                  tests_per_chunk_ratio=1,
                  target_dependencies_per_feature=0
                  ):
 
-        Workflow.__init__(self, actor)
-
-        change_management = ChangeManagement(actor, centralised_vcs_server)
-        self.specification = Specification(actor, change_management)
-        self.testing = Testing(actor, change_management, target_test_coverage_per_feature, tests_per_chunk_ratio)
-        self.implementation = Implementation(actor, change_management)
-        self.debugging = Debugging(actor, change_management)
-        self.refactoring = Refactoring(actor, change_management, target_dependencies_per_feature)
+        change_management = ChangeManagement(centralised_vcs_server)
+        self.specification = Specification(change_management)
+        self.testing = Testing(change_management, target_test_coverage_per_feature, tests_per_chunk_ratio)
+        self.implementation = Implementation(change_management)
+        self.debugging = Debugging(change_management)
+        self.refactoring = Refactoring(change_management, target_dependencies_per_feature)
 
     @default_cost()
     def implement_feature_tdd(self, user_story, random):

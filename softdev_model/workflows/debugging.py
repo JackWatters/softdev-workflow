@@ -1,12 +1,13 @@
-from theatre_ag import default_cost, Workflow
+from theatre_ag import default_cost
 
 from softdev_model.system import BugEncounteredException
 
 
-class Debugging(Workflow):
+class Debugging(object):
 
-    def __init__(self, actor, change_management):
-        super(Debugging, self).__init__(actor)
+    is_workflow = True
+
+    def __init__(self, change_management):
         self.change_management = change_management
 
     @default_cost(1)

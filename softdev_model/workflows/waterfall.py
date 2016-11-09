@@ -2,7 +2,7 @@
 @author: twsswt
 """
 
-from theatre_ag import default_cost, Workflow, Idling
+from theatre_ag import default_cost, Idling
 
 from .change_management import ChangeManagement
 from .implementation import Implementation
@@ -12,17 +12,16 @@ from .specification import Specification
 from .refactoring import Refactoring
 
 
-class Waterfall(Workflow):
+class Waterfall(object):
+
+    is_workflow = True
 
     def __init__(self,
-                 actor,
                  developers,
                  centralised_vcs_server,
                  target_test_coverage_per_feature=1.0,
                  tests_per_chunk_ratio=0,
                  target_dependencies_per_feature=1):
-
-        super(Waterfall, self).__init__(actor)
 
         self.developers = developers
 
@@ -31,8 +30,8 @@ class Waterfall(Workflow):
         self.tests_per_chunk_ratio = tests_per_chunk_ratio
         self.target_dependencies_per_feature = target_dependencies_per_feature
 
-        self.change_management = ChangeManagement(actor, centralised_vcs_server)
-        self.idling = Idling(actor)
+        self.change_management = ChangeManagement(centralised_vcs_server)
+        self.idling = Idling()
 
     @default_cost()
     def choose_developer(self):

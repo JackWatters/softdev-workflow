@@ -1,10 +1,11 @@
-from theatre_ag import default_cost, Workflow
+from theatre_ag import default_cost
 
 
-class Refactoring(Workflow):
+class Refactoring(object):
 
-    def __init__(self, actor, change_management, target_dependencies_per_feature=0):
-        super(Refactoring, self).__init__(actor)
+    is_workflow = True
+
+    def __init__(self, change_management, target_dependencies_per_feature=0):
         self.change_management = change_management
         self.target_dependencies_per_feature = target_dependencies_per_feature
 

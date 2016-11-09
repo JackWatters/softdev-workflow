@@ -1,12 +1,13 @@
-from theatre_ag import default_cost, Workflow
+from theatre_ag import default_cost
 
 from softdev_model.system import CentralisedVCSException
 
 
-class ChangeManagement(Workflow):
+class ChangeManagement(object):
 
-    def __init__(self, actor, centralised_vcs_server):
-        super(ChangeManagement, self).__init__(actor)
+    is_workflow = True
+
+    def __init__(self, centralised_vcs_server):
 
         self.centralised_vcs_server = centralised_vcs_server
         self.centralised_vcs_client = None

@@ -1,10 +1,12 @@
-from theatre_ag import default_cost, Workflow
+from theatre_ag import default_cost
 
 
-class Testing(Workflow):
+class Testing(object):
 
-    def __init__(self, actor, change_management, target_test_coverage_per_feature=1.0, target_tests_per_chunk_ratio=1):
-        super(Testing, self).__init__(actor)
+    is_workflow = True
+
+    def __init__(self, change_management, target_test_coverage_per_feature=1.0, target_tests_per_chunk_ratio=1):
+
         self.change_management = change_management
         self.target_test_coverage_per_feature = target_test_coverage_per_feature
         self.target_tests_per_chunk_ratio = target_tests_per_chunk_ratio
