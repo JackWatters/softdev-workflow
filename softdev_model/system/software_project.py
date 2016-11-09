@@ -5,13 +5,12 @@
 
 import time
 
-from theatre_ag import SynchronizingClock
+from theatre_ag import SynchronizingClock, Team
 
 from .bug import BugEncounteredException
 from .centralised_vcs import CentralisedVCSServer
 from .feature import InoperableFeatureException
 from .software_system import SoftwareSystem
-from .tdd_development_team import TDDDevelopmentTeam
 
 from random import Random
 
@@ -24,17 +23,18 @@ class SoftwareProject(object):
     def __init__(self,
                  random,
                  development_team,
-                 schedule,
+                 plan,
                  number_of_traces,
                  max_trace_length):
 
         self.random = random
         self.development_team = development_team
-        self.schedule = schedule
+        self.plan = plan
         self.number_of_traces = number_of_traces
         self.max_trace_length = max_trace_length
 
     def build_and_operate(self):
+        self.plan.apply(self.development_team)
         self.development_team.perform()
 
         for _ in range(0, self.number_of_traces):
@@ -45,7 +45,7 @@ class SoftwareProject(object):
 
     @property
     def software_system(self):
-        return self.development_team.release
+        return self.plan.release
 
 
 class SoftwareProjectGroup(object):
@@ -55,7 +55,7 @@ class SoftwareProjectGroup(object):
 
         for seed in range(0, n):
 
-            development_team = TDDDevelopmentTeam(SynchronizingClock(), CentralisedVCSServer(SoftwareSystem()))
+            development_team = Team(SynchronizingClock(), CentralisedVCSServer(SoftwareSystem()))
 
             for logical_name in range(0, number_of_developers):
                 development_team.add_developer(logical_name)
