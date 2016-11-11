@@ -2,33 +2,39 @@ import unittest
 
 from nose_parameterized import parameterized
 
+from Queue import Queue
+
 import fuzzi_moss as fm
-
-from random import Random
-
-workflow_random = Random()
 
 from fuzzi_moss.core_fuzzers import *
 
-from softdev_model.system import Bug, Chunk, Feature, SoftwareProjectGroup, Test
-from softdev_model.workflows.test_driven_development import TestDrivenDevelopment
-from softdev_model.workflows.waterfall import Waterfall
+from softdev_model.system import SoftwareProjectGroup, SystemRandom, TestDrivenDevelopmentPlan, UserStory
+from softdev_model.workflows import ChangeManagement, Debugging, Implementation, Refactoring, Specification, Testing, \
+    TestDrivenDevelopment, Waterfall
+
+workflow_random = SystemRandom()
 
 
 def create_experimental_parameters():
 
         result = list()
 
-        workflows = [Waterfall, TestDrivenDevelopment]
-        person_times = [50, 250]
+        number_of_clock_tickss = [50, 250]
+        number_of_developerss = [2, 5, 10]
         p_incomplete_steps = [p / 100.0 for p in range(0, 100, 5)]
         p_miss_steps = [p / 100.0 for p in range(0, 100, 50)]
 
-        for workflow in workflows:
-            for person_time in person_times:
+        number_of_clock_tickss = [500]
+        number_of_developerss = [2]
+        p_incomplete_steps = [p / 100.0 for p in range(0, 100, 100)]
+        p_miss_steps = [p / 100.0 for p in range(0, 100, 100)]
+
+        for number_of_developers in number_of_developerss:
+            for number_of_clock_ticks in number_of_clock_tickss:
                 for p_miss_step in p_miss_steps:
                     for p_incomplete_step in p_incomplete_steps:
-                        result.append(( workflow, person_time, p_miss_step, p_incomplete_step))
+                        result.append(
+                            (number_of_developers, number_of_clock_ticks, p_miss_step, p_incomplete_step))
         return result
 
 
@@ -56,13 +62,9 @@ class TestCompareWorkFlows(unittest.TestCase):
 
     def setUp(self):
         fm.fuzzi_moss_random.seed(1)
-        Chunk._count = 0
-        Feature._count = 0
-        Test._count = 0
-        Bug._count = 0
 
     @parameterized.expand(create_experimental_parameters, testcase_func_name=test_name_func)
-    def test_compare_workflows(self, workflow, person_time, p_miss_step, p_incomplete_step):
+    def test_compare_workflows(self, number_of_developers, number_of_clock_ticks, p_miss_step, p_incomplete_step):
 
         incomplete_step_fuzzer = \
             recurse_into_nested_steps(
@@ -78,8 +80,8 @@ class TestCompareWorkFlows(unittest.TestCase):
                 )
             )
 
+        '''
         workflow_advice = {
-
             TestDrivenDevelopment.work:
                 recurse_into_nested_steps(
                     target_structures={ast.For, ast.TryExcept},
@@ -103,12 +105,24 @@ class TestCompareWorkFlows(unittest.TestCase):
             Waterfall._debug_system: incomplete_step_fuzzer,
             Waterfall._refactor_system: incomplete_step_fuzzer,
         }
+        '''
+        workflow_advice = {
+            TestDrivenDevelopment.implement_feature_tdd :
+                recurse_into_nested_steps(
+                    target_structures={ast.For, ast.TryExcept},
+                    fuzzer=filter_steps(
+                        exclude_control_structures(),
+                        fuzzer=choose_from([(p_miss_step, remove_random_step), (1 - p_miss_step, identity)])
+                    )
+                ),
+        }
 
         def create_result_row(projects_group):
+
             return ", ".join(
                 [
-                    str(workflow.__name__),
-                    str(person_time),
+                    str(plan.__class__.__name__),
+                    str(number_of_clock_ticks),
                     "%.2f" % p_miss_step,
                     "%.2f" % p_incomplete_step,
                     str(reduce(lambda i, j: i + j, fm.fuzzer_invocations.values(), 0)),
@@ -118,18 +132,29 @@ class TestCompareWorkFlows(unittest.TestCase):
                     "%.0f" % projects_group.duration
                 ])
 
-        fm.fuzz_clazz(workflow, workflow_advice)
+        #fm.fuzz_clazz(Waterfall, workflow_advice)
+        fm.fuzz_clazz(TestDrivenDevelopment, workflow_advice)
+        #fm.fuzz_clazz(Specification, workflow_advice)
+        #fm.fuzz_clazz(Implementation, workflow_advice)
+        #fm.fuzz_clazz(Testing, workflow_advice)
+        #fm.fuzz_clazz(Debugging, workflow_advice)
+        #fm.fuzz_clazz(Refactoring, workflow_advice)
+        #fm.fuzz_clazz(ChangeManagement, workflow_advice)
+
+        product_backlog = Queue()
+
+        product_backlog.put(UserStory(0, 3, 1))
+        product_backlog.put(UserStory(1, 5, 2))
+        product_backlog.put(UserStory(2, 7, 3))
+
+        plan = TestDrivenDevelopmentPlan(product_backlog, workflow_random)
 
         projects = \
             SoftwareProjectGroup(
-                workflow=workflow,
-                person_time=person_time,
-                schedule=[3, 5, 7],
-                number_of_traces=50,
-                max_trace_length=750,
-                n=20)
+                plan, number_of_developers, number_of_clock_ticks, number_of_traces=1, max_trace_length=750, n=1)
 
         projects.build_and_operate()
+
         print create_result_row(projects)
         fm.reset_invocation_counters()
 
