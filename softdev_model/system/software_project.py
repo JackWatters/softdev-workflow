@@ -8,11 +8,11 @@ import time
 from theatre_ag import SynchronizingClock, Team
 
 from .bug import BugEncounteredException
-from .centralised_vcs import CentralisedVCSServer
 from .feature import InoperableFeatureException
-from .software_system import SoftwareSystem
+from .system_random import SystemRandom
 
-from random import Random
+from .centralised_vcs import CentralisedVCSServer
+from .software_system import SoftwareSystem
 
 
 class SoftwareProject(object):
@@ -22,48 +22,66 @@ class SoftwareProject(object):
 
     def __init__(self,
                  random,
+                 clock,
                  development_team,
                  plan,
+                 centralised_vcs_server,
                  number_of_traces,
                  max_trace_length):
 
         self.random = random
+        self.clock = clock
         self.development_team = development_team
         self.plan = plan
+        self.centralised_vcs_server = centralised_vcs_server
         self.number_of_traces = number_of_traces
         self.max_trace_length = max_trace_length
 
     def build_and_operate(self):
-        self.plan.apply(self.development_team)
+        self.plan.apply(self.development_team, self.centralised_vcs_server)
+        self.clock.start()
         self.development_team.perform()
+        self.clock.shutdown()
 
         for _ in range(0, self.number_of_traces):
             try:
-                self.software_system.operate(self.random, self.max_trace_length)
+                self.release.operate(self.random, self.max_trace_length)
             except (BugEncounteredException, InoperableFeatureException):
                 pass
 
     @property
-    def software_system(self):
-        return self.plan.release
+    def release(self):
+        return self.centralised_vcs_server.checkout().working_copy
+
+
+    @property
+    def project_duration(self):
+        # TODO
+        return 0
 
 
 class SoftwareProjectGroup(object):
 
-    def __init__(self, schedule, number_of_developers, number_of_traces, max_trace_length, n):
+    def __init__(self, plan, number_of_developers, number_of_clock_ticks, number_of_traces, max_trace_length, n):
         self.software_projects = list()
 
         for seed in range(0, n):
 
-            development_team = Team(SynchronizingClock(), CentralisedVCSServer(SoftwareSystem()))
+            clock = SynchronizingClock(number_of_clock_ticks)
+
+            development_team = Team(clock)
 
             for logical_name in range(0, number_of_developers):
-                development_team.add_developer(logical_name)
+                development_team.add_member(logical_name)
+
+            centralised_vcs_server = CentralisedVCSServer(SoftwareSystem())
 
             software_project = SoftwareProject(
-                Random(seed),
+                SystemRandom(seed),
+                clock,
                 development_team,
-                schedule,
+                plan,
+                centralised_vcs_server,
                 number_of_traces,
                 max_trace_length)
 
@@ -82,12 +100,12 @@ class SoftwareProjectGroup(object):
 
     @property
     def average_project_mean_time_to_failure(self):
-        return self._average_project_attribute(lambda p: p.software_system.mean_operations_to_failure)
+        return self._average_project_attribute(lambda p: p.release.mean_operations_to_failure)
 
     @property
     def average_project_remaining_developer_time(self):
-        return self._average_project_attribute(lambda p: p.developer.person_time)
+        return self._average_project_attribute(lambda p: p.project_duration)
 
     @property
     def average_project_features_implemented(self):
-        return self._average_project_attribute(lambda p: 1.0 * len(p.software_system.features))
+        return self._average_project_attribute(lambda p: 1.0 * len(p.release.features))
