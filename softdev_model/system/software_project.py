@@ -41,7 +41,7 @@ class SoftwareProject(object):
         self.development_team.perform()
         self.clock.shutdown()
 
-    def deploy_and_operate(self, number_of_traces, max_trace_length ):
+    def deploy_and_operate(self, number_of_traces, max_trace_length):
         deployment = self.centralised_vcs_server.checkout().working_copy
         self.deployments.append(deployment)
 
@@ -70,14 +70,15 @@ class SoftwareProject(object):
 
 class SoftwareProjectGroup(object):
 
-    def __init__(self, plan, number_of_developers, number_of_clock_ticks, number_of_traces, max_trace_length, n):
+    def __init__(self, number_of_projects, plan, number_of_developers, number_of_clock_ticks, number_of_traces,
+                 max_trace_length):
 
-        self.number_of_traces =number_of_traces
+        self.number_of_traces = number_of_traces
         self.max_trace_length = max_trace_length
 
         self.software_projects = list()
 
-        for seed in range(0, n):
+        for seed in range(0, number_of_projects):
 
             clock = SynchronizingClock(number_of_clock_ticks)
 

@@ -36,5 +36,5 @@ class Testing(object):
 
         self.change_mangement.checkout()
 
-        for feature in self.centralised_vcs_client.working_copy.features:
+        for feature in self.change_management.centralised_vcs_client.working_copy.features:
             self.test_per_chunk_ratio(feature, random)
