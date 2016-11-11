@@ -150,8 +150,8 @@ class TestCompareWorkFlows(unittest.TestCase):
         plan = TestDrivenDevelopmentPlan(product_backlog, workflow_random)
 
         projects = \
-            SoftwareProjectGroup(
-                plan, number_of_developers, number_of_clock_ticks, number_of_traces=1, max_trace_length=750, n=1)
+            SoftwareProjectGroup(number_of_projects=1, plan=plan, number_of_developers=number_of_developers,
+                                 number_of_clock_ticks=number_of_clock_ticks, number_of_traces=1, max_trace_length=750)
 
         projects.build_and_operate()
 
