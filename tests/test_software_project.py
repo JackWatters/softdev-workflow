@@ -30,15 +30,13 @@ class SoftwareProjectTestCase(unittest.TestCase):
             self.mock_development_team,
             self.mock_plan,
             self.centralised_vcs_server,
-            number_of_traces=5,
-            max_trace_length=1000
         )
 
     def test_that_system_is_built_and_operated(self):
 
         self.software_project.build()
 
-        self.software_project.deploy_and_operate(1, 1000, self.mock_random)
+        self.software_project.deploy_and_operate(1, 1000)
 
         self.mock_development_team.perform.assert_called_once_with()
 
