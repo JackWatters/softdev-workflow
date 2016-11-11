@@ -36,11 +36,13 @@ class SoftwareProjectTestCase(unittest.TestCase):
 
     def test_that_system_is_built_and_operated(self):
 
-        self.software_project.build_and_operate()
+        self.software_project.build()
+
+        self.software_project.deploy_and_operate(1, 1000, self.mock_random)
 
         self.mock_development_team.perform.assert_called_once_with()
 
-        self.software_project.release.operate.assert_called_with(self.mock_random, 1000)
+        self.software_project.last_deployment.operate.assert_called_with(self.mock_random, 1000)
 
 
 if __name__ == '__main__':

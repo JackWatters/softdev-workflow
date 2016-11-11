@@ -25,44 +25,56 @@ class SoftwareProject(object):
                  clock,
                  development_team,
                  plan,
-                 centralised_vcs_server,
-                 number_of_traces,
-                 max_trace_length):
+                 centralised_vcs_server):
 
         self.random = random
         self.clock = clock
         self.development_team = development_team
         self.plan = plan
         self.centralised_vcs_server = centralised_vcs_server
-        self.number_of_traces = number_of_traces
-        self.max_trace_length = max_trace_length
 
-    def build_and_operate(self):
+        self.deployments = list()
+
+    def build(self):
         self.plan.apply(self.development_team, self.centralised_vcs_server)
         self.clock.start()
         self.development_team.perform()
         self.clock.shutdown()
 
-        for _ in range(0, self.number_of_traces):
+    def deploy_and_operate(self, number_of_traces, max_trace_length ):
+        deployment = self.centralised_vcs_server.checkout().working_copy
+        self.deployments.append(deployment)
+
+        for _ in range(0, number_of_traces):
             try:
-                self.release.operate(self.random, self.max_trace_length)
+                deployment.operate(self.random, max_trace_length)
             except (BugEncounteredException, InoperableFeatureException):
                 pass
 
     @property
-    def release(self):
-        return self.centralised_vcs_server.checkout().working_copy
-
+    def last_deployment(self):
+        index = len(self.deployments) - 1
+        return None if index < 0 else self.deployments[index]
 
     @property
     def project_duration(self):
-        # TODO
-        return 0
+
+        finish_ticks = \
+            map(lambda d: 0 if d.last_completed_task is None else d.last_completed_task.finish_tick,
+                self.development_team.team_members)
+
+        reduce(min, finish_ticks)
+
+        return self.clock.current_tick
 
 
 class SoftwareProjectGroup(object):
 
     def __init__(self, plan, number_of_developers, number_of_clock_ticks, number_of_traces, max_trace_length, n):
+
+        self.number_of_traces =number_of_traces
+        self.max_trace_length = max_trace_length
+
         self.software_projects = list()
 
         for seed in range(0, n):
@@ -81,9 +93,7 @@ class SoftwareProjectGroup(object):
                 clock,
                 development_team,
                 plan,
-                centralised_vcs_server,
-                number_of_traces,
-                max_trace_length)
+                centralised_vcs_server)
 
             self.software_projects.append(software_project)
 
@@ -92,7 +102,9 @@ class SoftwareProjectGroup(object):
     def build_and_operate(self):
         start_time = time.time()
         for software_project in self.software_projects:
-            software_project.build_and_operate()
+            software_project.build()
+            software_project.deploy_and_operate(self.number_of_traces,  self.max_trace_length)
+
         self.duration = time.time() - start_time
 
     def _average_project_attribute(self, attr):
@@ -100,7 +112,7 @@ class SoftwareProjectGroup(object):
 
     @property
     def average_project_mean_time_to_failure(self):
-        return self._average_project_attribute(lambda p: p.release.mean_operations_to_failure)
+        return self._average_project_attribute(lambda p: p.last_deployment.mean_operations_to_failure)
 
     @property
     def average_project_remaining_developer_time(self):
@@ -108,4 +120,4 @@ class SoftwareProjectGroup(object):
 
     @property
     def average_project_features_implemented(self):
-        return self._average_project_attribute(lambda p: 1.0 * len(p.release.features))
+        return self._average_project_attribute(lambda p: 1.0 * len(p.last_deployment.features))
