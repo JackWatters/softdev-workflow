@@ -34,7 +34,7 @@ class SoftwareSystem(object):
         self.test_efficiency = test_efficiency
 
         self.features = SortedSet(key=lambda f: f.logical_name)
-        self.successful_operations = []
+        self.successful_operations = list()
 
     def add_feature(self, logical_name, size):
         feature = Feature(self, logical_name, size)
@@ -79,11 +79,11 @@ class SoftwareSystem(object):
         return reduce(lambda a, b: a.union(b), bug_sets, SortedSet(key=lambda bug: bug.fully_qualified_name))
 
     def operate(self, random, limit=sys.maxint):
-        current_operations = []
+        current_operations = list()
         self.successful_operations.append(current_operations)
 
         if len(self.features) == 0:
-            return self.successful_operations
+            return
 
         while len(current_operations) < limit:
             next_feature = random.choice(self.features)
@@ -96,8 +96,7 @@ class SoftwareSystem(object):
         :return : the last sequence of successful operations called by operate.
         """
         last_trace_index = len(self.successful_operations) - 1
-
-        return self.successful_operations[last_trace_index]
+        return None if last_trace_index < 0 else self.successful_operations[last_trace_index]
 
     @property
     def mean_operations_to_failure(self):
