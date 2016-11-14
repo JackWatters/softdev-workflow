@@ -9,7 +9,6 @@ from theatre_ag import SynchronizingClock, Team
 
 from .bug import BugEncounteredException
 from .feature import InoperableFeatureException
-from .system_random import SystemRandom
 
 from .centralised_vcs import CentralisedVCSServer
 from .software_system import SoftwareSystem
@@ -20,12 +19,7 @@ class SoftwareProject(object):
     Represents the overall state and behaviour of a software project.
     """
 
-    def __init__(self,
-                 random,
-                 clock,
-                 development_team,
-                 plan,
-                 centralised_vcs_server):
+    def __init__(self, clock, development_team, plan, centralised_vcs_server, random):
 
         self.random = random
         self.clock = clock
@@ -70,7 +64,7 @@ class SoftwareProject(object):
 
 class SoftwareProjectGroup(object):
 
-    def __init__(self, number_of_projects, plan, number_of_developers, number_of_clock_ticks, number_of_traces,
+    def __init__(self, plan, random, number_of_developers, number_of_clock_ticks, number_of_projects, number_of_traces,
                  max_trace_length):
 
         self.number_of_traces = number_of_traces
@@ -89,16 +83,11 @@ class SoftwareProjectGroup(object):
 
             centralised_vcs_server = CentralisedVCSServer(SoftwareSystem())
 
-            software_project = SoftwareProject(
-                SystemRandom(seed),
-                clock,
-                development_team,
-                plan,
-                centralised_vcs_server)
+            software_project = SoftwareProject(clock, development_team, plan, centralised_vcs_server, random)
 
             self.software_projects.append(software_project)
 
-        self.duration = -1
+        self.simulation_duration = -1
 
     def build_and_operate(self):
         start_time = time.time()
@@ -106,7 +95,7 @@ class SoftwareProjectGroup(object):
             software_project.build()
             software_project.deploy_and_operate(self.number_of_traces,  self.max_trace_length)
 
-        self.duration = time.time() - start_time
+        self.simulation_duration = time.time() - start_time
 
     def _average_project_attribute(self, attr):
         return reduce(lambda x, y: x + y, map(attr, self.software_projects), 0) / len(self.software_projects)
