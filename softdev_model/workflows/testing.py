@@ -34,7 +34,7 @@ class Testing(object):
     @default_cost()
     def complete_system_test_suite(self, random):
 
-        self.change_mangement.checkout()
+        self.change_management.checkout()
 
         for feature in self.change_management.centralised_vcs_client.working_copy.features:
             self.test_per_chunk_ratio(feature, random)
