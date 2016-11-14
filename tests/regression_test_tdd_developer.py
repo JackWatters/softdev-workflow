@@ -4,11 +4,10 @@ import unittest
 
 from Queue import Queue
 
-from theatre_ag import Actor, SynchronizingClock
+from theatre_ag import Actor, SynchronizingClock, Team
 
-from softdev_model.system import BugEncounteredException, CentralisedVCSServer, SoftwareSystem, SystemRandom, \
-    TDDDevelopmentTeam,  UserStory
-from softdev_model.workflows import TestDrivenDevelopment
+from softdev_model.system import BugEncounteredException, CentralisedVCSServer, SoftwareProject, SoftwareSystem, \
+    SystemRandom, TestDrivenDevelopmentPlan, UserStory
 
 
 class TDDDeveloperRegressionTestCase(unittest.TestCase):
@@ -19,7 +18,8 @@ class TDDDeveloperRegressionTestCase(unittest.TestCase):
 
         self.clock = SynchronizingClock(max_ticks=1000)
 
-        self.centralised_vcs_server = CentralisedVCSServer(SoftwareSystem())
+        self.development_team = Team(self.clock)
+        self.development_team.add_member('alice')
 
         self.product_backlog = Queue()
 
@@ -29,10 +29,12 @@ class TDDDeveloperRegressionTestCase(unittest.TestCase):
 
         self.random = SystemRandom(1)
 
-        self.development_team = TDDDevelopmentTeam(
-            self.clock, self.centralised_vcs_server, self.product_backlog, self.random)
+        self.plan = TestDrivenDevelopmentPlan(self.product_backlog, self.random)
 
-        self.development_team.add_member('alice')
+        self.centralised_vcs_server = CentralisedVCSServer(SoftwareSystem())
+
+        self.software_project = SoftwareProject(
+            self.clock, self.development_team, self.plan, self.centralised_vcs_server, self.random)
 
     def assert_operate_trace_length(self, x64_bit_result, x32_bit_result):
         working_copy = self.centralised_vcs_server.checkout().working_copy
@@ -47,9 +49,7 @@ class TDDDeveloperRegressionTestCase(unittest.TestCase):
 
     def test_tdd_development_team(self):
 
-        self.clock.start()
-        self.development_team.perform()
-        self.clock.shutdown()
+        self.software_project.build()
 
 if __name__ == '__main__':
     unittest.main()

@@ -24,13 +24,8 @@ class SoftwareProjectTestCase(unittest.TestCase):
         self.mock_plan = Mock(spec=DevelopmentPlan)
         self.mock_plan.release = Mock(return_value=Mock(spec=SoftwareSystem))
 
-        self.software_project = SoftwareProject(
-            self.mock_random,
-            self.clock,
-            self.mock_development_team,
-            self.mock_plan,
-            self.centralised_vcs_server,
-        )
+        self.software_project = SoftwareProject(self.clock, self.mock_development_team, self.mock_plan,
+                                                self.centralised_vcs_server, self.mock_random)
 
     def test_that_system_is_built_and_operated(self):
 
