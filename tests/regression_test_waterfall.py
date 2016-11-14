@@ -5,10 +5,10 @@ import unittest
 
 import sys
 
-from theatre_ag import Actor, SynchronizingClock
+from theatre_ag import SynchronizingClock, Team
 
-from softdev_model.system import BugEncounteredException, CentralisedVCSServer, SoftwareSystem, SystemRandom, \
-    UserStory, WaterfallDevelopmentTeam
+from softdev_model.system import BugEncounteredException, CentralisedVCSServer, SoftwareProject, SoftwareSystem, \
+    SystemRandom, UserStory, WaterfallDevelopmentPlan
 
 
 class WaterfallRegressionTestCase(unittest.TestCase):
@@ -19,28 +19,25 @@ class WaterfallRegressionTestCase(unittest.TestCase):
 
         self.clock = SynchronizingClock(max_ticks=100000)
 
-        self.centralised_vcs_server = CentralisedVCSServer(SoftwareSystem())
+        self.development_team = Team(self.clock)
+        self.development_team.add_member('manager')
+        self.development_team.add_member('alice')
 
-        self.specification = list()
-
-        self.specification.append(UserStory(0, 3, 1))
-        self.specification.append(UserStory(1, 5, 2))
-        self.specification.append(UserStory(2, 7, 3))
+        self.specification = [UserStory(0, 3, 1), UserStory(1, 5, 2), UserStory(2, 7, 3)]
 
         self.random = SystemRandom(1)
 
-        self.development_team = WaterfallDevelopmentTeam(
-            self.clock, self.centralised_vcs_server, self.specification, self.random)
+        self.plan = WaterfallDevelopmentPlan(self.specification, self.random)
 
-        self.development_team.add_member('manager')
-        self.development_team.add_member('alice')
+        self.centralised_vcs_server = CentralisedVCSServer(SoftwareSystem())
+
+        self.project = SoftwareProject(
+            self.clock, self.development_team, self.plan, self.centralised_vcs_server, self.random)
 
     def assert_operate_to_desired_trace_length(self, x64_bit_result=10000, x32_bit_result=10000, limit=10000):
 
         try:
-            self.clock.start()
-            self.development_team.perform()
-            self.clock.shutdown()
+            self.project.build()
 
             working_copy = self.centralised_vcs_server.checkout().working_copy
 
