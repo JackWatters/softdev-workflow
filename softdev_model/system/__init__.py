@@ -3,8 +3,9 @@ from .centralised_vcs import CentralisedVCSClient, CentralisedVCSException, Cent
 from .chunk import Chunk
 from .feature import Feature, InoperableFeatureException
 from .project_plan import DevelopmentPlan, TestDrivenDevelopmentPlan, WaterfallDevelopmentPlan
-from .software_project import SoftwareProject, SoftwareProjectGroup
 from .software_system import SoftwareSystem
+from .software_project import SoftwareProject
+from .software_project_group import SoftwareProjectGroup
 from .system_random import SystemRandom
 from .test import Test
 from .user_story import UserStory
