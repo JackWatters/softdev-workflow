@@ -52,11 +52,11 @@ class WaterfallRegressionTestCase(unittest.TestCase):
             self.assertEquals(x32_bit_result, len(working_copy.last_trace))
 
     def test_implement_default_system_and_operate(self):
-        self.assert_operate_to_desired_trace_length(12, 151)
+        self.assert_operate_to_desired_trace_length(12, 1)
 
     def test_implement_system_with_low_effectiveness_tests_and_operate(self):
         self.centralised_vcs_server.master.test_effectiveness = 0.1
-        self.assert_operate_to_desired_trace_length(12, 8)
+        self.assert_operate_to_desired_trace_length(12, 0)
 
     def test_implement_system_with_high_effectiveness_tests_and_operate(self):
         self.centralised_vcs_server.master.test_effectiveness = 1.0
