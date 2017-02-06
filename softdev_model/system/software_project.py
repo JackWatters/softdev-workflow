@@ -25,8 +25,8 @@ class SoftwareProject(object):
     def build(self):
         self.plan.apply(self.development_team, self.centralised_vcs_server)
         self.clock.start()
-        self.development_team.perform()
-        self.clock.shutdown()
+        self.development_team.start()
+        self.clock.wait_for_last_tick()
 
     def deploy_and_operate(self, number_of_traces, max_trace_length):
         deployment = self.centralised_vcs_server.checkout().working_copy
@@ -46,10 +46,14 @@ class SoftwareProject(object):
     @property
     def project_duration(self):
 
-        finish_ticks = \
-            map(lambda d: 0 if d.last_completed_task is None else d.last_completed_task.finish_tick,
-                self.development_team.team_members)
+        def finish_ticks(developer):
+            if developer.last_completed_task is None:
+                return 0
+            elif developer.last_completed_task.finish_tick is None:
+                return self.clock.current_tick
+            else:
+                return developer.last_completed_task.finish_tick
 
-        reduce(min, finish_ticks)
+        last_tick = reduce(max, map(finish_ticks, self.development_team.team_members))
 
-        return self.clock.current_tick
+        return last_tick
