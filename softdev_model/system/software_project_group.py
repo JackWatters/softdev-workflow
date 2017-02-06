@@ -37,7 +37,7 @@ class SoftwareProjectGroup(object):
         start_time = time.time()
         for software_project in self.software_projects:
             software_project.build()
-            software_project.deploy_and_operate(self.number_of_traces,  self.max_trace_length)
+            software_project.deploy_and_operate(self.number_of_traces, self.max_trace_length)
 
         self.simulation_duration = time.time() - start_time
 
