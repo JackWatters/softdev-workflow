@@ -19,10 +19,8 @@ class Implementation(object):
 
         feature = self.change_management.centralised_vcs_client.working_copy.get_feature(logical_name)
 
-        chunk_count = 0
         while not feature.is_implemented:
-            self.add_chunk(chunk_count, feature, random)
-            chunk_count += 1
+            self.add_chunk(len(feature.chunks), feature, random)
             self.change_management.commit_changes(random)
 
     @default_cost()

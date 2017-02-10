@@ -79,36 +79,32 @@ class Waterfall(object):
         workflow = Refactoring(ChangeManagement(self.centralised_vcs_server))
         self._allocate_task(workflow, workflow.refactor_feature, [feature.logical_name, random])
 
-    def wait_for_pending_tasks(self):
-        for task in self.pending_tasks:
-            self.idling.idle_until(task)
-
     @default_cost(1)
     def allocate_tasks(self, schedule, random):
 
         for user_story in schedule:
             self._allocate_specification_task(user_story, random)
 
-        self.wait_for_pending_tasks()
+        self.idling.wait_for_tasks(self.pending_tasks)
 
         self.change_management.checkout()
 
         for feature in self.change_management.centralised_vcs_client.working_copy.features:
             self._allocate_implementation_task(feature, random)
 
-        self.wait_for_pending_tasks()
+        self.idling.wait_for_tasks(self.pending_tasks)
 
         for feature in self.change_management.centralised_vcs_client.working_copy.features:
             self._allocate_testing_task(feature, random)
 
-        self.wait_for_pending_tasks()
+        self.idling.wait_for_tasks(self.pending_tasks)
 
         for feature in self.change_management.centralised_vcs_client.working_copy.features:
             self._allocate_debugging_task(feature, random)
 
-        self.wait_for_pending_tasks()
+        self.idling.wait_for_tasks(self.pending_tasks)
 
         for feature in self.change_management.centralised_vcs_client.working_copy.features:
-            self._allocate_debugging_task(feature, random)
+            self._allocate_refactoring_task(feature, random)
 
-        self.wait_for_pending_tasks()
+        self.idling.wait_for_tasks(self.pending_tasks)
