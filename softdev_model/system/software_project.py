@@ -45,15 +45,9 @@ class SoftwareProject(object):
 
     @property
     def project_duration(self):
+        return self.development_team.last_tick
 
-        def finish_ticks(developer):
-            if developer.last_completed_task is None:
-                return 0
-            elif developer.last_completed_task.finish_tick is None:
-                return self.clock.current_tick
-            else:
-                return developer.last_completed_task.finish_tick
+    def task_count(self, task_spec=None):
+        return self.development_team.task_count(task_spec)
 
-        last_tick = reduce(max, map(finish_ticks, self.development_team.team_members))
 
-        return last_tick

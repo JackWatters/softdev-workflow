@@ -42,7 +42,7 @@ class SoftwareProjectGroup(object):
         self.simulation_duration = time.time() - start_time
 
     def _average_project_attribute(self, attr):
-        return reduce(lambda x, y: x + y, map(attr, self.software_projects), 0) / len(self.software_projects)
+        return sum(map(attr, self.software_projects)) / len(self.software_projects)
 
     @property
     def average_project_mean_time_to_failure(self):
@@ -55,3 +55,6 @@ class SoftwareProjectGroup(object):
     @property
     def average_project_features_implemented(self):
         return self._average_project_attribute(lambda p: 1.0 * len(p.last_deployment.features))
+
+    def average_task_count(self, task_spec=None):
+        return self._average_project_attribute(lambda p: p.task_count(task_spec))
