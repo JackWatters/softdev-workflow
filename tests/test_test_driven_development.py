@@ -27,6 +27,8 @@ class TestDrivenDevelopmentTestCase(unittest.TestCase):
         self.mock_feature.tests_per_chunk_ratio = 0
         self.mock_feature.test_coverage = 0.0
 
+        self.mock_feature.chunks = []
+
         # noinspection PyUnusedLocal
         def add_test_side_effect(*args, **kwargs):
             self.mock_feature.tests_per_chunk_ratio = 1

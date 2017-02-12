@@ -33,7 +33,7 @@ class SoftwareProjectTestCase(unittest.TestCase):
 
         self.software_project.deploy_and_operate(1, 1000)
 
-        self.mock_development_team.perform.assert_called_once_with()
+        self.mock_development_team.start.assert_called_once_with()
 
         self.software_project.last_deployment.operate.assert_called_with(self.mock_random, 1000)
 
