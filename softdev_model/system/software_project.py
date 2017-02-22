@@ -6,30 +6,23 @@
 from .bug import BugEncounteredException
 from .feature import InoperableFeatureException
 
+from theatre_ag import Episode
 
-class SoftwareProject(object):
+
+class SoftwareProject(Episode):
     """
     Represents the overall state and behaviour of a software project.
     """
 
-    def __init__(self, clock, development_team, plan, centralised_vcs_server, random):
+    def __init__(self, clock, development_team, plan, random):
+        super(SoftwareProject, self).__init__(clock, development_team, directions=plan)
 
         self.random = random
-        self.clock = clock
-        self.development_team = development_team
-        self.plan = plan
-        self.centralised_vcs_server = centralised_vcs_server
 
         self.deployments = list()
 
-    def build(self):
-        self.plan.apply(self.development_team, self.centralised_vcs_server)
-        self.clock.start()
-        self.development_team.start()
-        self.clock.wait_for_last_tick()
-
     def deploy_and_operate(self, number_of_traces, max_trace_length):
-        deployment = self.centralised_vcs_server.checkout().working_copy
+        deployment = self.directions.centralised_vcs_server.checkout().working_copy
         self.deployments.append(deployment)
 
         for _ in range(0, number_of_traces):
@@ -45,9 +38,9 @@ class SoftwareProject(object):
 
     @property
     def project_duration(self):
-        return self.development_team.last_tick
+        return self.cast.last_tick
 
     def task_count(self, task_spec=None):
-        return self.development_team.task_count(task_spec)
+        return self.cast.task_count(task_spec)
 
 

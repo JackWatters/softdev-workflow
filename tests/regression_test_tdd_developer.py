@@ -4,7 +4,7 @@ import unittest
 
 from Queue import Queue
 
-from theatre_ag import Actor, SynchronizingClock, Team
+from theatre_ag import Actor, SynchronizingClock, Cast
 
 from softdev_model.system import BugEncounteredException, CentralisedVCSServer, SoftwareProject, SoftwareSystem, \
     SystemRandom, TestDrivenDevelopmentPlan, UserStory
@@ -18,7 +18,7 @@ class TDDDeveloperRegressionTestCase(unittest.TestCase):
 
         self.clock = SynchronizingClock(max_ticks=1000)
 
-        self.development_team = Team(self.clock)
+        self.development_team = Cast(self.clock)
         self.development_team.add_member('alice')
 
         self.product_backlog = Queue()

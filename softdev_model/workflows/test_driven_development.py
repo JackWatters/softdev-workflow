@@ -24,7 +24,6 @@ class TestDrivenDevelopment(object):
                  tests_per_chunk_ratio=1,
                  target_dependencies_per_feature=0
                  ):
-
         change_management = ChangeManagement(centralised_vcs_server)
         self.specification = Specification(change_management)
         self.testing = Testing(change_management, target_test_coverage_per_feature, tests_per_chunk_ratio)
@@ -45,7 +44,6 @@ class TestDrivenDevelopment(object):
 
     @default_cost()
     def work_from_backlog(self, product_backlog, random):
-
         while True:
             try:
                 user_story = product_backlog.get(block=False)

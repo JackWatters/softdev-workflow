@@ -2,7 +2,6 @@ from .bug import Bug, BugEncounteredException
 from .centralised_vcs import CentralisedVCSClient, CentralisedVCSException, CentralisedVCSServer, Conflict
 from .chunk import Chunk
 from .feature import Feature, InoperableFeatureException
-from .project_plan import DevelopmentPlan, TestDrivenDevelopmentPlan, WaterfallDevelopmentPlan
 from .software_system import SoftwareSystem
 from .software_project import SoftwareProject
 from .software_project_group import SoftwareProjectGroup

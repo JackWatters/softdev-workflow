@@ -4,9 +4,11 @@ from mock import Mock
 
 from Queue import Queue
 
-from theatre_ag import SynchronizingClock, Team
+from theatre_ag import SynchronizingClock, Cast
 
-from softdev_model.system import DevelopmentPlan, CentralisedVCSServer, SoftwareProject, SystemRandom, SoftwareSystem
+from softdev_model.system import CentralisedVCSServer, SoftwareProject, SystemRandom, SoftwareSystem
+
+from softdev_model.workflows import WaterfallDevelopmentPlan
 
 
 class SoftwareProjectTestCase(unittest.TestCase):
@@ -17,19 +19,20 @@ class SoftwareProjectTestCase(unittest.TestCase):
 
         self.clock = Mock(spec=SynchronizingClock)
 
-        self.mock_development_team = Mock(spec=Team)
+        self.mock_development_team = Mock(spec=Cast)
 
         self.centralised_vcs_server = Mock(spec=CentralisedVCSServer)
 
-        self.mock_plan = Mock(spec=DevelopmentPlan)
+        self.mock_plan = Mock(spec=WaterfallDevelopmentPlan)
         self.mock_plan.release = Mock(return_value=Mock(spec=SoftwareSystem))
+        self.mock_plan.centralised_vcs_server = self.centralised_vcs_server
 
-        self.software_project = SoftwareProject(self.clock, self.mock_development_team, self.mock_plan,
-                                                self.centralised_vcs_server, self.mock_random)
+        self.software_project = SoftwareProject(
+            self.clock, self.mock_development_team, self.mock_plan, self.mock_random)
 
     def test_that_system_is_built_and_operated(self):
 
-        self.software_project.build()
+        self.software_project.perform()
 
         self.software_project.deploy_and_operate(1, 1000)
 

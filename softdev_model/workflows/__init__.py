@@ -1,3 +1,4 @@
+from .plans import TestDrivenDevelopmentPlan, WaterfallDevelopmentPlan
 from .change_management import ChangeManagement
 from .debugging import Debugging
 from .implementation import Implementation

@@ -5,7 +5,7 @@ import unittest
 
 import sys
 
-from theatre_ag import SynchronizingClock, Team
+from theatre_ag import SynchronizingClock, Cast
 
 from softdev_model.system import BugEncounteredException, CentralisedVCSServer, SoftwareProject, SoftwareSystem, \
     SystemRandom, UserStory, WaterfallDevelopmentPlan
@@ -19,7 +19,7 @@ class WaterfallRegressionTestCase(unittest.TestCase):
 
         self.clock = SynchronizingClock(max_ticks=100000)
 
-        self.development_team = Team(self.clock)
+        self.development_team = Cast(self.clock)
         self.development_team.add_member('manager')
         self.development_team.add_member('alice')
 

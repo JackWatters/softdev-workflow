@@ -3,13 +3,20 @@ import time
 from . import CentralisedVCSServer, SoftwareProject
 from . import SoftwareSystem
 
-from theatre_ag import SynchronizingClock, Team
+from theatre_ag import SynchronizingClock, Cast
 
 
 class SoftwareProjectGroup(object):
 
-    def __init__(self, plan, random, number_of_developers, number_of_clock_ticks, number_of_projects, number_of_traces,
-                 max_trace_length):
+    def __init__(self,
+                 specification,
+                 plan_spec,
+                 number_of_developers,
+                 number_of_clock_ticks,
+                 number_of_projects,
+                 number_of_traces,
+                 max_trace_length,
+                 random):
 
         self.number_of_traces = number_of_traces
         self.max_trace_length = max_trace_length
@@ -20,14 +27,16 @@ class SoftwareProjectGroup(object):
 
             clock = SynchronizingClock(number_of_clock_ticks)
 
-            development_team = Team(clock)
+            development_team = Cast(clock)
 
             for logical_name in range(0, number_of_developers):
                 development_team.add_member(logical_name)
 
             centralised_vcs_server = CentralisedVCSServer(SoftwareSystem())
 
-            software_project = SoftwareProject(clock, development_team, plan, centralised_vcs_server, random)
+            plan = plan_spec(specification, centralised_vcs_server, random)
+
+            software_project = SoftwareProject(clock, development_team, plan, random)
 
             self.software_projects.append(software_project)
 
@@ -35,8 +44,9 @@ class SoftwareProjectGroup(object):
 
     def build_and_operate(self):
         start_time = time.time()
+
         for software_project in self.software_projects:
-            software_project.build()
+            software_project.perform()
             software_project.deploy_and_operate(self.number_of_traces, self.max_trace_length)
 
         self.simulation_duration = time.time() - start_time
