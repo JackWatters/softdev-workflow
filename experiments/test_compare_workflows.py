@@ -2,50 +2,30 @@ import unittest
 
 from nose_parameterized import parameterized
 
-from Queue import Queue
-
 import pydysofu
 
-from fuzzi_moss import missed_target
-from fuzzi_moss.socio_technical_fuzzers import workflow_actors_name_is
+from fuzzi_moss import missed_target, incomplete_procedure, default_incomplete_procedure_pmf
 
-from softdev_model.system import SoftwareProjectGroup, SystemRandom, TestDrivenDevelopmentPlan, UserStory, \
-    WaterfallDevelopmentPlan
+from softdev_model.system import SoftwareProjectGroup, SystemRandom, UserStory
 
-from softdev_model.workflows import ChangeManagement, Debugging, Implementation, Refactoring, Specification, Testing, \
-    TestDrivenDevelopment, Waterfall
+from softdev_model.workflows import ChangeManagement, Debugging, Implementation, Refactoring, \
+    Specification, Testing, TestDrivenDevelopment, TestDrivenDevelopmentPlan, Waterfall, WaterfallDevelopmentPlan
 
 
 random = SystemRandom(1)
 
-schedule = [UserStory(0, 3, 1), UserStory(1, 5, 2), UserStory(2, 7, 3)]
 
-product_backlog = Queue()
-for user_story in schedule: product_backlog.put(user_story)
-
-waterfall_plan = WaterfallDevelopmentPlan(schedule, random)
-tdd_plan = TestDrivenDevelopmentPlan(product_backlog, random)
+specification = [UserStory(0, 3, 1), UserStory(1, 5, 2), UserStory(2, 7, 3)]
 
 
-def create_short_experimental_parameters():
+def create_experimental_parameters():
     return [
-        (plan, team_size, max_clock_tick, p_miss_step, p_incomplete_step)
-        for plan in [waterfall_plan]
-        for team_size in [2]
-        for max_clock_tick in [300]
-        for p_miss_step in [0.0]
-        for p_incomplete_step in [1.0]
-    ]
-
-
-def create_full_experimental_parameters():
-    return [
-        (plan, team_size, max_clock_tick, p_miss_step, p_incomplete_step)
-        for plan in [waterfall_plan, tdd_plan]
-        for team_size in [1, 2, 5, 10]
-        for max_clock_tick in [150, 300, 500]
-        for p_miss_step in [p / 100.0 for p in range(0, 100, 50)]
-        for p_incomplete_step in [p / 100.0 for p in range(0, 100, 5)]
+        (plan, team_size, max_clock_tick, concentration, conscientiousness)
+        for plan in [WaterfallDevelopmentPlan, TestDrivenDevelopmentPlan]
+        for team_size in [2]  # [2, 5, 10]
+        for max_clock_tick in [200]  # [150, 300, 500]
+        for concentration in [0.001, 0.05, 0.1, 0.2, 0.5, 1.0]
+        for conscientiousness in [1]  # [0.25, 1, 2, 10]
     ]
 
 
@@ -55,106 +35,117 @@ def test_name_func(func, param_num, param):
 
 class TestCompareWorkFlows(unittest.TestCase):
 
-    @staticmethod
-    def run_experiment(plan, number_of_developers, number_of_clock_ticks, p_miss_step, p_incomplete_step):
+    headers_printed = False
 
-        workflow_random = SystemRandom()
+    @staticmethod
+    def print_data_row(data_format_tuples):
+
+        if not TestCompareWorkFlows.headers_printed:
+            headers = map(lambda t: t[0], data_format_tuples)
+            print ", ".join(map(lambda h: h.rjust(10, ' '), headers))
+            TestCompareWorkFlows.headers_printed = True
+
+        row_format_string = ", ".join(map(lambda t: t[1], data_format_tuples))
+        data = map(lambda t: t[2], data_format_tuples)
+
+        print row_format_string % tuple(data)
+
+    def run_experiment(self, plan, number_of_developers, number_of_clock_ticks, concentration, conscientiousness):
 
         workflow_advice = {
 
-            ChangeManagement.commit_changes: {workflow_actors_name_is('alice'): missed_target(workflow_random)}
+            ChangeManagement.commit_changes:
+                incomplete_procedure(random, pmf=default_incomplete_procedure_pmf(concentration)),
+            Specification.add_feature:
+                incomplete_procedure(random, pmf=default_incomplete_procedure_pmf(concentration)),
+            Implementation.implement_feature:
+                incomplete_procedure(random, pmf=default_incomplete_procedure_pmf(concentration)),
+            Testing.test_per_chunk_ratio:
+                incomplete_procedure(random, pmf=default_incomplete_procedure_pmf(concentration)),
+            Debugging.debug_feature:
+                incomplete_procedure(random, pmf=default_incomplete_procedure_pmf(concentration)),
+            Refactoring.refactor_feature:
+                incomplete_procedure(random, pmf=default_incomplete_procedure_pmf(concentration)),
 
+            TestDrivenDevelopment.implement_feature_tdd:
+                incomplete_procedure(random, pmf=default_incomplete_procedure_pmf(concentration)),
 
-            #    in_sequence({
-            #        insert_steps(0, 'from random import Random\ncommit_random=Random(1)'),
-            #        replace_condition_with('commit_random.random() < 0.75')
-            #    })
+            Waterfall.allocate_tasks:
+                incomplete_procedure(random, pmf=default_incomplete_procedure_pmf(concentration))
 
-            #ChangeManagement.resolve: identity,
-            #ChangeManagement.checkout: identity,
-
-            #Specification.add_feature: identity,
-            #Implementation.implement_feature: identity,
-            #Testing.test_per_chunk_ratio: identity,
-            #Debugging.debug_feature: identity,
-            #Refactoring.refactor_feature: identity,
-
-            #TestDrivenDevelopment.implement_feature_tdd:
-            #    recurse_into_nested_steps(
-            #        target_structures={ast.For, ast.TryExcept},
-            #        fuzzer=filter_steps(
-            #            exclude_control_structures(),
-            #            fuzzer=choose_from([(p_miss_step, remove_random_step), (1 - p_miss_step, identity)])
-            #        )
-            #    ),
-
-            #TestDrivenDevelopment.work_from_backlog: identity,
-            #TestDrivenDevelopment.implement_feature_tdd: identity,
-            #Waterfall.allocate_tasks: identity,
         }
 
         pydysofu.fuzz_clazz(ChangeManagement, workflow_advice)
 
-        #fm.fuzz_clazz(Specification, workflow_advice)
-        #fm.fuzz_clazz(Implementation, workflow_advice)
-        #fm.fuzz_clazz(Testing, workflow_advice)
-        #fm.fuzz_clazz(Debugging, workflow_advice)
-        #fm.fuzz_clazz(Refactoring, workflow_advice)
+        pydysofu.fuzz_clazz(Specification, workflow_advice)
+        pydysofu.fuzz_clazz(Testing, workflow_advice)
+        pydysofu.fuzz_clazz(Implementation, workflow_advice)
+        pydysofu.fuzz_clazz(Debugging, workflow_advice)
+        pydysofu.fuzz_clazz(Refactoring, workflow_advice)
 
-        #fm.fuzz_clazz(Waterfall, workflow_advice)
-        #fm.fuzz_clazz(TestDrivenDevelopment, workflow_advice)
+        pydysofu.fuzz_clazz(Waterfall, workflow_advice)
+        pydysofu.fuzz_clazz(TestDrivenDevelopment, workflow_advice)
 
         projects_group = \
             SoftwareProjectGroup(
+                specification,
                 plan,
-                workflow_random,
                 number_of_developers,
                 number_of_clock_ticks,
-                number_of_projects=1,
-                number_of_traces=1,
-                max_trace_length=750)
+                number_of_projects=20,
+                number_of_traces=10,
+                max_trace_length=750,
+                random=random)
 
         projects_group.build_and_operate()
 
-        print "%s, %d, %d, %.2f, %.2f, %d, %d, %d, %.2f, %d" % \
-            (
-                plan.__class__.__name__,
-                number_of_clock_ticks,
-                number_of_developers,
-                p_miss_step,
-                p_incomplete_step,
-                pydysofu.fuzzer_invocations_count(),
-                projects_group.average_project_mean_time_to_failure,
-                projects_group.average_project_remaining_developer_time,
-                projects_group.average_project_features_implemented,
-                projects_group.simulation_duration
+        data_format_tuples = (
+            # Preamble
+            ("workflow", "%-10s", plan.__name__[0:10]),
+            ("t_alloc", "%10d", number_of_clock_ticks),
+            ("#team", "%10d", number_of_developers),
 
-            )
+            # Fuzz parameters
+            ("ci", "%10.2f", conscientiousness),
+            ("co", "%10.2f", concentration),
+
+            # Task counts
+            ("#exec_wf", "%10d", projects_group.average_task_count(Waterfall.allocate_tasks)),
+            ("#exec_co", "%10d", projects_group.average_task_count(ChangeManagement.commit_changes)),
+            ("#exec_spc", "%10d", projects_group.average_task_count(Specification.add_feature)),
+            ("#exec_imp", "%10d", projects_group.average_task_count(Implementation.add_chunk)),
+            ("#exec_tng", "%10d", projects_group.average_task_count(Testing.test_per_chunk_ratio)),
+            ("#exec_dbg", "%10d", projects_group.average_task_count(Debugging.debug_feature)),
+            ("#exec_rfg", "%10d", projects_group.average_task_count(Refactoring.refactor_feature)),
+
+            # Fuzz counts
+            ("#fuzz_wf", "%10d",  pydysofu.fuzzer_invocations_count(Waterfall)),
+            ("#fuzz_co", "%10d",  pydysofu.fuzzer_invocations_count(ChangeManagement)),
+            ("#fuzz_spc", "%10d", pydysofu.fuzzer_invocations_count(Specification)),
+            ("#fuzz_imp", "%10d", pydysofu.fuzzer_invocations_count(Implementation)),
+            ("#fuzz_tng", "%10d", pydysofu.fuzzer_invocations_count(Testing)),
+            ("#fuzz_dbg", "%10d", pydysofu.fuzzer_invocations_count(Debugging)),
+            ("#fuzz_rfg", "%10d", pydysofu.fuzzer_invocations_count(Refactoring)),
+            ("#fuzz_tot", "%10d", pydysofu.fuzzer_invocations_count()),
+
+            # Project characteristics
+            ("mtf", "%10.2f", projects_group.average_project_mean_time_to_failure),
+            ("t_used", "%10d", projects_group.average_project_remaining_developer_time),
+            ("#ftrs", "%10.2f", projects_group.average_project_features_implemented),
+            ("#t_run", "%10d", projects_group.simulation_duration)
+        )
+
+        self.print_data_row(data_format_tuples)
 
         pydysofu.reset_invocation_counters()
 
-    @classmethod
-    def setUpClass(cls):
-        print ", ".join(
-            [
-                "workflow",
-                "allocated time",
-                "team size,"
-                "p miss step",
-                "p not finish",
-                "fuzzings applied",
-                "mean time to failure",
-                "remaining_time",
-                "completed features",
-                "run time(s)"
-            ])
+        pydysofu.defuzz_all_classes()
 
     def setUp(self):
         pydysofu.pydysofu_random.seed(1)
 
-    #@parameterized.expand(create_full_experimental_parameters, testcase_func_name=test_name_func)
-    @parameterized.expand(create_short_experimental_parameters, testcase_func_name=test_name_func)
-    def test_compare_workflows_short_parameters(
+    @parameterized.expand(create_experimental_parameters, testcase_func_name=test_name_func)
+    def test_compare_workflows(
             self, plan, number_of_developers, number_of_clock_ticks, p_miss_step, p_incomplete_step):
         self.run_experiment(plan, number_of_developers, number_of_clock_ticks, p_miss_step, p_incomplete_step)
 
