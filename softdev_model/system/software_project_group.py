@@ -59,7 +59,7 @@ class SoftwareProjectGroup(object):
         return self._average_project_attribute(lambda p: p.last_deployment.mean_operations_to_failure)
 
     @property
-    def average_project_remaining_developer_time(self):
+    def average_project_time_used(self):
         return self._average_project_attribute(lambda p: p.project_duration)
 
     @property
