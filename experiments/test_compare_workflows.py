@@ -21,10 +21,10 @@ specification = [UserStory(0, 3, 1), UserStory(1, 5, 2), UserStory(2, 7, 3)]
 def create_experimental_parameters():
     return [
         (plan, team_size, max_clock_tick, concentration, conscientiousness)
-        for plan in [WaterfallDevelopmentPlan, TestDrivenDevelopmentPlan]
-        for team_size in [2]  # [2, 5, 10]
+        for plan in [WaterfallDevelopmentPlan, TestDrivenDevelopmentPlan]  # []
+        for team_size in [5]  # [2, 5, 10]
         for max_clock_tick in [200]  # [150, 300, 500]
-        for concentration in [0.001, 0.05, 0.1, 0.2, 0.5, 1.0]
+        for concentration in [0.001, 0.05, 0.1, 0.2, 0.5, 1.0]  # []
         for conscientiousness in [1]  # [0.25, 1, 2, 10]
     ]
 
@@ -106,11 +106,12 @@ class TestCompareWorkFlows(unittest.TestCase):
             ("#team", "%10d", number_of_developers),
 
             # Fuzz parameters
-            ("ci", "%10.2f", conscientiousness),
+            # ("ci", "%10.2f", conscientiousness),
             ("co", "%10.2f", concentration),
 
             # Task counts
             ("#exec_wf", "%10d", projects_group.average_task_count(Waterfall.allocate_tasks)),
+            ("#exec_tdd", "%10d", projects_group.average_task_count(TestDrivenDevelopment.implement_feature_tdd)),
             ("#exec_co", "%10d", projects_group.average_task_count(ChangeManagement.commit_changes)),
             ("#exec_spc", "%10d", projects_group.average_task_count(Specification.add_feature)),
             ("#exec_imp", "%10d", projects_group.average_task_count(Implementation.add_chunk)),
@@ -120,6 +121,7 @@ class TestCompareWorkFlows(unittest.TestCase):
 
             # Fuzz counts
             ("#fuzz_wf", "%10d",  pydysofu.fuzzer_invocations_count(Waterfall)),
+            ("#fuzz_dd", "%10d",  pydysofu.fuzzer_invocations_count(TestDrivenDevelopment)),
             ("#fuzz_co", "%10d",  pydysofu.fuzzer_invocations_count(ChangeManagement)),
             ("#fuzz_spc", "%10d", pydysofu.fuzzer_invocations_count(Specification)),
             ("#fuzz_imp", "%10d", pydysofu.fuzzer_invocations_count(Implementation)),
@@ -130,7 +132,7 @@ class TestCompareWorkFlows(unittest.TestCase):
 
             # Project characteristics
             ("mtf", "%10.2f", projects_group.average_project_mean_time_to_failure),
-            ("t_used", "%10d", projects_group.average_project_remaining_developer_time),
+            ("t_used", "%10d", projects_group.average_project_time_used),
             ("#ftrs", "%10.2f", projects_group.average_project_features_implemented),
             ("#t_run", "%10d", projects_group.simulation_duration)
         )
