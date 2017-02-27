@@ -4,6 +4,8 @@ from nose_parameterized import parameterized
 
 import pydysofu
 
+import fuzzi_moss
+
 from fuzzi_moss import incomplete_procedure, default_incomplete_procedure_pmf
 
 from softdev_model.system import SoftwareProjectGroup, SystemRandom, UserStory
@@ -14,23 +16,23 @@ from softdev_model.workflows import ChangeManagement, Debugging, Implementation,
 
 random = SystemRandom(1)
 
-
 specification = [UserStory(0, 3, 1), UserStory(1, 5, 2), UserStory(2, 7, 3)]
 
 
 def create_experimental_parameters():
     return [
         (plan, team_size, max_clock_tick, concentration, fuzz_classes)
-        for plan in [WaterfallDevelopmentPlan, TestDrivenDevelopmentPlan]
-        for team_size in [5]
-        for max_clock_tick in [200, 300, 500]
-        for concentration in [0.001, 0.05, 0.1, 0.2, 0.5, 1.0, 2.0, 5.0]
         for fuzz_classes in [
             [ChangeManagement, Specification, Testing, Implementation, Debugging, Refactoring],
             [Waterfall, TestDrivenDevelopment],
             [ChangeManagement, Specification, Testing, Implementation, Debugging, Refactoring, Waterfall,
              TestDrivenDevelopment]
         ]
+        for plan in [WaterfallDevelopmentPlan, TestDrivenDevelopmentPlan]
+        for team_size in [2, 4]
+        for max_clock_tick in [150, 300, 450]
+        for concentration in [0.001, 0.005, 0.01, 0.05, 0.1, 0.5, 1.0, 5.0]
+
     ]
 
 
@@ -99,28 +101,37 @@ class TestCompareWorkFlows(unittest.TestCase):
 
             # Fuzz parameters
             ("fuzzed", "%-10s", reduce(lambda a, b: a+b, map(lambda c: c.__name__[0], fuzz_classes), "")),
-            ("co", "%10.5f", concentration),
+            ("co", "%10.3f", concentration),
 
             # Task counts
-            ("#exec_wf", "%10d", projects_group.average_task_count(Waterfall.allocate_tasks)),
-            ("#exec_tdd", "%10d", projects_group.average_task_count(TestDrivenDevelopment.implement_feature_tdd)),
-            ("#exec_co", "%10d", projects_group.average_task_count(ChangeManagement.commit_changes)),
-            ("#exec_spc", "%10d", projects_group.average_task_count(Specification.add_feature)),
-            ("#exec_imp", "%10d", projects_group.average_task_count(Implementation.add_chunk)),
-            ("#exec_tng", "%10d", projects_group.average_task_count(Testing.test_per_chunk_ratio)),
-            ("#exec_dbg", "%10d", projects_group.average_task_count(Debugging.debug_feature)),
-            ("#exec_rfg", "%10d", projects_group.average_task_count(Refactoring.refactor_feature)),
+            ("#exec_wf", "%10d", projects_group.task_count(Waterfall.allocate_tasks)),
+            ("#exec_tdd", "%10d", projects_group.task_count(TestDrivenDevelopment.implement_feature_tdd)),
+            ("#exec_co", "%10d", projects_group.task_count(ChangeManagement.commit_changes)),
+            ("#exec_spc", "%10d", projects_group.task_count(Specification.add_feature)),
+            ("#exec_imp", "%10d", projects_group.task_count(Implementation.add_chunk)),
+            ("#exec_tng", "%10d", projects_group.task_count(Testing.test_per_chunk_ratio)),
+            ("#exec_dbg", "%10d", projects_group.task_count(Debugging.debug_feature)),
+            ("#exec_rfg", "%10d", projects_group.task_count(Refactoring.refactor_feature)),
 
             # Fuzz counts
-            ("#fuzz_wf", "%10d",  pydysofu.fuzzer_invocations_count(Waterfall)),
-            ("#fuzz_dd", "%10d",  pydysofu.fuzzer_invocations_count(TestDrivenDevelopment)),
-            ("#fuzz_co", "%10d",  pydysofu.fuzzer_invocations_count(ChangeManagement)),
-            ("#fuzz_spc", "%10d", pydysofu.fuzzer_invocations_count(Specification)),
-            ("#fuzz_imp", "%10d", pydysofu.fuzzer_invocations_count(Implementation)),
-            ("#fuzz_tng", "%10d", pydysofu.fuzzer_invocations_count(Testing)),
-            ("#fuzz_dbg", "%10d", pydysofu.fuzzer_invocations_count(Debugging)),
-            ("#fuzz_rfg", "%10d", pydysofu.fuzzer_invocations_count(Refactoring)),
-            ("#fuzz_tot", "%10d", pydysofu.fuzzer_invocations_count()),
+            ("#fuzz_wf", "%10d",  fuzzi_moss.lines_removed_count(Waterfall)),
+            ("#fuzz_tdd", "%10d",  fuzzi_moss.lines_removed_count(TestDrivenDevelopment)),
+            ("#fuzz_co", "%10d",  fuzzi_moss.lines_removed_count(ChangeManagement)),
+            ("#fuzz_spc", "%10d", fuzzi_moss.lines_removed_count(Specification)),
+            ("#fuzz_imp", "%10d", fuzzi_moss.lines_removed_count(Implementation)),
+            ("#fuzz_tng", "%10d", fuzzi_moss.lines_removed_count(Testing)),
+            ("#fuzz_dbg", "%10d", fuzzi_moss.lines_removed_count(Debugging)),
+            ("#fuzz_rfg", "%10d", fuzzi_moss.lines_removed_count(Refactoring)),
+            ("#fuzz_tot", "%10d", fuzzi_moss.lines_removed_count()),
+
+            ("#lines_wf", "%10d", fuzzi_moss.removable_lines_count(Waterfall.allocate_tasks)),
+            ("#lines_tdd", "%10d", fuzzi_moss.removable_lines_count(TestDrivenDevelopment.implement_feature_tdd)),
+            ("#lines_co", "%10d", fuzzi_moss.removable_lines_count(ChangeManagement.commit_changes)),
+            ("#lines_spc", "%10d", fuzzi_moss.removable_lines_count(Specification.add_feature)),
+            ("#lines_imp", "%10d", fuzzi_moss.removable_lines_count(Implementation.add_chunk)),
+            ("#lines_tng", "%10d", fuzzi_moss.removable_lines_count(Testing.test_per_chunk_ratio)),
+            ("#lines_dbg", "%10d", fuzzi_moss.removable_lines_count(Debugging.debug_feature)),
+            ("#lines_rfg", "%10d", fuzzi_moss.removable_lines_count(Refactoring.refactor_feature)),
 
             # Project characteristics
             ("mtf", "%10.2f", projects_group.average_project_mean_time_to_failure),
@@ -132,6 +143,7 @@ class TestCompareWorkFlows(unittest.TestCase):
         self.print_data_row(data_format_tuples)
 
         pydysofu.reset_invocation_counters()
+        fuzzi_moss.reset_lines_removed_counters()
 
         pydysofu.defuzz_all_classes()
 
