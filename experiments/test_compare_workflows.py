@@ -32,7 +32,6 @@ def create_experimental_parameters():
         for team_size in [2, 4]
         for max_clock_tick in [150, 300, 450]
         for concentration in [0.001, 0.005, 0.01, 0.05, 0.1, 0.5, 1.0, 5.0]
-
     ]
 
 
