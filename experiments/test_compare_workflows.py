@@ -4,7 +4,7 @@ from nose_parameterized import parameterized
 
 import pydysofu
 
-from fuzzi_moss import missed_target, incomplete_procedure, default_incomplete_procedure_pmf
+from fuzzi_moss import incomplete_procedure, default_incomplete_procedure_pmf
 
 from softdev_model.system import SoftwareProjectGroup, SystemRandom, UserStory
 
@@ -20,12 +20,17 @@ specification = [UserStory(0, 3, 1), UserStory(1, 5, 2), UserStory(2, 7, 3)]
 
 def create_experimental_parameters():
     return [
-        (plan, team_size, max_clock_tick, concentration, conscientiousness)
-        for plan in [WaterfallDevelopmentPlan, TestDrivenDevelopmentPlan]  # []
-        for team_size in [5]  # [2, 5, 10]
-        for max_clock_tick in [200]  # [150, 300, 500]
-        for concentration in [0.001, 0.05, 0.1, 0.2, 0.5, 1.0]  # []
-        for conscientiousness in [1]  # [0.25, 1, 2, 10]
+        (plan, team_size, max_clock_tick, concentration, fuzz_classes)
+        for plan in [WaterfallDevelopmentPlan, TestDrivenDevelopmentPlan]
+        for team_size in [5]
+        for max_clock_tick in [200, 300, 500]
+        for concentration in [0.001, 0.05, 0.1, 0.2, 0.5, 1.0, 2.0, 5.0]
+        for fuzz_classes in [
+            [ChangeManagement, Specification, Testing, Implementation, Debugging, Refactoring],
+            [Waterfall, TestDrivenDevelopment],
+            [ChangeManagement, Specification, Testing, Implementation, Debugging, Refactoring, Waterfall,
+             TestDrivenDevelopment]
+        ]
     ]
 
 
@@ -34,6 +39,9 @@ def test_name_func(func, param_num, param):
 
 
 class TestCompareWorkFlows(unittest.TestCase):
+
+    def setUp(self):
+        pydysofu.pydysofu_random.seed(1)
 
     headers_printed = False
 
@@ -50,10 +58,10 @@ class TestCompareWorkFlows(unittest.TestCase):
 
         print row_format_string % tuple(data)
 
-    def run_experiment(self, plan, number_of_developers, number_of_clock_ticks, concentration, conscientiousness):
+    @parameterized.expand(create_experimental_parameters, testcase_func_name=test_name_func)
+    def test_compare_workflows(self, plan, team_size, max_clock_tick, concentration, fuzz_classes):
 
         workflow_advice = {
-
             ChangeManagement.commit_changes:
                 incomplete_procedure(random, pmf=default_incomplete_procedure_pmf(concentration)),
             Specification.add_feature:
@@ -66,48 +74,32 @@ class TestCompareWorkFlows(unittest.TestCase):
                 incomplete_procedure(random, pmf=default_incomplete_procedure_pmf(concentration)),
             Refactoring.refactor_feature:
                 incomplete_procedure(random, pmf=default_incomplete_procedure_pmf(concentration)),
-
             TestDrivenDevelopment.implement_feature_tdd:
                 incomplete_procedure(random, pmf=default_incomplete_procedure_pmf(concentration)),
-
             Waterfall.allocate_tasks:
                 incomplete_procedure(random, pmf=default_incomplete_procedure_pmf(concentration))
-
         }
 
-        pydysofu.fuzz_clazz(ChangeManagement, workflow_advice)
+        for clazz in fuzz_classes:
+            pydysofu.fuzz_clazz(clazz, workflow_advice)
 
-        pydysofu.fuzz_clazz(Specification, workflow_advice)
-        pydysofu.fuzz_clazz(Testing, workflow_advice)
-        pydysofu.fuzz_clazz(Implementation, workflow_advice)
-        pydysofu.fuzz_clazz(Debugging, workflow_advice)
-        pydysofu.fuzz_clazz(Refactoring, workflow_advice)
-
-        pydysofu.fuzz_clazz(Waterfall, workflow_advice)
-        pydysofu.fuzz_clazz(TestDrivenDevelopment, workflow_advice)
-
-        projects_group = \
-            SoftwareProjectGroup(
-                specification,
-                plan,
-                number_of_developers,
-                number_of_clock_ticks,
-                number_of_projects=20,
-                number_of_traces=10,
-                max_trace_length=750,
-                random=random)
+        projects_group = SoftwareProjectGroup(specification, plan, team_size, max_clock_tick,
+                                              number_of_projects=20,
+                                              number_of_traces=10,
+                                              max_trace_length=750,
+                                              random=random)
 
         projects_group.build_and_operate()
 
         data_format_tuples = (
             # Preamble
             ("workflow", "%-10s", plan.__name__[0:10]),
-            ("t_alloc", "%10d", number_of_clock_ticks),
-            ("#team", "%10d", number_of_developers),
+            ("t_alloc", "%10d", max_clock_tick),
+            ("#team", "%10d", team_size),
 
             # Fuzz parameters
-            # ("ci", "%10.2f", conscientiousness),
-            ("co", "%10.2f", concentration),
+            ("fuzzed", "%-10s", reduce(lambda a, b: a+b, map(lambda c: c.__name__[0], fuzz_classes), "")),
+            ("co", "%10.5f", concentration),
 
             # Task counts
             ("#exec_wf", "%10d", projects_group.average_task_count(Waterfall.allocate_tasks)),
@@ -142,14 +134,6 @@ class TestCompareWorkFlows(unittest.TestCase):
         pydysofu.reset_invocation_counters()
 
         pydysofu.defuzz_all_classes()
-
-    def setUp(self):
-        pydysofu.pydysofu_random.seed(1)
-
-    @parameterized.expand(create_experimental_parameters, testcase_func_name=test_name_func)
-    def test_compare_workflows(
-            self, plan, number_of_developers, number_of_clock_ticks, p_miss_step, p_incomplete_step):
-        self.run_experiment(plan, number_of_developers, number_of_clock_ticks, p_miss_step, p_incomplete_step)
 
 if __name__ == '__main__':
     unittest.main()
