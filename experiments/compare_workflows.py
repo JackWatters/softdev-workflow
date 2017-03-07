@@ -26,7 +26,7 @@ def format_row(header_format_data_tuples):
     return row_format_string % tuple(data)
 
 
-results_file=open('./compare_workflows.csv', 'w')
+results_file=open('./experiments/compare_workflows.csv', 'w')
 
 specification = [UserStory(0, 3, 1), UserStory(1, 5, 2), UserStory(2, 7, 3)]
 
