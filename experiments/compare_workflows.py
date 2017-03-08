@@ -32,13 +32,13 @@ specification = [UserStory(0, 3, 1), UserStory(1, 5, 2), UserStory(2, 7, 3)]
 
 experimental_parameters = [
         (fuzz_classes, plan, team_size, max_clock_tick, concentration)
+        for plan in [WaterfallDevelopmentPlan, TestDrivenDevelopmentPlan]
         for fuzz_classes in [
             [ChangeManagement, Specification, Testing, Implementation, Debugging, Refactoring],
             [Waterfall, TestDrivenDevelopment],
             [ChangeManagement, Specification, Testing, Implementation, Debugging, Refactoring, Waterfall,
              TestDrivenDevelopment]
         ]
-        for plan in [WaterfallDevelopmentPlan, TestDrivenDevelopmentPlan]
         for team_size in [2, 4]
         for max_clock_tick in [150, 300, 450]
         for concentration in [0.001, 0.005, 0.01, 0.05, 0.1, 0.5, 1.0, 5.0]
