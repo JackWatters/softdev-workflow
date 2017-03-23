@@ -3,7 +3,7 @@ import time
 from . import CentralisedVCSServer, SoftwareProject
 from . import SoftwareSystem
 
-from theatre_ag import SynchronizingClock, Cast
+from theatre_ag import Cast, SynchronizingClock, TaskQueueActor
 
 
 class SoftwareProjectGroup(object):
@@ -27,10 +27,10 @@ class SoftwareProjectGroup(object):
 
             clock = SynchronizingClock(number_of_clock_ticks)
 
-            development_team = Cast(clock)
+            development_team = Cast()
 
             for logical_name in range(0, number_of_developers):
-                development_team.add_member(logical_name)
+                development_team.add_member(TaskQueueActor(logical_name, clock))
 
             centralised_vcs_server = CentralisedVCSServer(SoftwareSystem())
 
