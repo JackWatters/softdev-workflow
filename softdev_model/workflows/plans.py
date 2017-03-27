@@ -20,7 +20,7 @@ class WaterfallDevelopmentPlan(object):
         waterfall_task = Waterfall(team, self.centralised_vcs_server)
 
         team[0].allocate_task(
-            waterfall_task, waterfall_task.allocate_tasks, [self.specification, self.random])
+            waterfall_task.allocate_tasks, waterfall_task, [self.specification, self.random])
 
 
 class TestDrivenDevelopmentPlan(object):
@@ -38,4 +38,4 @@ class TestDrivenDevelopmentPlan(object):
 
         for developer in team:
             tdd_task = TestDrivenDevelopment(self.centralised_vcs_server)
-            developer.allocate_task(tdd_task, tdd_task.work_from_backlog, [product_backlog, self.random])
+            developer.allocate_task(tdd_task.work_from_backlog, tdd_task, [product_backlog, self.random])

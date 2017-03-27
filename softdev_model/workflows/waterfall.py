@@ -56,7 +56,7 @@ class Waterfall(object):
 
     def _allocate_task(self, workflow, entry_point, arguments):
         developer = self.choose_developer()
-        task = developer.allocate_task(workflow, entry_point, arguments)
+        task = developer.allocate_task(entry_point, workflow, arguments)
         self.pending_tasks.append(task)
 
     def _allocate_specification_task(self, user_story, random):
