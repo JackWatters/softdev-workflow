@@ -40,7 +40,7 @@ class SoftwareProject(Episode):
     def project_duration(self):
         return self.cast.last_tick
 
-    def task_count(self, task_spec=None):
-        return self.cast.task_count(task_spec)
+    def task_count(self, task_filter=None):
+        return self.cast.task_count(task_filter)
 
 

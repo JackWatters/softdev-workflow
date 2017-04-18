@@ -66,5 +66,5 @@ class SoftwareProjectGroup(object):
     def average_project_features_implemented(self):
         return self._average_project_attribute(lambda p: 1.0 * len(p.last_deployment.features))
 
-    def task_count(self, task_spec=None):
-        return sum(map(lambda p: p.task_count(task_spec), self.software_projects))
+    def task_count(self, task_filter=None):
+        return sum(map(lambda p: p.task_count(task_filter), self.software_projects))
