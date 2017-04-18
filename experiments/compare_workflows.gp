@@ -1,25 +1,21 @@
 #!/usr/bin/gnuplot
 
-set terminal png size 1200,800
+set terminal png size 300,200
 
-EXPERIMENTAL_REPORT_DIR='results'
-
-#set yrange [0:500]
+#set yrange [0:120]
 
 set datafile separator ","
 
-set output EXPERIMENTAL_REPORT_DIR.'/compare_workflows_mtf.png'
+set output './compare_workflows_mtf.png'
 
 set ylabel 'average mean time to failure'
-set xlabel 'p not finish'
+set xlabel 'fuzzings'
 
-plot \
- EXPERIMENTAL_REPORT_DIR.'/compare_workflows.csv' every  ::41::60 using 5:6 with lines lt rgb "red" title "Waterfall,p_miss_step=0.0,res=250", \
- EXPERIMENTAL_REPORT_DIR.'/compare_workflows.csv' every  ::61::80 using 5:6 with lines lt rgb "orange" title "Waterfall,p_miss_step=0.5,res=250", \
- EXPERIMENTAL_REPORT_DIR.'/compare_workflows.csv' every ::121::140 using 5:6 with lines lt rgb "blue" title "TDD,p_miss_step=0.0,res=250", \
- EXPERIMENTAL_REPORT_DIR.'/compare_workflows.csv' every ::141::160 using 5:6 with lines lt rgb "green" title "TDD,p_miss_step=0.5,res=250"
+set nokey
 
- # EXPERIMENTAL_REPORT_DIR.'/compare_workflows.csv' every   ::1::20 using 5:6 with lines lt rgb "red" title "Waterfall,p_miss_step=0.0,res=50", \
-# EXPERIMENTAL_REPORT_DIR.'/compare_workflows.csv' every  ::21::40 using 5:6 with lines lt rgb "orange" title "Waterfall,p_miss_step=0.5,res=50", \
-# EXPERIMENTAL_REPORT_DIR.'/compare_workflows.csv' every  ::81::100 using 5:6 with lines lt rgb "blue" title "TDD,p_miss_step=0.0,res=50", \
-# EXPERIMENTAL_REPORT_DIR.'/compare_workflows.csv' every ::101::120 using 5:6 with lines lt rgb "green" title "TDD,p_miss_step=0.5,res=50"
+# 'compare_workflows.csv' every  ::1::8 using 22:31 with points lt rgb "red", \
+
+plot 'compare_workflows.csv' every  ::1::10 using 22:31 with points lt rgb "green", \
+ 'compare_workflows.csv' every  ::11::20 using 22:31 with points lt rgb "black",
+# 'compare_workflows.csv' every  ::75::96 using 22:31 with points lt rgb "blue", \
+
