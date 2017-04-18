@@ -9,3 +9,5 @@ results/
 .project
 .idea
 .pydevproject
+experiments/*.csv
+experiments/*.png
