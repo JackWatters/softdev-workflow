@@ -83,7 +83,7 @@ class TestDrivenDevelopmentTestCase(unittest.TestCase):
 
         self.test_driven_development = TestDrivenDevelopment(self.mock_centralised_vcs_server)
 
-        self.user_story = UserStory('mock_story', 1, 0)
+        self.user_story = UserStory('mock_story', 1)
 
     def test_implement_feature_tdd(self):
 
