@@ -45,10 +45,8 @@ experimental_parameters = [
         (fuzz_classes, plan, team_size, user_story_indexes, max_clock_tick, concentration)
         for plan in [WaterfallDevelopmentPlan, TestDrivenDevelopmentPlan]
         for fuzz_classes in [
-            [],
-            # [ChangeManagement, Testing, Implementation, Debugging, Refactoring],
-            # [Waterfall, TestDrivenDevelopment],
-            # [ChangeManagement, Testing, Implementation, Debugging, Refactoring, Waterfall, TestDrivenDevelopment]
+            [ChangeManagement, Testing, Implementation, Debugging, Refactoring],
+            [Waterfall, TestDrivenDevelopment],
         ]
         for team_size in [3]
         for max_clock_tick in [500]
@@ -76,7 +74,8 @@ experimental_parameters = [
             0.1,
             0.2,
             0.5,
-            1.0
+            1.0,
+            5.0
         ]
     ]
 
@@ -176,7 +175,8 @@ for fuzz_classes, plan, team_size, user_story_indexes, max_clock_tick, concentra
         ("#lines_rfg", "%10d", fuzzi_moss.removable_lines_count(Refactoring.refactor_feature)),
 
         # Project characteristics
-        ("mtf", "%10.2f", projects_group.average_project_mean_time_to_failure),
+        ("mtf_avg", "%10.2f", projects_group.average_project_mean_time_to_failure),
+        ("mtf", "%10s", projects_group.mean_times_to_failure),
         ("t_used", "%10d", projects_group.average_project_time_used),
         ("#ftrs_impld", "%10.2f", projects_group.average_project_features_implemented),
         ("#t_run", "%10d", projects_group.simulation_duration)
