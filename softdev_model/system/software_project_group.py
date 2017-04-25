@@ -55,6 +55,10 @@ class SoftwareProjectGroup(object):
         return sum(map(attr, self.software_projects)) / len(self.software_projects)
 
     @property
+    def mean_times_to_failure(self):
+        return [p.last_deployment.mean_operations_to_failure for p in self.software_projects]
+
+    @property
     def average_project_mean_time_to_failure(self):
         return self._average_project_attribute(lambda p: p.last_deployment.mean_operations_to_failure)
 
