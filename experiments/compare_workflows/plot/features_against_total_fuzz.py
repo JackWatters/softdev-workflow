@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 import numpy
 
-from compare_workflows_data_for_plotting import get_time_series, project_sizes
+from experiments.compare_workflows.data_for_plotting import get_time_series, project_sizes
 
 plt.rc('text', usetex=True)
 plt.rc('font', family='serif')

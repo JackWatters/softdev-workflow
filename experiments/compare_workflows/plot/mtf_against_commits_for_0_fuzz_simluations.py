@@ -1,6 +1,6 @@
 import matplotlib.pyplot as plt
 
-from compare_workflows_data_for_plotting import get_time_series
+from experiments.compare_workflows.data_for_plotting import get_time_series
 
 plt.figure(figsize=(4, 4/1.4))
 
@@ -26,7 +26,5 @@ x_values, y_values = get_time_series(
     row_filter=lambda r: r.workflow == 'WaterfallD' and r.fuzz_total <=0)
 
 plt.scatter(x_values, y_values, label='WTF', color='red')
-
-plt.show()
 
 plt.savefig('mtf_against_commits_for_0_fuzz_simluations.pgf', bbox_inches='tight')
