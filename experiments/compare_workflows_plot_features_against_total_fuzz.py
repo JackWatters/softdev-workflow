@@ -2,10 +2,12 @@ import matplotlib.pyplot as plt
 import numpy
 
 from compare_workflows_data_for_plotting import get_time_series, project_sizes
-#plt.rc('text', usetex=True)
-#plt.rc('font', family='serif')
 
-plt.title('Average Features Implemented against Total Fuzzings')
+plt.rc('text', usetex=True)
+plt.rc('font', family='serif')
+
+plt.figure(figsize=(8,8/2.8))
+
 plt.xlabel('\#fuzzings')
 plt.ylabel('\#features')
 
@@ -24,16 +26,14 @@ for project_type in ['small', 'large']:
                     r.workflow == workflow and r.project_size == project_size and r.project_type == project_type)
 
             d = 1 - project_size/ (1.0 * max(project_sizes(project_type).values()))
-            print d
 
             color = (1.0, d, d) if workflow is 'WaterfallD' else (d, d, 1.0)
+            label = workflow+" "+project_type+" "+str(project_size)
 
-            plt.scatter(x_values, y_values, label=workflow+" "+str(project_size), color=color)
+            plt.scatter(x_values, y_values, label=label, color=color)
 
             trend = numpy.poly1d(numpy.polyfit(x_values, y_values, 2))
 
             plt.plot(x_values, trend(x_values),color=color)
 
-plt.legend(loc=0)
-
-plt.show()
+plt.savefig('compare_workflows_plot_features_against_total_fuzz.pgf', bbox_inches='tight')

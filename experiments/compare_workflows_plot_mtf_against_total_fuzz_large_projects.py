@@ -3,10 +3,11 @@ import numpy
 
 from compare_workflows_data_for_plotting import get_time_series, project_sizes
 
-#plt.rc('text', usetex=True)
-#plt.rc('font', family='serif')
+plt.figure(figsize=(8, 8/2.8))
 
-plt.title('Average MTF against Total Fuzzings for Large Feature Projects')
+plt.rc('text', usetex=True)
+plt.rc('font', family='serif')
+
 plt.xlabel('\#fuzzings')
 plt.ylabel('\#mtf')
 
@@ -27,12 +28,10 @@ for workflow in ['TestDriven', 'WaterfallD']:
 
         color = (1.0, d, d) if workflow is 'WaterfallD' else (d, d, 1.0)
 
-        plt.scatter(x_values, y_values, label=workflow+" "+str(project_size), color=color)
+        plt.scatter(x_values, y_values, color=color)
 
         trend = numpy.poly1d(numpy.polyfit(x_values, y_values, 2))
 
         plt.plot(x_values, trend(x_values),color=color)
 
-plt.legend(loc=0)
-
-plt.show()
+plt.savefig('compare_workflows_plot_mtf_against_total_fuzz_large_projects.pgf', bbox_inches='tight')

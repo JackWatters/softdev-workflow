@@ -2,10 +2,11 @@ import matplotlib.pyplot as plt
 
 from compare_workflows_data_for_plotting import get_time_series
 
-#plt.rc('text', usetex=True)
-#plt.rc('font', family='serif')
+plt.figure(figsize=(4, 4/1.4))
 
-plt.title('Average Mean Time to Failure Against Commits')
+plt.rc('text', usetex=True)
+plt.rc('font', family='serif')
+
 plt.xlabel('\#commits')
 plt.ylabel('mtf_avg')
 
@@ -26,6 +27,6 @@ x_values, y_values = get_time_series(
 
 plt.scatter(x_values, y_values, label='WTF', color='red')
 
-plt.legend(loc=0)
-
 plt.show()
+
+plt.savefig('compare_workflows_plot_mtf_against_commits_for_0_fuzz_simluations.pgf', bbox_inches='tight')

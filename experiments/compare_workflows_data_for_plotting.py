@@ -44,7 +44,7 @@ class SimulationRun(object):
 
     @property
     def commits(self):
-        return self.raw['   #exec_co']
+        return int(self.raw['   #exec_co'])
 
     @property
     def project_size(self):
@@ -53,6 +53,10 @@ class SimulationRun(object):
     @property
     def mtf_avg(self):
         return float(self.raw['    mtf_avg'])
+
+    @property
+    def fuzz_type(self):
+        return self.raw['     fuzzed'].strip()
 
     @property
     def fuzz_total(self):

@@ -11,3 +11,4 @@ results/
 .pydevproject
 experiments/*.csv
 experiments/*.png
+*.pgf

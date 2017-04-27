@@ -2,10 +2,11 @@ import matplotlib.pyplot as plt
 
 from compare_workflows_data_for_plotting import get_time_series
 
-#plt.rc('text', usetex=True)
-#plt.rc('font', family='serif')
+plt.rc('text', usetex=True)
+plt.rc('font', family='serif')
 
-plt.title('Total Commits Against Total Chunks \nfor Small and Large Projects for Unfuzzed Simulations')
+plt.figure(figsize=(4, 4/1.4))
+
 plt.xlabel('\#chunks')
 plt.ylabel('\#commits')
 
@@ -26,6 +27,4 @@ x_values, y_values = get_time_series(
 
 plt.scatter(x_values, y_values, label='Large Feature Projects', color='red')
 
-plt.legend(loc=4)
-
-plt.show()
+plt.savefig('compare_workflows_plot_commits_against_project_size_for_0_fuzz_simulations.pgf', bbox_inches='tight')
