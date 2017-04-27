@@ -1,6 +1,6 @@
 import csv
 
-small_project_size = {
+small_project_sizes = {
     '0': 2,
     '0 1': 4,
     '0 1 2': 6,
@@ -9,7 +9,7 @@ small_project_size = {
     '0 1 2 3 4 5': 12,
 }
 
-large_project_size = {
+large_project_sizes = {
     '6': 4,
     '6 7': 8,
     '6 7 8': 12,
@@ -18,8 +18,12 @@ large_project_size = {
     '6 7 8 9 10 11': 24,
 }
 
-all_project_sizes = small_project_size.copy()
-all_project_sizes.update(large_project_size)
+
+def project_sizes(project_type):
+    if project_type == 'large':
+        return large_project_sizes
+    elif project_type == 'small':
+        return small_project_sizes
 
 
 class SimulationRun(object):
@@ -33,9 +37,9 @@ class SimulationRun(object):
 
     @property
     def project_type(self):
-        if self.project_spec in small_project_size.keys():
+        if self.project_spec in small_project_sizes.keys():
             return 'small'
-        elif self.project_spec in large_project_size.keys():
+        elif self.project_spec in large_project_sizes.keys():
             return 'large'
 
     @property
@@ -44,7 +48,7 @@ class SimulationRun(object):
 
     @property
     def project_size(self):
-        return all_project_sizes[self.project_spec]
+        return project_sizes(self.project_type)[self.project_spec]
 
     @property
     def mtf_avg(self):
@@ -64,10 +68,10 @@ class SimulationRun(object):
 
     @property
     def features_implemented(self):
-        return int(self.raw['#ftrs_impld'])
+        return float(self.raw[' #ftrs_impld'])
 
 
-simulation_runs = [SimulationRun(row) for row in csv.DictReader(open('compare_workflows.csv','r'))]
+simulation_runs = [SimulationRun(row) for row in csv.DictReader(open('compare_workflows.csv','r'), )]
 
 
 def get_time_series(x_field, y_field, row_filter=lambda r: True):

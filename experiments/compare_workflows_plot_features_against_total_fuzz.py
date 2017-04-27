@@ -1,8 +1,7 @@
 import matplotlib.pyplot as plt
 import numpy
 
-from compare_workflows_data_for_plotting import get_time_series
-
+from compare_workflows_data_for_plotting import get_time_series, project_sizes
 #plt.rc('text', usetex=True)
 #plt.rc('font', family='serif')
 
@@ -11,28 +10,29 @@ plt.xlabel('\#fuzzings')
 plt.ylabel('\#features')
 
 plt.xlim([0, 600])
-plt.ylim([0, 300])
+plt.ylim([0, 7])
 
-x_values, y_values = get_time_series(
-    x_field=lambda r: r.fuzz_total,
-    y_field=lambda r: r.features_implemented,
-    row_filter=lambda r: r.workflow == 'TestDriven')
+for project_type in ['small', 'large']:
+    for workflow in ['TestDriven', 'WaterfallD']:
 
-plt.scatter(x_values, y_values, label='TDD', color='blue')
+        for project_size in sorted(project_sizes(project_type).values()):
 
-trend = numpy.poly1d(numpy.polyfit(x_values, y_values, 3))
+            x_values, y_values = get_time_series(
+                x_field=lambda r: r.fuzz_total,
+                y_field=lambda r: r.features_implemented,
+                row_filter=lambda r:
+                    r.workflow == workflow and r.project_size == project_size and r.project_type == project_type)
 
-plt.plot(x_values, trend(x_values),"b-")
+            d = 1 - project_size/ (1.0 * max(project_sizes(project_type).values()))
+            print d
 
-x_values, y_values = get_time_series(
-    x_field=lambda r: r.fuzz_total,
-    y_field=lambda r: r.features_implemented,
-    row_filter=lambda r: r.workflow == 'WaterfallD')
+            color = (1.0, d, d) if workflow is 'WaterfallD' else (d, d, 1.0)
 
-plt.scatter(x_values, y_values, label='WTF', color='red')
+            plt.scatter(x_values, y_values, label=workflow+" "+str(project_size), color=color)
 
-p = numpy.poly1d(numpy.polyfit(x_values, y_values, 3))
-plt.plot(x_values, p(x_values),"r-")
+            trend = numpy.poly1d(numpy.polyfit(x_values, y_values, 2))
+
+            plt.plot(x_values, trend(x_values),color=color)
 
 plt.legend(loc=0)
 
