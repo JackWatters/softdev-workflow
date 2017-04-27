@@ -62,6 +62,10 @@ class SimulationRun(object):
     def t_used(self):
         return int(self.raw['     t_used'])
 
+    @property
+    def features_implemented(self):
+        return int(self.raw['#ftrs_impld'])
+
 
 simulation_runs = [SimulationRun(row) for row in csv.DictReader(open('compare_workflows.csv','r'))]
 

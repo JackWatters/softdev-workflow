@@ -15,7 +15,7 @@ plt.ylim([0, 300])
 
 x_values, y_values = get_time_series(
     x_field=lambda r: r.fuzz_total,
-    y_field=lambda r: r.mtf_avg,
+    y_field=lambda r: r.features_implemented,
     row_filter=lambda r: r.workflow == 'TestDriven')
 
 plt.scatter(x_values, y_values, label='TDD', color='blue')
@@ -26,7 +26,7 @@ plt.plot(x_values, trend(x_values),"b-")
 
 x_values, y_values = get_time_series(
     x_field=lambda r: r.fuzz_total,
-    y_field=lambda r: r.mtf_avg,
+    y_field=lambda r: r.features_implemented,
     row_filter=lambda r: r.workflow == 'WaterfallD')
 
 plt.scatter(x_values, y_values, label='WTF', color='red')
