@@ -36,4 +36,4 @@ for project_type in ['small', 'large']:
 
             plt.plot(x_values, trend(x_values),color=color)
 
-plt.savefig('compare_workflows_plot_features_against_total_fuzz.pgf', bbox_inches='tight')
+plt.savefig('features_against_total_fuzz.pgf', bbox_inches='tight')

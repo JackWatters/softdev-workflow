@@ -1,4 +1,6 @@
 import csv
+import os
+
 
 small_project_sizes = {
     '0': 2,
@@ -74,8 +76,9 @@ class SimulationRun(object):
     def features_implemented(self):
         return float(self.raw[' #ftrs_impld'])
 
+module_dir = os.path.abspath(os.path.join(__file__, os.pardir))
 
-simulation_runs = [SimulationRun(row) for row in csv.DictReader(open('compare_workflows.csv','r'), )]
+simulation_runs = [SimulationRun(row) for row in csv.DictReader(open(module_dir+'/data.csv','r'), )]
 
 
 def get_time_series(x_field, y_field, row_filter=lambda r: True):

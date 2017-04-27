@@ -1,6 +1,6 @@
 import matplotlib.pyplot as plt
 
-from compare_workflows_data_for_plotting import get_time_series
+from experiments.compare_workflows.data_for_plotting import get_time_series
 
 plt.rc('text', usetex=True)
 plt.rc('font', family='serif')
@@ -27,4 +27,4 @@ x_values, y_values = get_time_series(
 
 plt.scatter(x_values, y_values, label='Large Feature Projects', color='red')
 
-plt.savefig('compare_workflows_plot_commits_against_project_size_for_0_fuzz_simulations.pgf', bbox_inches='tight')
+plt.savefig('commits_against_project_size_for_0_fuzz_simulations.pgf', bbox_inches='tight')

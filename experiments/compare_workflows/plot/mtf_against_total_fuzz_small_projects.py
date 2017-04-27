@@ -34,4 +34,4 @@ for workflow in ['TestDriven', 'WaterfallD']:
 
         plt.plot(x_values, trend(x_values),color=color)
 
-plt.savefig('compare_workflows_plot_mtf_against_total_fuzz_small_projects.pgf', bbox_inches='tight')
+plt.savefig('mtf_against_total_fuzz_small_projects.pgf', bbox_inches='tight')

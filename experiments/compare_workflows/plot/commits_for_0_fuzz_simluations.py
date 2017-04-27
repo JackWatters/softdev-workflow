@@ -29,4 +29,4 @@ plt.scatter(x_values, y_values, label='WTF', color='red')
 
 plt.show()
 
-plt.savefig('compare_workflows_plot_mtf_against_commits_for_0_fuzz_simluations.pgf', bbox_inches='tight')
+plt.savefig('mtf_against_commits_for_0_fuzz_simluations.pgf', bbox_inches='tight')
