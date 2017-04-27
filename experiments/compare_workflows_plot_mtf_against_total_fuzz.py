@@ -1,7 +1,10 @@
 import matplotlib.pyplot as plt
 import numpy
 
-from simulation_run_data_for_plotting import get_time_series
+from compare_workflows_data_for_plotting import get_time_series
+
+#plt.rc('text', usetex=True)
+#plt.rc('font', family='serif')
 
 plt.title('Average MTF against Total Fuzzings')
 plt.xlabel('\#fuzzings')

@@ -1,13 +1,13 @@
 import matplotlib.pyplot as plt
 
-from simulation_run_data_for_plotting import get_time_series
+from compare_workflows_data_for_plotting import get_time_series
+
+#plt.rc('text', usetex=True)
+#plt.rc('font', family='serif')
 
 plt.title('Average Mean Time to Failure Against Commits')
 plt.xlabel('\#commits')
 plt.ylabel('mtf_avg')
-
-#plt.rc('text', usetex=True)
-#plt.rc('font', family='serif')
 
 plt.xlim([0, 8000])
 plt.ylim([0, 350])

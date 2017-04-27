@@ -1,13 +1,13 @@
 import matplotlib.pyplot as plt
 
-from simulation_run_data_for_plotting import get_time_series
-
-plt.title('Total Commits Against Total Chunks \nfor Small and Large Projects')
-plt.xlabel('\#chunks')
-plt.ylabel('\#commits')
+from compare_workflows_data_for_plotting import get_time_series
 
 #plt.rc('text', usetex=True)
 #plt.rc('font', family='serif')
+
+plt.title('Total Commits Against Total Chunks \nfor Small and Large Projects for Unfuzzed Simulations')
+plt.xlabel('\#chunks')
+plt.ylabel('\#commits')
 
 plt.xlim([0, 25])
 plt.ylim([0, 8000])
