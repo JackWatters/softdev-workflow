@@ -12,3 +12,4 @@ results/
 experiments/*.csv
 experiments/*.png
 *.pgf
+*.jpg
