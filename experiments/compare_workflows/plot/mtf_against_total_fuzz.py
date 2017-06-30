@@ -40,6 +40,6 @@ for project_type in ['small', 'large']:
 
             plt.plot(x_values, trend(x_values),color=color)
 
-    plt.savefig('mtf_against_total_fuzz_large_projects_%s.jpg' % project_type, bbox_inches='tight')
+    plt.savefig('mtf_against_total_fuzz_projects_%s.jpg' % project_type, bbox_inches='tight')
     plt.close()
 
