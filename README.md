@@ -1,6 +1,6 @@
-#Software Development Workflow Model for Fuzzi_Moss.
+# Software Development Workflow Model for Fuzzi_Moss.
 
-##Contributors
+## Contributors
 
   * Tim Storer<br/>
     School of Computing Science, University of Glasgow<br/>
