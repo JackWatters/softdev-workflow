@@ -1,6 +1,9 @@
-#Software Development Workflow Model for Fuzzi_Moss.
+# Software Development Workflow Models for Fuzzi_Moss.
 
-##Contributors
+Models and simulation experiments of software development following the Waterfall and Test Driven Development practices
+using the Theatre_Ag/Fuzzi_Moss socio-technical systems simulation environment.
+
+## Contributors
 
   * Tim Storer<br/>
     School of Computing Science, University of Glasgow<br/>
