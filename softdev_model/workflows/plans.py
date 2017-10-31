@@ -19,7 +19,7 @@ class WaterfallDevelopmentPlan(object):
 
         waterfall_task = Waterfall(team, self.centralised_vcs_server)
 
-        team[0].allocate_task(
+        list(team)[0].allocate_task(
             waterfall_task.allocate_tasks, waterfall_task, [self.specification, self.random])
 
 
