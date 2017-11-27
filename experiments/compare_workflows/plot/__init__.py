@@ -1,5 +1,5 @@
 import commits_against_project_size_for_0_fuzz_simulations
-import mtf_against_commits_for_0_fuzz_simluations
+import mtf_against_project_size_for_0_fuzz_simluations
 import features_against_total_fuzz
 import mtf_against_total_fuzz
 import mtf_against_total_fuzz_small_projects

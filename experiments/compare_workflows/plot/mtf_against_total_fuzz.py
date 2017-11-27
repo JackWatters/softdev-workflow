@@ -3,14 +3,15 @@ import numpy
 
 from experiments.compare_workflows.data_for_plotting import get_time_series, project_sizes
 
+
 for project_type in ['small', 'large']:
 
-    plt.figure(figsize=(3, 3/1.4))
+    plt.rc('font', **{'family': 'serif', 'serif': ['Computer Modern'], 'size': 8})
+    plt.rc('text', usetex=True)
+    plt.figure(figsize=(2, 2 / 1.4))
 
-    plt.rc('font', **{'family': 'serif', 'serif': ['Georgia'], 'size': 10})
-
-    plt.xlabel('#statements removed')
-    plt.ylabel('#mtf')
+    plt.xlabel('\#statements removed')
+    plt.ylabel('mtf')
 
     plt.xlim([0, 600])
     if project_type == 'small':
@@ -38,8 +39,9 @@ for project_type in ['small', 'large']:
 
             trend = numpy.poly1d(numpy.polyfit(x_values, y_values, 2))
 
-            plt.plot(x_values, trend(x_values),color=color)
+            plt.plot(x_values, trend(x_values), color=color)
 
-    plt.savefig('mtf_against_total_fuzz_projects_%s.jpg' % project_type, bbox_inches='tight')
+    plt.tight_layout(pad=0)
+    plt.savefig('mtf_against_total_fuzz_projects_%s.pdf' % project_type)
     plt.close()
 
