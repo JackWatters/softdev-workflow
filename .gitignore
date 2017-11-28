@@ -10,6 +10,6 @@ results/
 .idea
 .pydevproject
 experiments/*.csv
-experiments/*.png
+experiments/compare_workflows/plot/*.pdf
 *.pgf
 *.jpg
