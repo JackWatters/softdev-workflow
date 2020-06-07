@@ -78,7 +78,7 @@ class SoftwareSystem(object):
         bug_sets = map(lambda c: frozenset(c.bugs), self.chunks)
         return reduce(lambda a, b: a.union(b), bug_sets, SortedSet(key=lambda bug: bug.fully_qualified_name))
 
-    def operate(self, random, limit=sys.maxint):
+    def operate(self, random, limit=sys.maxsize):
         current_operations = list()
         self.successful_operations.append(current_operations)
 

@@ -1,9 +1,3 @@
-import pydysofu
-
-import fuzzi_moss
-
-from fuzzi_moss import incomplete_procedure, default_incomplete_procedure_pmf
-
 from softdev_model.system import SoftwareProjectGroup, SystemRandom, UserStory
 
 from softdev_model.workflows import ChangeManagement, Debugging, Implementation, Refactoring, \
@@ -24,7 +18,7 @@ def format_row(header_format_data_tuples):
     return row_format_string % tuple(data)
 
 
-results_file=open('./data.csv', 'w')
+results_file = open('./data.csv', 'w')
 
 user_stories = [
         UserStory(0, 2),
@@ -79,7 +73,7 @@ experimental_parameters = [
         ]
     ]
 
-print "Running ", len(experimental_parameters), " experiments."
+print ("Running" , len(experimental_parameters), " experiments.")
 
 for fuzz_classes, plan, team_size, user_story_indexes, max_clock_tick, concentration in experimental_parameters:
 
@@ -92,7 +86,7 @@ for fuzz_classes, plan, team_size, user_story_indexes, max_clock_tick, concentra
         ("co", "%10.3f", concentration),
     )
 
-    print "Executing", format_row(configuration_format)
+    print ("Executing", format_row(configuration_format))
 
     random = SystemRandom(1)
     pydysofu.pydysofu_random.seed(1)
