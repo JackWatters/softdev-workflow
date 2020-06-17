@@ -1,6 +1,3 @@
-fuzzi_moss
-mock
-nose
-nose_parameterized
+#fuzzi_moss
 sortedcontainers
 theatre_ag

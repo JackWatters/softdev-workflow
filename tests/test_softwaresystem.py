@@ -7,7 +7,7 @@ from sortedcontainers import SortedSet
 
 from softdev_model.system import BugEncounteredException, SoftwareSystem, SystemRandom
 
-from mock import Mock
+from unittest.mock import Mock
 
 
 class SoftwareSystemTest(unittest.TestCase):
@@ -20,7 +20,7 @@ class SoftwareSystemTest(unittest.TestCase):
         self.software_system.add_feature('a', 1)
         self.software_system.add_feature('b', 1)
 
-        self.assertEquals(['a', 'b'], map(lambda f: f.logical_name, self.software_system.features))
+        self.assertEquals(['a', 'b'], [f.logical_name for f in self.software_system.features])
 
     def test_get_feature(self):
         self.software_system.add_feature('a', 2)
@@ -61,14 +61,14 @@ class SoftwareSystemTest(unittest.TestCase):
         random_mock.a_bug_should_be_inserted = Mock(side_effect=[False, True, False])
         feature_a.extend('4', random_mock)
 
-        self.assertEquals(['a.1.0', 'a.1.1', 'a.4.0'], map(lambda b: b.fully_qualified_name, self.software_system.bugs))
+        self.assertEqual(['a.1.0', 'a.1.1', 'a.4.0'], [b.fully_qualified_name for b in self.software_system.bugs])
 
     def test_tests(self):
 
         feature_a = self.software_system.add_feature('a', 3)
         feature_a.add_test(4)
         feature_a.add_test(3)
-        self.assertEquals(['a.3', 'a.4'], map(lambda t: t.fully_qualified_name, self.software_system.tests))
+        self.assertEquals(['a.3', 'a.4'], [t.fully_qualified_name for t in self.software_system.tests])
 
     def complete_feature(self, logical_name, size, random):
         feature = self.software_system.add_feature(logical_name, size)

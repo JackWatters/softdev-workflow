@@ -5,7 +5,7 @@ Created on 20 Mar 2016
 """
 import unittest
 
-from mock import Mock
+from unittest.mock import Mock
 
 from softdev_model.system import Bug, BugEncounteredException, Chunk, Feature, SoftwareSystem, Test
 

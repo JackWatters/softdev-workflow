@@ -2,6 +2,7 @@
 @author: twsswt
 """
 from random import Random
+from functools import reduce
 
 from sortedcontainers.sortedset import SortedSet
 
@@ -47,7 +48,7 @@ class Test(object):
         """
         The indexes to chunks in the sorted set of chunks of this tests's parent feature that this tests touches.
         """
-        shuffled_indexes = range(0, self.feature.size)
+        shuffled_indexes = list(range(0, self.feature.size))
         shuffler = Random(self.logical_name)
         shuffler.shuffle(shuffled_indexes)
 

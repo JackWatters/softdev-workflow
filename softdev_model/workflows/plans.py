@@ -5,7 +5,7 @@
 from .test_driven_development import TestDrivenDevelopment
 from .waterfall import Waterfall
 
-from Queue import Queue
+from queue import Queue
 
 
 class WaterfallDevelopmentPlan(object):

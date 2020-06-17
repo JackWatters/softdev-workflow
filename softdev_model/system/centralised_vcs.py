@@ -103,10 +103,10 @@ class CentralisedVCSClient(object):
         self.working_copy = copy_software_system(self.working_base)
 
         self.probability_automatically_resolve = probability_automatically_resolve
-        self.conflicts = []
+        self.conflicts = list()
 
     def _add_conflict(self, working_base_chunk, random):
-        conflict_complexity = random.random()
+        conflict_complexity = random.conflict_complexity()
         conflict = Conflict(working_base_chunk.fully_qualified_name, conflict_complexity)
         self.conflicts.append(conflict)
         return conflict
@@ -115,18 +115,13 @@ class CentralisedVCSClient(object):
         if conflict.resolve_threshold <= self.probability_automatically_resolve:
             self.resolve(conflict, random)
 
-    def _merge(self, old_working_base, random):
-        """
-        Check if each chunk in the current working base has changed since the last update.  If so, either over-write the
-        ne working copy if it hasn't been modified, or conflict.
-        :param old_working_base:
-        :param random:
-        """
+    def _initialise_new_features_in_working_copy_following_update(self):
         for working_base_feature in self.working_base.features:
             working_copy_feature = self.working_copy.get_feature(working_base_feature.logical_name)
             if working_copy_feature is None:
                 self.working_copy.add_feature(working_base_feature.logical_name, working_base_feature.size)
 
+    def _add_new_chunks_to_working_copy_following_from_working_base_following_update(self):
         new_chunks = set()
 
         for new_working_base_chunk in self.working_base.chunks:
@@ -136,6 +131,17 @@ class CentralisedVCSClient(object):
                 working_copy_feature = self.working_copy.get_feature(new_working_base_chunk.feature.logical_name)
                 working_copy_chunk = working_copy_feature.add_chunk(new_working_base_chunk.logical_name)
                 new_chunks.add(working_copy_chunk)
+        return new_chunks
+
+    def _merge(self, old_working_base, random):
+        """
+        Check if each chunk in the current working base has changed since the last update.  If so, either over-write the
+        new working copy if it hasn't been modified, or conflict.
+        :param old_working_base:
+        :param random:
+        """
+        self._initialise_new_features_in_working_copy_following_update()
+        new_chunks = self._add_new_chunks_to_working_copy_following_from_working_base_following_update()
 
         for new_working_base_chunk in self.working_base.chunks:
             chunk_fully_qualified_name = new_working_base_chunk.fully_qualified_name
@@ -148,11 +154,9 @@ class CentralisedVCSClient(object):
                 old_working_base_chunk = old_working_base.get_chunk(chunk_fully_qualified_name)
 
                 if old_working_base_chunk is not None and old_working_base_chunk != new_working_base_chunk:
-
                     if working_copy_chunk == old_working_base_chunk:
                         working_copy_chunk.overwrite_with(new_working_base_chunk)
                     elif working_copy_chunk != new_working_base_chunk:
-
                         conflict = self._add_conflict(new_working_base_chunk, random)
                         self._try_automatic_resolve(conflict, random)
 
@@ -170,8 +174,6 @@ class CentralisedVCSClient(object):
 
     def resolve(self, conflict, random):
         self.conflicts.remove(conflict)
-
         working_base_chunk = self.working_base.get_chunk(conflict.chunk_fully_qualified_name)
         working_copy_chunk = self.working_copy.get_chunk(conflict.chunk_fully_qualified_name)
-
         working_copy_chunk.merge(working_base_chunk, random)

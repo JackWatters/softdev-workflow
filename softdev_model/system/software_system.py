@@ -3,6 +3,8 @@
 """
 import sys
 
+from functools import reduce
+
 from sortedcontainers.sortedset import SortedSet
 
 from .feature import Feature
@@ -42,14 +44,14 @@ class SoftwareSystem(object):
         return feature
 
     def get_feature(self, logical_name):
-        result = filter(lambda f: f.logical_name == logical_name, self.features)
+        result = list(filter(lambda f: f.logical_name == logical_name, self.features))
         if len(result) is 0:
             return None
         else:
             return result[0]
 
     def get_chunk(self, fully_qualified_name):
-        result = filter(lambda chunk: chunk.fully_qualified_name == fully_qualified_name, self.chunks)
+        result = [chunk for chunk in self.chunks if chunk.fully_qualified_name == fully_qualified_name]
         if len(result) is 0:
             return None
         else:
@@ -62,11 +64,11 @@ class SoftwareSystem(object):
 
     @property
     def chunk_names(self):
-        return map(lambda c: c.fully_qualified_name, self.chunks)
+        return [c.fully_qualified_name for c in self.chunks]
 
     @property
     def chunk_contents(self):
-        return map(lambda c: c.local_content, self.chunks)
+        return [c.local_content for c in self.chunks]
 
     @property
     def tests(self):

@@ -13,3 +13,5 @@ experiments/*.csv
 experiments/compare_workflows/plot/*.pdf
 *.pgf
 *.jpg
+
+venv-x

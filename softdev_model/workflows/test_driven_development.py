@@ -2,12 +2,12 @@
 @author: twsswt
 """
 
-from Queue import Empty
+from queue import Empty
 
 from theatre_ag import default_cost
 
 from .change_management import ChangeManagement
-from specification import Specification
+from .specification import Specification
 from .testing import Testing
 from .implementation import Implementation
 from .debugging import Debugging

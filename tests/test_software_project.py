@@ -1,8 +1,8 @@
 import unittest
 
-from mock import Mock
+from unittest.mock import Mock
 
-from Queue import Queue
+from queue import Queue
 
 from theatre_ag import SynchronizingClock, Cast
 

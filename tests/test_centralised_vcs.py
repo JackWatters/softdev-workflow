@@ -1,6 +1,6 @@
 import unittest
 
-from mock import Mock
+from unittest.mock import Mock
 
 from softdev_model.system import CentralisedVCSServer, SoftwareSystem, SystemRandom
 
@@ -19,23 +19,25 @@ class CentralisedVCSTest(unittest.TestCase):
         self.centralised_vcs_client_bob = self.centralised_vcs_server.checkout()
 
     def test_checkout(self):
-        self.assertEquals(["0.0"], self.centralised_vcs_client_alice.working_copy.chunk_names)
+        self.assertEqual(["0.0"], self.centralised_vcs_client_alice.working_copy.chunk_names)
 
     def test_checkout_and_update(self):
 
         random_mock = Mock(spec=SystemRandom)
+        random_mock.conflict_complexity.return_value = 1.0
 
         self.centralised_vcs_client_alice.update(random_mock)
 
-        self.assertEquals(["0.0"], self.centralised_vcs_client_alice.working_copy.chunk_names)
+        self.assertEqual(["0.0"], self.centralised_vcs_client_alice.working_copy.chunk_names)
 
     def _alice_modifies_a_chunk_in_working_copy(self):
 
         chunk = self.centralised_vcs_client_alice.working_copy.get_chunk(self.chunk.fully_qualified_name)
 
         random_mock = Mock(spec=SystemRandom)
-        random_mock.create_local_content = Mock(side_effect=[456])
+        random_mock.create_local_content = Mock(return_value=456)
         random_mock.a_bug_should_be_inserted = Mock(side_effect=[False])
+        random_mock.conflict_complexity.return_value = 1.0
 
         chunk.modify(random_mock)
 
@@ -53,6 +55,8 @@ class CentralisedVCSTest(unittest.TestCase):
         random_mock = Mock(spec=SystemRandom)
         random_mock.randint = Mock()
         random_mock.random = Mock()
+        random_mock.conflict_complexity.return_value = 0.0
+        random_mock.a_bug_should_be_inserted.return_value = False
 
         self.centralised_vcs_client_alice.update(random_mock)
         self.centralised_vcs_client_alice.commit()
@@ -60,7 +64,7 @@ class CentralisedVCSTest(unittest.TestCase):
 
     def _bob_updates_and_conflicts_working_copy(self):
         random_mock = Mock(spec=SystemRandom)
-        random_mock.random = Mock(side_effect=[1.0])
+        random_mock.conflict_complexity.return_value = 1.0
 
         self.centralised_vcs_client_bob.update(random_mock)
 
@@ -81,11 +85,9 @@ class CentralisedVCSTest(unittest.TestCase):
         self.centralised_vcs_client_bob.update(random_mock)
 
     def test_checkout_modify_update_and_commit(self):
-
         self._alice_modifies_a_chunk_in_working_copy()
         self._alice_updates_working_copy_and_commits_chunk()
-
-        self.assertEquals([456], self.centralised_vcs_client_alice.working_copy.chunk_contents)
+        self.assertEqual([456], self.centralised_vcs_client_alice.working_copy.chunk_contents)
 
     def test_concurrent_checkout_modify_and_conflict(self):
         self._alice_modifies_a_chunk_in_working_copy()
@@ -93,7 +95,7 @@ class CentralisedVCSTest(unittest.TestCase):
         self._alice_updates_working_copy_and_commits_chunk()
         self._bob_updates_and_conflicts_working_copy()
 
-        self.assertEquals(1, len(self.centralised_vcs_client_bob.conflicts))
+        self.assertEqual(1, len(self.centralised_vcs_client_bob.conflicts))
 
     def test_that_automatic_merge_is_stateless(self):
         """

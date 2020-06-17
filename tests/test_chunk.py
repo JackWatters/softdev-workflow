@@ -3,7 +3,7 @@
 """
 import unittest
 
-from mock import Mock
+from unittest.mock import Mock
 
 from softdev_model.system import BugEncounteredException, Chunk, Feature, SoftwareSystem, SystemRandom
 

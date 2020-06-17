@@ -1,10 +1,10 @@
 import unittest
 
-from mock import Mock, call
+from unittest.mock import Mock, call
 
 from threading import _RLock
 
-from theatre_ag import Actor, SynchronizingClock
+# from theatre_ag import Actor, SynchronizingClock
 
 from softdev_model.system import Bug, BugEncounteredException, CentralisedVCSClient, CentralisedVCSServer, Chunk, \
     Feature, SoftwareSystem, SystemRandom, Test, UserStory

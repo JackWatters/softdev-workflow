@@ -51,5 +51,6 @@ class TDDDeveloperRegressionTestCase(unittest.TestCase):
 
         self.software_project.build()
 
+
 if __name__ == '__main__':
     unittest.main()

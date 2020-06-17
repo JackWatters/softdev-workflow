@@ -5,6 +5,8 @@
 from .bug import Bug
 from sortedcontainers import SortedSet
 
+from functools import reduce
+
 
 class Chunk(object):
     """
@@ -36,6 +38,9 @@ class Chunk(object):
     def __ne__(self, other):
         return not(self.__eq__(other))
 
+    def __hash__(self):
+        return hash(self.logical_name)
+
     @property
     def probability_gain_feature_dependency(self):
         return self.feature.software_system.probability_gain_feature_dependency
@@ -66,27 +71,26 @@ class Chunk(object):
 
     @property
     def dependency_logical_names(self):
-        return map(lambda d: d.logical_name, self.dependencies)
+        return [d.logical_name for d in self.dependencies]
 
     @property
     def bugs_logical_names(self):
-        return map(lambda b: b.logical_name, self.bugs)
+        return [b.logical_name for b in  self.bugs]
 
     @property
     def bugs_in_dependencies(self):
-        chunk_bug_set = frozenset(map(lambda chunk: frozenset(chunk.bugs), self.dependencies))
+        chunk_bug_set = frozenset(frozenset(chunk.bugs) for chunk in self.dependencies)
         return reduce(lambda bugs_a, bugs_b: bugs_a.union(bugs_b), chunk_bug_set, set())
 
     @property
     def tests(self):
-        return filter(lambda t: self in t.chunks, self.feature.tests)
+        return [t for t in self.feature.tests if self in t.chunks]
 
     def modify(self, random):
         feature_chunks = self.feature.chunks - {self}
         system_chunks = set(self.feature.software_system.chunks.difference(self.feature.chunks))
         self._add_dependencies(random, system_chunks, self.probability_gain_system_dependency)
         self._add_dependencies(random, feature_chunks, self.probability_gain_feature_dependency)
-
         self.local_content = random.create_local_content()
 
         self._insert_bugs(random)
@@ -95,7 +99,6 @@ class Chunk(object):
         for dependency in source_chunk.dependencies:
             working_copy_dependency = self.feature.software_system.get_chunk(dependency.fully_qualified_name)
             self.dependencies.add(working_copy_dependency)
-
         self.modify(random)
 
     def overwrite_with(self, source_chunk):
@@ -130,7 +133,7 @@ class Chunk(object):
         self.bugs.add(Bug(logical_name, self))
 
     def get_bug(self, logical_name):
-        result = filter(lambda bug: bug.logical_name == logical_name, self.bugs)
+        result = [bug for bug in self.bugs if bug.logical_name == logical_name]
         if len(result) is 0:
             return None
         else:
@@ -168,7 +171,7 @@ class Chunk(object):
         feature_dependencies = string_repr_set(filter(lambda c: c.feature == self.feature, self.dependencies))
         system_dependencies = string_repr_set(filter(lambda c: c.feature != self.feature, self.dependencies))
 
-        bugs = ", ".join(map(lambda bug: str(bug), self.bugs))
+        bugs = ", ".join((str(bug) for bug in self.bugs))
 
         return "c_%s:[%s]:[%s]->(in[%s],ex[%s])" % \
                (str(self.logical_name), self.local_content, bugs, feature_dependencies, system_dependencies)
