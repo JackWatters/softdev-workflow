@@ -93,7 +93,7 @@ class SoftwareSystemTest(unittest.TestCase):
         with self.assertRaises(BugEncounteredException):
             self.software_system.operate(random, 10000)
 
-        self.assertEqual(3, len(self.software_system.last_trace))
+        self.assertEqual(9, len(self.software_system.last_trace))
 
         for test in self.software_system.tests:
 

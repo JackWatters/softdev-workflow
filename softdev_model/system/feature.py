@@ -2,6 +2,8 @@
 @author: tws
 """
 
+from functools import reduce
+
 
 from .chunk import Chunk
 from .test import Test

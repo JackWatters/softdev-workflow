@@ -6,7 +6,7 @@ class SystemRandom(Random):
     """
     Extends the random class with a higher level API for operations that require random behaviour.
     """
-    def __int__(self, *args):
+    def __init__(self, *args):
         Random.__init__(self, *args)
 
     def sample_chunks(self, chunks):
