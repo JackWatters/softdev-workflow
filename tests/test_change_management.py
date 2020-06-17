@@ -27,7 +27,7 @@ class ChangeManagementTestCase(unittest.TestCase):
 
         self.change_management.checkout()
 
-        self.assertEquals(self.centralised_vcs_client, self.change_management.centralised_vcs_client)
+        self.assertEqual(self.centralised_vcs_client, self.change_management.centralised_vcs_client)
 
     def test_resolve(self):
         self.change_management.checkout()

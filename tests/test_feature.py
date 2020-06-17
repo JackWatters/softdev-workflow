@@ -34,7 +34,7 @@ class FeatureTest(unittest.TestCase):
 
         chunk = self._extend_fixture_feature()
 
-        self.assertEquals(0, len(chunk.dependencies))
+        self.assertEqual(0, len(chunk.dependencies))
 
     def test_operate_implemented_no_bugs(self):
         self._extend_fixture_feature()
@@ -69,7 +69,7 @@ class FeatureTest(unittest.TestCase):
         mock_random.choose_bug = Mock(side_effect=[next(iter(chunk.bugs))])
 
         self.feature.debug(mock_random)
-        self.assertEquals(0, len(chunk.bugs))
+        self.assertEqual(0, len(chunk.bugs))
 
 
 if __name__ == "__main__":

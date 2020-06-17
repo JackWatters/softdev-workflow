@@ -20,13 +20,13 @@ class SoftwareSystemTest(unittest.TestCase):
         self.software_system.add_feature('a', 1)
         self.software_system.add_feature('b', 1)
 
-        self.assertEquals(['a', 'b'], [f.logical_name for f in self.software_system.features])
+        self.assertEqual(['a', 'b'], [f.logical_name for f in self.software_system.features])
 
     def test_get_feature(self):
         self.software_system.add_feature('a', 2)
         feature = self.software_system.get_feature('a')
 
-        self.assertEquals('a', feature.logical_name)
+        self.assertEqual('a', feature.logical_name)
 
     def test_chunks(self):
         feature_a = self.software_system.add_feature('a', 1)
@@ -35,7 +35,7 @@ class SoftwareSystemTest(unittest.TestCase):
         feature_b.add_chunk('2')
         feature_a.add_chunk('1')
 
-        self.assertEquals(['a.1', 'b.2'], self.software_system.chunk_names)
+        self.assertEqual(['a.1', 'b.2'], self.software_system.chunk_names)
 
     def test_bugs(self):
 
@@ -68,7 +68,7 @@ class SoftwareSystemTest(unittest.TestCase):
         feature_a = self.software_system.add_feature('a', 3)
         feature_a.add_test(4)
         feature_a.add_test(3)
-        self.assertEquals(['a.3', 'a.4'], [t.fully_qualified_name for t in self.software_system.tests])
+        self.assertEqual(['a.3', 'a.4'], [t.fully_qualified_name for t in self.software_system.tests])
 
     def complete_feature(self, logical_name, size, random):
         feature = self.software_system.add_feature(logical_name, size)
@@ -93,7 +93,7 @@ class SoftwareSystemTest(unittest.TestCase):
         with self.assertRaises(BugEncounteredException):
             self.software_system.operate(random, 10000)
 
-        self.assertEquals(3, len(self.software_system.last_trace))
+        self.assertEqual(3, len(self.software_system.last_trace))
 
         for test in self.software_system.tests:
 
@@ -105,7 +105,7 @@ class SoftwareSystemTest(unittest.TestCase):
                     test.feature.debug(random, e.bug)
 
         self.software_system.operate(random, 10000)
-        self.assertEquals(10000, len(self.software_system.last_trace))
+        self.assertEqual(10000, len(self.software_system.last_trace))
 
 
 if __name__ == "__main__":

@@ -108,7 +108,7 @@ class CentralisedVCSTest(unittest.TestCase):
         self._bob_updates_and_conflicts_working_copy()
         self._bob_updates_and_conflicts_working_copy()
 
-        self.assertEquals(1, len(self.centralised_vcs_client_bob.conflicts))
+        self.assertEqual(1, len(self.centralised_vcs_client_bob.conflicts))
 
     def test_that_conflicts_can_be_resolved(self):
         """
@@ -122,7 +122,7 @@ class CentralisedVCSTest(unittest.TestCase):
         self._bob_manually_resolves_conflict()
         self._bob_commits_and_updates_working_copy()
 
-        self.assertEquals(0, len(self.centralised_vcs_client_bob.conflicts))
+        self.assertEqual(0, len(self.centralised_vcs_client_bob.conflicts))
 
 
 if __name__ == '__main__':
